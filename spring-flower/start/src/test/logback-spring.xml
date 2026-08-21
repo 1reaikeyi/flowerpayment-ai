@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 1. 控制台输出 Appender 配置 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] --- %-6level %logger{50} ===> %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 2. ServiceInterceptAspect 专用文件输出 Appender -->
+    <appender name="SERVICE_INTERCEPT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logging/aop</file>
+        
+        <!-- 滚动策略：按时间滚动 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logging/aop.%d{yyyy-MM-dd}</fileNamePattern>
+            <!-- 保留30天的日志文件 -->
+            <maxHistory>30</maxHistory>
+            <!-- 总文件大小上限 -->
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+
+        <!-- 编码器配置 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] --- %-6level %logger{50} ===> %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 其他日志配置 -->
+    <logger name="org.apache.ibatis" level="TRACE"/>
+    <logger name="org.springframework.transaction" level="DEBUG"/>
+    <logger name="com.zaxxer.hikari" level="INFO" additivity="false"/>
+
+    <!-- 3. 为 ServiceInterceptAspect 配置独立的 Logger -->
+    <logger name="start.aop.ServiceInterceptAspect" level="INFO" additivity="true">
+        <appender-ref ref="SERVICE_INTERCEPT_FILE"/>
+    </logger>
+
+    <!-- 根日志配置 -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

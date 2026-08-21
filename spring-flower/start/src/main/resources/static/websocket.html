@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket</title>
+</head>
+<body>
+<!-- 催单按钮：顾客点击后向服务端发送 reminder -->
+<button onclick="reminder()">催单</button>
+<!-- 关闭连接按钮 -->
+<button onclick="closeWebSocket()">关闭连接</button>
+<div id="message"></div>
+</body>
+<script type="text/javascript">
+    var websocket = null;
+    // 顾客端 id 规则：user_{随机数}
+    var clientId = "user_" + 1;
+
+    // 判断当前浏览器是否支持WebSocket
+    if('WebSocket' in window){
+        // 连接WebSocket节点
+        websocket = new WebSocket("ws://localhost:8080/websocket/"+clientId);
+    }
+    else{
+        alert('Not support websocket')
+    }
+
+    // 连接发生错误的回调方法
+    websocket.onerror = function(){
+        setMessageInnerHTML("error");
+    };
+
+    // 连接成功建立的回调方法
+    websocket.onopen = function(){
+        setMessageInnerHTML("连接成功 " + clientId);
+    }
+
+    // 接收到消息的回调方法
+    websocket.onmessage = function(event){
+        setMessageInnerHTML("收到消息：" + event.data);
+        // 收到商家回复的 received，表示商家已确认催单
+        if(event.data === "received"){
+            setMessageInnerHTML("商家已确认催单");
+        }
+    }
+
+    // 连接关闭的回调方法
+    websocket.onclose = function(){
+        setMessageInnerHTML("close");
+    }
+
+    // 监听窗口关闭事件，主动关闭连接，防止服务端异常
+    window.onbeforeunload = function(){
+        websocket.close();
+    }
+
+    // 将消息显示在网页上
+    function setMessageInnerHTML(innerHTML){
+        document.getElementById('message').innerHTML += innerHTML + '<br/>';
+    }
+
+    // 催单：向服务端发送 reminder 消息
+    function reminder(){
+        websocket.send("reminder");
+        setMessageInnerHTML("已发送催单请求");
+    }
+
+    // 关闭连接
+    function closeWebSocket() {
+        websocket.close();
+    }
+</script>
+</html>

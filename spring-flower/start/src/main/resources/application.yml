@@ -1,0 +1,103 @@
+spring:
+  # 项目配置文件
+  profiles:
+    active: dev
+  # 数据库配置
+  datasource:
+    driver-class-name: ${flower.datasource.driver-class-name}
+    url: jdbc:mysql://${flower.datasource.host}:${flower.datasource.port}/${flower.datasource.database}
+    username: ${flower.datasource.username}
+    password: ${flower.datasource.password}
+  # redis配置文件
+  data:
+    redis:
+      host: ${flower.redis.host}
+      port: ${flower.redis.port}
+      password: ${flower.redis.password}
+      database: ${flower.redis.database}
+      client-type: lettuce
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 10
+          max-wait: 3000ms
+          max-idle: 8
+          min-idle: 2
+      # Redisson 配置：单节点模式，复用上方 redis 连接参数
+      # 注意：config 必须使用 | 块标量，内容作为字符串交给 Redisson 自行解析
+      redisson:
+        config: |
+          singleServerConfig:
+            # Redis 连接地址（必须带 redis:// 协议前缀）
+            address: "redis://${restaurant.redis.host}:${restaurant.redis.port}"
+            # 数据库索引
+            database: ${restaurant.redis.database}
+            # 访问密码
+            password: ${restaurant.redis.password}
+            # 连接池大小
+            connectionPoolSize: 10
+            # 最小空闲连接数
+            connectionMinimumIdleSize: 2
+            # 命令执行超时（毫秒）
+            timeout: 3000
+
+  # 缓存配置
+  cache:
+    type: redis
+    redis:
+      cache-null-values: false
+
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+# Mybatis-plus配置
+mybatis-plus:
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
+  type-enums-package: model.entityenum
+# 日志配置
+logging:
+  level:
+    flower:
+      web_controller: ${flower.logging:info}
+# jwt配置
+jwt:
+  # 设置jwt签名加密时使用的秘钥
+  admin-secret-key: huawei_secret_for_spring_security_generation_as_jwt_to_use_admin
+  # 设置jwt过期时间
+  admin-ttl: 864000000
+  # 设置前端传递过来的令牌名称
+  admin-token-name: token
+  # 设置jwt签名加密时使用的秘钥
+  user-secret-key: huawei_secret_for_spring_security_generation_as_jwt_to_use_user
+  # 设置jwt过期时间
+  user-ttl: 864000000
+  # 设置前端传递过来的令牌名称
+  user-token-name: token
+# 阿里云OSS配置
+alioss:
+  endpoint: ${flower.endpoint}
+  access-key-id: ${flower.access-key-id}
+  access-key-secret: ${flower.access-key-secret}
+  bucket-name: ${flower.bucket-name}
+# 支付宝支付配置
+alipay:
+  gatewayUrl: ${flower.alipay.gateway-url:https://openapi-sandbox.dl.alipaydev.com/gateway.do}
+  appId: ${flower.alipay.app-id}
+  appPrivateKey: ${flower.alipay.app-private-key}
+  alipayPublicKey: ${flower.alipay.alipay-public-key}
+  format: ${flower.alipay.format:JSON}
+  charset: ${flower.alipay.charset:UTF-8}
+  signType: ${flower.alipay.sign-type:RSA2}
+  # 必填：回调地址（notify必须公网可访问；return给前端页面）
+  notifyUrl: ${flower.alipay.notify-url}
+  returnUrl: ${flower.alipay.return-url}
+
+
+
+

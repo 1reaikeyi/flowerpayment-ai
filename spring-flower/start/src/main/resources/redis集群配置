@@ -1,0 +1,40 @@
+redisson:
+    config: |
+      sentinelServerConfig:
+        # 哨兵监控的 master 名（必须与 redis-sentinel.conf 中 "sentinel monitor <name> ..." 一致）
+        masterName: "mymaster"
+        # 3 个哨兵地址（必须带 redis:// 前缀，列表形式）
+        addSentinelAddress:
+          - "redis://192.168.80.128:27000"
+          - "redis://192.168.80.129:27001"
+          - "redis://192.168.80.130:27002"
+        # Redis 主/从节点访问密码
+        password: "${weibo.redis.password}"
+        # 哨兵自身密码（本项目所有密码相同，复用同一个）
+        sentinelPassword: "${weibo.redis.password}"
+        # 数据库索引（哨兵模式支持 0~15）
+        database: ${weibo.redis.database}
+        # 读模式：MASTER_SLAVE 表示主从都可读（默认 SLAVE 只读从节点）
+        readMode: "MASTER_SLAVE"
+        # 主节点连接池大小
+        masterConnectionPoolSize: 10
+        # 主节点最小空闲连接
+        masterConnectionMinimumIdleSize: 2
+        # 从节点连接池大小
+        slaveConnectionPoolSize: 10
+        # 从节点最小空闲连接
+        slaveConnectionMinimumIdleSize: 2
+        # 建立连接超时（毫秒）
+        connectTimeout: 3000
+        # 命令执行超时（毫秒）
+        timeout: 3000
+        # 命令失败重试次数
+        retryAttempts: 3
+        # 重试间隔（毫秒）
+        retryInterval: 1500
+
+放到application-dev.yml的redis配置下，替换redisson配置
+1写+2读+3哨兵：
+主节点：192.168.80.128:27000
+从节点：192.168.80.129:27001,192.168.80.130:27002
+哨兵：192.168.80.128:27000,192.168.80.129:27001,192.168.80.130:27002

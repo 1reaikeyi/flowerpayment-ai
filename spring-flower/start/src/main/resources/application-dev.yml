@@ -1,0 +1,34 @@
+flower:
+  logging: info
+  #数据库配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host: localhost
+    port: 3306
+    database: use_flower
+    username: root
+    password: ${MYSQL_PASSWORD}
+  #redis配置文件
+  redis:
+    host: 192.168.80.128
+    port: 6379
+    password: ${MYSQL_PASSWORD}
+    database: 2
+
+
+  #文件上传配置
+  endpoint: https://oss-cn-beijing.aliyuncs.com
+  # 阿里云身份凭证ID（相当于“账号”）
+  access-key-id: ${PATH_alibaba_oss_id}
+  # 阿里云身份凭证密钥（相当于“密码”）
+  access-key-secret: ${PATH_alibaba_oss_secret}
+  # 阿里云OSS 存储空间名称（相当于“网盘文件夹”）
+  bucket-name: java-web-ai-wangnian
+
+  # 支付宝支付配置
+  alipay:
+    app-id: ${PATH_alibaba_pay_appid}
+    app-private-key: ${PATH_alibaba_pay_private}
+    alipay-public-key: ${PATH_alibaba_pay_public}
+    notify-url: https://localhost:8080/pay/notify
+    return-url: http://localhost:8080/pay/return

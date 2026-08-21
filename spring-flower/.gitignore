@@ -1,0 +1,33 @@
+# 文档&编译包
+
+HELP.md
+.mvn/wrapper/maven-wrapper.jar
+
+# 全局忽略所有 target 目录（最简洁有效，删掉多余反向排除）
+
+**/target/
+
+# STS 开发工具配置
+
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# NetBeans 开发工具配置
+
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# VS Code 开发工具配置
+
+.vscode/

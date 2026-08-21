@@ -1,0 +1,224 @@
+-- ========== 分类表 ==========
+create table flower_category
+(
+    id          bigint auto_increment comment '主键'
+        primary key,
+    name        varchar(32)      not null comment '分类名称',
+    type        bigint           null comment '类型 1 鲜花商品单只 2 节日商品多只 3 礼品',
+    sort        bigint default 0 not null comment '顺序',
+    status      bigint           null comment '启用状态 0:禁用，1:启用',
+    create_time datetime         null comment '创建时间',
+    update_time datetime         null comment '更新时间',
+    create_user bigint           null comment '创建人',
+    update_user bigint           null comment '修改人',
+    constraint idx_category_name
+        unique (name)
+)
+    comment '鲜花及节日礼盒分类' collate = utf8mb4_bin;
+
+-- ========== 鲜花单品表 ==========
+create table flower
+(
+    id          bigint auto_increment comment '主键'
+        primary key,
+    name        varchar(32)      not null comment '鲜花名称',
+    category_id bigint           not null comment '所属分类id',
+    price       decimal(10, 2)   null comment '单价',
+    image       varchar(255)     null comment '商品图片',
+    description varchar(255)     null comment '花语/描述信息',
+    status      bigint default 1 null comment '启用状态:0 下架 1 在售',
+    create_time datetime         null comment '创建时间',
+    update_time datetime         null comment '更新时间',
+    create_user bigint           null comment '创建人',
+    update_user bigint           null comment '修改人',
+    constraint idx_flower_name
+        unique (name)
+)
+    comment '鲜花单品' collate = utf8mb4_bin;
+
+-- ========== 鲜花规格表==========
+create table flower_detail
+(
+    id            bigint auto_increment comment '主键'
+        primary key,
+    flower_id     bigint       not null comment '鲜花id',
+    spec_object     varchar(32)  null comment '送人对象',
+    spec_options  varchar(255) null comment '用途',
+    constraint idx_flower_spec
+        unique (flower_id, spec_object)
+)
+    comment '鲜花规格关系表' collate = utf8mb4_bin;
+
+-- ========== 节日多花组合==========
+create table festival
+(
+    id          bigint auto_increment comment '主键'
+        primary key,
+    category_id bigint           null comment '所属分类',
+    name        varchar(32)      not null comment '节日礼盒名称',
+    price       decimal(10, 2)   not null comment '礼盒价格',
+    number      bigint           not null comment '鲜花数量',
+    status      bigint default 1 null comment '售卖状态 0:下架 1:在售',
+    description varchar(255)     null comment '礼盒描述',
+    image       varchar(255)     null comment '礼盒图片',
+    create_time datetime         null comment '创建时间',
+    update_time datetime         null comment '更新时间',
+    create_user bigint           null comment '创建人',
+    update_user bigint           null comment '修改人',
+    constraint idx_festival_name
+        unique (name)
+)
+    comment '节日多花组合' collate = utf8mb4_bin;
+
+-- ========== 礼盒里包含哪些花==========
+create table festival_detail
+(
+    id          bigint auto_increment comment '主键'
+        primary key,
+    festival_id bigint         null comment '对应节日礼盒id',
+    flower_id   bigint   null comment '关联鲜花id',
+    spec_object   varchar(32)  null comment '送人对象',
+    spec_options  varchar(255) null comment '用途'
+)
+    comment '节日礼盒鲜花关系' collate = utf8mb4_bin;
+
+-- ========== 员工表 ==========
+create table employee
+(
+    id          bigint auto_increment comment '主键'
+        primary key,
+    name        varchar(32)      not null comment '员工姓名',
+    username    varchar(32)      not null comment '登录账号',
+    password    varchar(64)      not null comment '密码',
+    avatar      varchar(64)      null comment '头像',
+    email       varchar(32)      not null comment '邮箱',
+    phone       varchar(11)      not null comment '手机号',
+    sex         varchar(2)       not null comment '性别',
+    status      bigint default 1 not null comment '状态 0:禁用，1:启用',
+    create_time datetime         null comment '创建时间',
+    update_time datetime         null comment '更新时间',
+    create_user bigint           null comment '创建人',
+    update_user bigint           null comment '修改人',
+    constraint idx_username
+        unique (username)
+)
+    comment '员工信息（店长/店员/客服）' collate = utf8mb4_bin;
+
+-- ========== 用户表 ==========
+create table user
+(
+    id          bigint auto_increment comment '主键'
+        primary key,
+    username    varchar(32)  null comment '昵称',
+    password    varchar(64)  null comment '密码',
+    phone       varchar(11)  null comment '手机号',
+    sex         varchar(2)   null comment '性别',
+    id_number   varchar(18)  null comment '身份证号',
+    avatar      varchar(500) null comment '头像',
+    create_time datetime     null comment '注册时间',
+    status      bigint       null comment '0:注销 1:启用'
+)
+    comment '用户信息' collate = utf8mb4_bin;
+
+-- ========== 地址簿 ==========
+create table user_address
+(
+    id            bigint auto_increment comment '主键'
+        primary key,
+    user_id       bigint                       not null comment '用户id',
+    consignee     varchar(50)                  null comment '收花人',
+    sex           varchar(2)                   null comment '性别',
+    phone         varchar(11)                  not null comment '手机号',
+    province_code varchar(12) charset utf8mb4  null comment '省级区划编号',
+    province_name varchar(32) charset utf8mb4  null comment '省级名称',
+    city_code     varchar(12) charset utf8mb4  null comment '市级区划编号',
+    city_name     varchar(32) charset utf8mb4  null comment '市级名称',
+    district_code varchar(12) charset utf8mb4  null comment '区级区划编号',
+    district_name varchar(32) charset utf8mb4  null comment '区级名称',
+    detail        varchar(200) charset utf8mb4 null comment '详细地址',
+    label         varchar(100) charset utf8mb4 null comment '标签（家/公司/学校）',
+    is_default    bigint default 0             not null comment '是否默认 0否 1是'
+)
+    comment '收货地址簿' collate = utf8mb4_bin;
+
+-- ========== 购物车 ==========
+create table user_shopping
+(
+    id          bigint auto_increment comment '主键'
+        primary key,
+    name        varchar(32)      null comment '商品名称',
+    image       varchar(255)     null comment '图片',
+    user_id     bigint           not null comment '用户id',
+    flower_id   bigint           null comment '鲜花单品id',
+    festival_id bigint           null comment '节日礼盒id',
+    number      bigint default 1 not null comment '数量',
+    amount      decimal(10, 2)   not null comment '金额',
+    create_time datetime         null comment '加入时间'
+)
+    comment '购物车' collate = utf8mb4_bin;
+
+-- ========== 订单表 ==========
+create table flower_order
+(
+    id                      bigint auto_increment comment '主键'
+        primary key,
+    status                  bigint default 1 not null comment '订单状态
+1用户下单2用户确认支付
+3商家制作
+4快递员取货5快递员开始配送6快递员已到达
+7系统自动确认
+8已取消：超时未付/商家拒单/用户取消/退款',
+    user_id                 bigint           not null comment '下单用户id',
+    username                varchar(32)      null comment '用户名称',
+    consignee               varchar(32)      null comment '收花人',
+    phone                   varchar(11)      null comment '手机号',
+    address_id              bigint           not null comment '地址id',
+    address                 varchar(255)     null comment '配送地址',
+    pay_status              bigint default 0 not null comment '关联flower_order_pay支付状态',
+    remark                  varchar(100)     null comment '备注信息',
+    delivery_type           bigint           null comment '配送方式：0预约配送 1立即送出',
+    delivery_date           date             null comment '预约配送日期',
+    start_delivery_time     datetime         null comment '配送开始时间',
+    estimated_delivery_time datetime         null comment '预计送达时间',
+    delivery_time           datetime         null comment '实际送达时间',
+    create_time datetime         null comment '创建时间',
+    update_time datetime         null comment '更新时间'
+)
+    comment '订单表' collate = utf8mb4_bin;
+
+-- ========== 订单明细 ==========
+create table flower_order_detail
+(
+    id            bigint auto_increment comment '主键'
+        primary key,
+    order_id      bigint           not null comment '订单id',
+    name          varchar(32)      null comment '商品名称',
+    image         varchar(255)     null comment '图片',
+    flower_id     bigint           null comment '鲜花单品id',
+    festival_id   bigint           null comment '节日礼盒id',
+    number        bigint default 1 not null comment '数量',
+    amount        decimal(10, 2)   not null comment '金额',
+    wrap_fee      bigint           null comment '礼盒包装费'
+)
+    comment '订单明细表' collate = utf8mb4_bin;
+
+-- ========== 支付记录表 ==========
+create table flower_order_pay
+(
+    id               bigint auto_increment comment '主键id'
+        primary key,
+    order_id         bigint           null comment '关联orderId',
+    order_time       datetime         not null comment '下单时间',
+    pay_method       bigint default 1 not null comment '支付方式 1微信,2支付宝',
+    pay_status       bigint default 0 not null comment '支付状态 0未支付 1已支付 2已退款',
+    checkout_time    datetime         null comment '支付完成时间',
+    amount           decimal(10, 2)   not null comment '实付金额',
+    remark           varchar(100)     null comment '备注',
+    cancel_reason    varchar(255)     null comment '取消原因',
+    cancel_time      datetime         null comment '取消时间',
+    create_time      datetime         null comment '创建时间',
+    update_time      datetime         null comment '更新时间',
+    create_user      bigint           null comment '创建人',
+    update_user      bigint           null comment '修改人'
+)
+    comment '支付记录表' collate = utf8mb4_bin;

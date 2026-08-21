@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>商家端 - 催单提醒</title>
+</head>
+<body>
+<h3>商家端</h3>
+<!-- 开启提醒按钮：用户点击后授权音频自动播放 -->
+<button id="enableBtn" onclick="enableAudio()">开启催单提醒</button>
+<span id="audioStatus" style="color:gray;">未开启</span>
+<br><br>
+<div id="message"></div>
+
+<!-- 催单音频，收到 reminder 后自动播放。注意：src 路径相对于 static 目录，文件名要与实际一致 -->
+<audio id="reminderAudio" src="/reminer.mp3" preload="auto"></audio>
+</body>
+<script type="text/javascript">
+    var websocket = null;
+    // 音频是否已授权（用户点击过开启按钮）
+    var audioEnabled = false;
+    // 商家端 id 规则：admin_{随机数}
+    var clientId = "admin_" + 1;
+
+    // 判断当前浏览器是否支持WebSocket
+    if('WebSocket' in window){
+        websocket = new WebSocket("ws://localhost:8080/websocket/"+clientId);
+    }
+    else{
+        alert('Not support websocket')
+    }
+
+    // 连接发生错误的回调方法
+    websocket.onerror = function(){
+        setMessageInnerHTML("error");
+    };
+
+    // 连接成功建立的回调方法
+    websocket.onopen = function(){
+        setMessageInnerHTML("商家端连接成功 " + clientId);
+    }
+
+    // 接收到消息的回调方法
+    websocket.onmessage = function(event){
+        setMessageInnerHTML("收到消息：" + event.data);
+        // 收到顾客的催单请求
+        if(event.data === "reminder"){
+            // 1. 播放催单音频
+            playReminderAudio();
+            // 2. 向服务端回复 received，由服务端转发给顾客
+            websocket.send("received");
+            setMessageInnerHTML("已回复顾客 received");
+            // 3. 回复后断开连接
+            setTimeout(function(){
+                websocket.close();
+            }, 500);
+        }
+    }
+
+    // 连接关闭的回调方法
+    websocket.onclose = function(){
+        setMessageInnerHTML("连接已断开");
+    }
+
+    // 将消息显示在网页上
+    function setMessageInnerHTML(innerHTML){
+        document.getElementById('message').innerHTML += innerHTML + '<br/>';
+    }
+
+    // 开启催单提醒：用户点击后完成页面交互，浏览器不再拦截音频
+    function enableAudio(){
+        var audio = document.getElementById('reminderAudio');
+        // 播放一个静音片段，激活音频上下文（绕过自动播放策略）
+        audio.muted = true;
+        audio.play().then(function(){
+            audio.pause();
+            audio.muted = false;
+            audioEnabled = true;
+            document.getElementById('audioStatus').style.color = 'green';
+            document.getElementById('audioStatus').textContent = '已开启';
+            document.getElementById('enableBtn').disabled = true;
+            setMessageInnerHTML("催单提醒已开启");
+        }).catch(function(err){
+            console.error("开启失败：", err);
+            alert("开启失败：" + err.message);
+        });
+    }
+
+    // 播放催单音频
+    function playReminderAudio(){
+        var audio = document.getElementById('reminderAudio');
+        // 重置播放进度
+        audio.currentTime = 0;
+        audio.play().catch(function(err){
+            console.error("音频播放失败：", err);
+            setMessageInnerHTML("音频被拦截，请点击「开启催单提醒」按钮");
+        });
+    }
+</script>
+</html>

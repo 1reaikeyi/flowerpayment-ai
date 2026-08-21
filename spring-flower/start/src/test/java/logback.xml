@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 1. 控制台输出 Appender 配置 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!-- 日志格式：日期 线程名 级别 日志器 消息 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] --- %-6level %logger{50} ===> %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="org.apache.ibatis" level="TRACE"/>
+    <logger name="org.springframework.transaction" level="DEBUG"/>
+    <!-- 关闭 HikariCP 连接池 DEBUG 日志，只打印关键信息 -->
+    <logger name="com.zaxxer.hikari" level="INFO" additivity="false"/>
+
+    <!-- 3. 根日志配置 -->
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
