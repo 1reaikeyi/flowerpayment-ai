@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 花店 Service（对应 flower 表）
  */
-@Service
+
 public interface FlowerService extends IService<Flower> {
 
     Flower readCache(Long id);
@@ -19,5 +19,4 @@ public interface FlowerService extends IService<Flower> {
 
     void deleteCache(List<Long> ids);
 
-    void deleteCacheById(Long id);
 }

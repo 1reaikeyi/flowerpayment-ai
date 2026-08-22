@@ -2,6 +2,7 @@ package service.impl;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -118,10 +119,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         IPage page = new Page(employeePageDTO.getPage(),employeePageDTO.getPageSize());
         IPage<Employee> employeeIPage = super.page(page,queryWrapper);
         List<EmployeeVO> voList = employeeIPage.getRecords().stream()
-                .map(emp -> {
-                    EmployeeVO vo = BeanUtil.copyProperties(emp, EmployeeVO.class);
-                    return vo;
-                })
+                .map(emp -> BeanUtil.copyProperties(emp, EmployeeVO.class))
                 .collect(Collectors.toList());
         return voList;
     }
@@ -130,13 +128,15 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     public void updateByObject(EmployeeDTO employeeDTO) {
         // 1. 校验 ID
         if (employeeDTO.getId() == null) {
-            throw new EmployeeFailedException("员工ID不能为空");
+            throw new EmployeeFailedException(ErrorConstant.OPERATION_ERROR);
         }
 
         // 2. 构建 wrapper，只 set 有值的字段
         LambdaUpdateWrapper<Employee> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(Employee::getId, employeeDTO.getId());
-
+        if(StrUtil.isNotBlank(employeeDTO.getWork())){
+            updateWrapper.set(Employee::getWork,employeeDTO.getWork());
+        }
         if (StrUtil.isNotBlank(employeeDTO.getUsername())) {
             updateWrapper.set(Employee::getUsername, employeeDTO.getUsername());
         }
@@ -160,24 +160,15 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
             updateWrapper.set(Employee::getPassword,
                     passwordEncoder.encode(employeeDTO.getPassword()));
         }
-
-        // 3. 执行更新（entity 传 null，完全用 wrapper 里的 set）
-        try {
-            super.update(null, updateWrapper);
-        } catch (Exception e) {
-            throw new EmployeeFailedException(OperationErrorEnum.UPDATE_ERROR.name());
-        }
-
+        super.update(null, updateWrapper);
     }
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteById(List<Long> ids) {
-        try {
-            super.removeByIds(ids);
-        } catch (Exception e) {
-            throw new EmployeeFailedException(OperationErrorEnum.DELETE_ERROR.name());
+        if (CollectionUtil.isEmpty(ids)) {
+            throw new EmployeeFailedException(ErrorConstant.OPERATION_ERROR);
         }
-
+        super.removeByIds(ids);
     }
 
 

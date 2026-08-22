@@ -10,9 +10,9 @@ public class ErrorConstant {
     public static final String PASSWORD_ERROR = "密码错误";
     public static final String REGISTER_ERROR = "注册失败";
     public static final String ACCOUNT_NOT_EXIST = "账号不存在";
-
+    public static final String CATEGORY_NOT_EXIST = "目录不存在";
+    public static final String OPERATION_ERROR = "更新，删除的ID不能为空";
     public static final String USER_NOT_LOGIN = "用户未登录";
     public static final String PASSWORD_EDIT_FAILED = "密码修改失败";
-
 
 }

@@ -8,6 +8,6 @@ import org.springframework.stereotype.Service;
 /**
  * 购物车 Service（对应 user_shopping 表）
  */
-@Service
+
 public interface UserShoppingService extends IService<UserShopping> {
 }

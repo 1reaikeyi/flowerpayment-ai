@@ -43,6 +43,11 @@ public class Flower implements Serializable {
     private Long categoryId;
 
     /**
+     * 颜色
+     */
+    @TableField("color")
+    private String color;
+    /**
      * 单价
      */
     @TableField("price")

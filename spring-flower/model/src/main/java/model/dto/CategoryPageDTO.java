@@ -1,5 +1,7 @@
 package model.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,13 +12,12 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryPageDTO implements Serializable {
-    //页码
-    private int page;
+    @Min(value = 1, message = "页码不能小于1")
+    private Long page = 1L;
 
-    //每页记录数
-    private int pageSize;
-
-    private String name;
+    @Min(value = 1, message = "每页条数不能小于1")
+    @Max(value = 20, message = "每页条数不能超过20")
+    private Long pageSize = 10L;
 
     private Long type;
 }

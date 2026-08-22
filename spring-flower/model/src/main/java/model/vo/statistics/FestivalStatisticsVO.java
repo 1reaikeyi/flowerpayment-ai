@@ -1,4 +1,4 @@
-package model.vo;
+package model.vo.statistics;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * 鲜花单品销量统计 VO
+ * 节日礼盒销量统计 VO
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FlowerStatisticsVO {
-    private Long flowerId;
+public class FestivalStatisticsVO {
+    private Long festivalId;
     private String name;
     private Long number;
     private BigDecimal amount;

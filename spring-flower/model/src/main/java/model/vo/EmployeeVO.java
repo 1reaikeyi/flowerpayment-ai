@@ -13,7 +13,7 @@ public class EmployeeVO implements Serializable {
     private Long id;
     private String username;
     private String avatar;
-    private String work;        // 部门
+    private String work;
     private String email;
     private String phone;
     private Long status;

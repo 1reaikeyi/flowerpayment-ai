@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * 员工 Service（对应 employee 表）
  */
-@Service
+
 public interface EmployeeService extends IService<Employee> {
     Employee findEmployeename(String username);
 

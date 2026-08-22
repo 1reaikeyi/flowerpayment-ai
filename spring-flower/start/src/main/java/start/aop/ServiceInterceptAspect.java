@@ -59,15 +59,16 @@ public class ServiceInterceptAspect {
         OperationLogging annotation = targetMethod.getAnnotation(OperationLogging.class);
         String operation = annotation.operation().name(); // 操作类型（CREATE/GET/UPDATE/DELETE）
         Object result = null;
-        String methodArgs = null;
+        // 方法入参，转成字符串作为日志的 message
+        // 注意：必须在 proceed() 之前计算，否则方法抛异常进入 catch 分支时 methodArgs 仍为 null，
+        // 会导致 OperationType.error 内部 message.toString() 抛 NPE
+        String methodArgs = Arrays.toString(joinPoint.getArgs());
+        if (methodArgs == null || methodArgs.length() == 0) {
+            methodArgs = "没有param,boby";
+        }
         try {
             // 2. 执行目标业务方法，成功后记录操作日志（效果同 OperationType.ok）
             result = joinPoint.proceed();
-            // 方法入参，转成字符串作为日志的 message
-            methodArgs = Arrays.toString(joinPoint.getArgs());
-            if (methodArgs == null || methodArgs.length() == 0) {
-                methodArgs = "没有param,boby";
-            }
             OperationType.ok(operation, methodArgs);
         } catch (Exception e) {
             // 3. 方法执行异常：记录错误操作日志（效果同 OperationType.error）
