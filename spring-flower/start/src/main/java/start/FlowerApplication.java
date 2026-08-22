@@ -34,9 +34,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 // 开启配置属性
 @EnableConfigurationProperties({AliOssProperties.class, JwtProperties.class})
 @CrossOrigin
-public class RestaurantApplication {
+public class FlowerApplication {
     public static void main(String[] args) {
-        SpringApplication.run(RestaurantApplication.class, args);
+        SpringApplication.run(FlowerApplication.class, args);
         log.info("--匹配成功");
     }
 }
