@@ -240,7 +240,7 @@ flowchart TD
 | 悲观锁不能解决集群和并发问题 | Redisson 可重入分布式锁 + 看门狗自动续期；加锁后双重检查缓存 |
 |    redis宕机的突发性问题     | Redis 不可用：降级直查数据库<br> log.info("Redis 宕机:{}", e.getMessage()); Flower flower = this.getMysql(id); return BeanUtil.toBean(flower, FlowerVO.class); |
 
-排除冷启动的（第一次，第100次)达到稳定，进行统计
+排除冷启动的（第一次，第 500 次)达到稳定，进行统计。因为本地测试性能影响，最大值设置 500
 
 | flower                       | jmeter的100次并发                               |
 | ---------------------------- | ----------------------------------------------- |
