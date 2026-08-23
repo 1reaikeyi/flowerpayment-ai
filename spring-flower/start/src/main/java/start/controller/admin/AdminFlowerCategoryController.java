@@ -15,7 +15,9 @@ import model.dto.FlowerCategoryDTO;
 import model.entity.Festival;
 import model.entity.Flower;
 import model.entity.FlowerCategory;
+import model.vo.FestivalVO;
 import model.vo.FlowerCategoryVO;
+import model.vo.FlowerVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -76,16 +78,16 @@ public class AdminFlowerCategoryController {
         return Result.success(ids);
     }
 
-//    @OperationLogging(operation = OperationEnum.READ)
-//    @GetMapping("/of/flower")
-//    public Result readFlower(@RequestParam("id") Long categoryId) {
-//        List<FlowerVO> flowerVOList = flowerCategoryService.readFlower(categoryId);
-//        return Result.success();
-//    }
-//    @OperationLogging(operation = OperationEnum.READ)
-//    @GetMapping("of/festival")
-//    public Result getFestival(@RequestParam("id") Long categoryId) {
-//        List<FestivalVO> festivalList = festivalService.readFestival(categoryId);
-//        return Result.success();
-//    }
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("/of/flower")
+    public Result readFlower(@RequestParam("id") Long categoryId) {
+        List<FlowerVO> flowerVOList = flowerCategoryService.readFlower(categoryId);
+        return Result.success();
+    }
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("of/festival")
+    public Result getFestival(@RequestParam("id") Long categoryId) {
+        List<FestivalVO> festivalList = festivalService.readFestival(categoryId);
+        return Result.success();
+    }
 }

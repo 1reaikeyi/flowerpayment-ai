@@ -5,6 +5,7 @@ import model.dto.CategoryPageDTO;
 import model.dto.FlowerCategoryDTO;
 import model.entity.FlowerCategory;
 import model.vo.FlowerCategoryVO;
+import model.vo.FlowerVO;
 
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface FlowerCategoryService extends IService<FlowerCategory> {
     void updateByObject(FlowerCategoryDTO categoryDTO);
 
     void deleteById(List<Long> ids);
+
+    List<FlowerVO> readFlower(Long categoryId);
 }

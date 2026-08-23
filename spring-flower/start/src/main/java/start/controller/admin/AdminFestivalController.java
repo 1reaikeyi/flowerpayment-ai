@@ -3,61 +3,61 @@ package start.controller.admin;
 import common.enums.OperationEnum;
 import common.result.Result;
 import lombok.extern.slf4j.Slf4j;
+import model.dto.FestivalDTO;
+import model.dto.FestivalPageDTO;
 import model.dto.FlowerDTO;
 import model.dto.FlowerPageDTO;
+import model.vo.FestivalVO;
 import model.vo.FlowerVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import service.FlowerDetailService;
+import service.FestivalService;
 import service.FlowerService;
 import start.aop.OperationLogging;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/flower")
+@RequestMapping("/admin/festival")
 @Slf4j
-public class AdminFlowerController {
-
+public class AdminFestivalController {
     @Autowired
-    private FlowerService flowerService;
+    private FestivalService festivalService;
 
     @OperationLogging(operation = OperationEnum.CREATE)
     @PostMapping
-    public Result create(@RequestBody FlowerDTO flowerDTO) {
-        FlowerDTO dto = flowerService.create(flowerDTO);
+    public Result create(@RequestBody FestivalDTO festivalDTO) {
+        FestivalDTO dto = festivalService.create(festivalDTO);
         return Result.success(dto);
     }
 
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping
     public Result readById(@RequestParam Long id) {
-        FlowerVO flowerVO = flowerService.readCache(id);
-        return Result.success(flowerVO);
+        FestivalVO festivalVO = festivalService.readCache(id);
+        return Result.success(festivalVO);
     }
 
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/all")
-    public Result readPage(FlowerPageDTO flowerPageDTO) {
-        List<FlowerVO> flowerVOList = flowerService.readPage(flowerPageDTO);
-        return Result.success(flowerVOList);
+    public Result readPage(FestivalPageDTO festivalPageDTO) {
+        List<FestivalVO> festivalVOList = festivalService.readPage(festivalPageDTO);
+        return Result.success(festivalVOList);
     }
 
 
 
     @OperationLogging(operation = OperationEnum.UPDATE)
     @PutMapping
-    public Result updateByObject(@RequestBody FlowerDTO flowerDTO) {
-        flowerService.updateCache(flowerDTO);
-        return Result.success(flowerDTO);
+    public Result updateByObject(@RequestBody FestivalDTO festivalDTO) {
+        festivalService.updateCache(festivalDTO);
+        return Result.success(festivalDTO);
     }
 
     @OperationLogging(operation = OperationEnum.DELETE)
     @DeleteMapping
     public Result deleteById(@RequestParam List<Long> ids) {
-        flowerService.deleteCache(ids);
+        festivalService.deleteCache(ids);
         return Result.success(ids);
     }
-
 }
