@@ -38,10 +38,6 @@ public class AdminFlowerCategoryController {
 
     @Autowired
     private FlowerCategoryService flowerCategoryService;
-    @Autowired
-    private FlowerService flowerService;
-    @Autowired
-    private FestivalService festivalService;
 
     @OperationLogging(operation = OperationEnum.CREATE)
     @PostMapping
@@ -82,12 +78,12 @@ public class AdminFlowerCategoryController {
     @GetMapping("/of/flower")
     public Result readFlower(@RequestParam("id") Long categoryId) {
         List<FlowerVO> flowerVOList = flowerCategoryService.readFlower(categoryId);
-        return Result.success();
+        return Result.success(flowerVOList);
     }
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("of/festival")
     public Result getFestival(@RequestParam("id") Long categoryId) {
-        List<FestivalVO> festivalList = festivalService.readFestival(categoryId);
-        return Result.success();
+        List<FestivalVO> festivalList = flowerCategoryService.readFestival(categoryId);
+        return Result.success(festivalList);
     }
 }

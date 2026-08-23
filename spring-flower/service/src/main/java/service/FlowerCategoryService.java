@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import model.dto.CategoryPageDTO;
 import model.dto.FlowerCategoryDTO;
 import model.entity.FlowerCategory;
+import model.vo.FestivalVO;
 import model.vo.FlowerCategoryVO;
 import model.vo.FlowerVO;
 
@@ -26,4 +27,6 @@ public interface FlowerCategoryService extends IService<FlowerCategory> {
     void deleteById(List<Long> ids);
 
     List<FlowerVO> readFlower(Long categoryId);
+
+    List<FestivalVO> readFestival(Long categoryId);
 }

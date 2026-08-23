@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -42,10 +46,7 @@ import java.util.Map;
 @EnableMethodSecurity
 @Slf4j
 public class SecurityConfig {
-    @Autowired
-    private JwtProperties jwtProperties;
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+
     //密码加密
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -56,38 +57,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-    //401未认证异常处理
-    @Bean
-    public AuthenticationEntryPoint authenticationEntryPoint() {
-        return new AuthenticationEntryPoint() {
-            @Override
-            public void commence(
-                HttpServletRequest request,
-                HttpServletResponse response,
-                AuthenticationException authException) throws IOException, ServletException {
-                log.debug("未认证请求: {}, 异常: {}", request.getRequestURI(), authException.getMessage());
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json;charset=UTF-8");
-                Map<String, Object> result = new HashMap<>();
-                result.put("code", 401);
-                result.put("message", "请先登录");
-                response.getWriter().write(JSONUtil.toJsonStr(result));
-            }
-        };
-    }
-    //403无权限异常处理
-    @Bean
-    public AccessDeniedHandler accessDeniedHandler() {
-        return (request, response, accessDeniedException) -> {
-            log.debug("无权限请求: {}, 异常: {}", request.getRequestURI(), accessDeniedException.getMessage());
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setContentType("application/json;charset=UTF-8");
-            Map<String, Object> result = new HashMap<>();
-            result.put("code", 403);
-            result.put("message", "无权限访问");
-            response.getWriter().write(JSONUtil.toJsonStr(result));
-        };
-    }
+
     // 配置CORS
     private void crosConfig(CorsConfigurer<HttpSecurity> cors) {
         CorsConfiguration config = new CorsConfiguration();
@@ -123,7 +93,8 @@ public class SecurityConfig {
                         .requestMatchers("/user/register", "/user/login").permitAll()
                         .requestMatchers("/admin/employee/register", "/admin/employee/login").permitAll()
                         // 只拦截,对于测试使用的pay+auth+role，不拦截
-                        .requestMatchers("/admin/**", "/user/**").authenticated()
+                        .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_EMP")
+                        .requestMatchers("/user/**").hasAuthority("ROLE_USER")
                         // 其他接口全部放行
                         .anyRequest().permitAll()
                 )
@@ -138,6 +109,54 @@ public class SecurityConfig {
                 // 认证拦截过滤器（在 RefreshFilter 之后）
                 .addFilterBefore(informationRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+                .role("ADMIN").implies("EMP")
+                .role("ADMIN").implies("USER")
+                .role("EMP").implies("USER")
+                .build();
+    }
+
+    @Bean
+    static MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+        DefaultMethodSecurityExpressionHandler handler = new DefaultMethodSecurityExpressionHandler();
+        handler.setRoleHierarchy(roleHierarchy);
+        return handler;
+    }
+    //401未认证异常处理
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return new AuthenticationEntryPoint() {
+            @Override
+            public void commence(
+                HttpServletRequest request,
+                HttpServletResponse response,
+                AuthenticationException authException) throws IOException, ServletException {
+                log.debug("未认证请求: {}, 异常: {}", request.getRequestURI(), authException.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+                Map<String, Object> result = new HashMap<>();
+                result.put("code", 401);
+                result.put("message", "请先登录");
+                response.getWriter().write(JSONUtil.toJsonStr(result));
+            }
+        };
+    }
+    //403无权限异常处理
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> {
+            log.debug("无权限请求: {}, 异常: {}", request.getRequestURI(), accessDeniedException.getMessage());
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json;charset=UTF-8");
+            Map<String, Object> result = new HashMap<>();
+            result.put("code", 403);
+            result.put("message", "无权限访问");
+            response.getWriter().write(JSONUtil.toJsonStr(result));
+        };
     }
 
 }

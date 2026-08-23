@@ -65,7 +65,7 @@
 
 # 后端说明
 
-## 一、用户与员工双端登录认证模块
+## 一、店长、店员和客户多端端登录认证模块
 
 ## **第三方授权登录流程图和支付流程**：支付宝
 
@@ -80,7 +80,7 @@
 
 ### 迭代过程
 
-1. 早期版本：单过滤器 if-else 区分账号类型，新增 QQ / 支付宝第三方登录后逻辑爆炸；优化为过滤器链接力模式，解耦两套登录逻辑。
+1. 早期版本：单过滤器 if-else 区分账号类型，新增 QQ / 支付宝第三方登录后逻辑爆炸；优化为过滤器链接力模式，解耦多端登录逻辑。
 2. 早期只校验 JWT 签名，支持伪造永久 Token；新增 Redis 缓存校验，实现登录状态后端可控。
 3. 最初使用固定 TTL，活跃用户频繁掉线；改造为滑动过期，留存提升明显。
 
@@ -96,6 +96,28 @@ Q：滑动过期会不会产生大量无效 Redis Key？
 Q: BCrypt 密码加密存储优点？
 
 不使用 MD5/SHA256 不可逆哈希，BCrypt 自带随机盐值，抗彩虹表暴力破解，数据库永不存储明文密码。
+Q: 如何用户权限隔离？
+ 1.	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+ 2.	@Bean
+    public RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+                .role("ADMIN").implies("EMP")
+                .role("ADMIN").implies("USER")
+                .role("EMP").implies("USER")
+                .build();
+    }
+
+    @Bean
+    static MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+        DefaultMethodSecurityExpressionHandler handler = new DefaultMethodSecurityExpressionHandler();
+        handler.setRoleHierarchy(roleHierarchy);
+        return handler;
+    }
+   3. 	// 只拦截,对于测试使用的pay+auth+role，不拦截
+.requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_EMP")
+.requestMatchers("/user/**").hasAuthority("ROLE_USER")
+
+
 ```
 
 ------
@@ -169,7 +191,7 @@ index idx_festival_id (festival_id)、index idx_flower_id (flower_id).
 
 ---
 
-**缓存设计：因为flower模块 festival模块存在价格，不能直接返回旧数据，异步更新后返回新数据**
+**缓存设计：因为flower模块 festival模块的价格存在因为节日，花的保质期限制不能直接返回旧数据，异步更新后返回新数据**
 
 
 

@@ -24,4 +24,5 @@ public interface FestivalService extends IService<Festival> {
     FestivalDTO create(FestivalDTO festivalDTO);
 
     List<FestivalVO> readPage(FestivalPageDTO festivalPageDTO);
+
 }
