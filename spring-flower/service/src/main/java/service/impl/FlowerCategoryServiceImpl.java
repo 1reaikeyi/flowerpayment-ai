@@ -55,7 +55,7 @@ public class FlowerCategoryServiceImpl extends ServiceImpl<FlowerCategoryMapper,
                 .toList();
         return flowerCategoryVOList;
     }
-
+    @CacheEvict(allEntries = true)
     @Override
     public List<FlowerCategoryVO> readPage(CategoryPageDTO categoryPageDTO) {
         LambdaQueryWrapper<FlowerCategory> queryWrapper = new LambdaQueryWrapper<>();
@@ -67,7 +67,7 @@ public class FlowerCategoryServiceImpl extends ServiceImpl<FlowerCategoryMapper,
                 .collect(Collectors.toList());
         return voList;
     }
-
+    @CacheEvict(allEntries = true)
     @Override
     public void updateByObject(FlowerCategoryDTO categoryDTO) {
          // 1. 校验 ID
@@ -92,7 +92,7 @@ public class FlowerCategoryServiceImpl extends ServiceImpl<FlowerCategoryMapper,
         
         super.update(updateWrapper);
     }
-
+    @CacheEvict(allEntries = true)
     @Override
     public void deleteById(List<Long> ids) {
         if(CollectionUtil.isEmpty(ids)){

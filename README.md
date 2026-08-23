@@ -140,14 +140,18 @@ Q: BCrypt 密码加密存储优点？
    修改分类直接清空整个命名空间，规避无法枚举所有关联 key 的问题。
 
 ### 迭代过程
-排除冷启动的第一次，无缓存的情况是全程没有使用 redis 的稳定情况，有缓存的情况是全程有 redis 的稳定情况
-| 正常使用jmeter的100次并发                                    | ![](说明/并发测试/flower-category.png)                       |
+排除冷启动的（第一次，第1000次)，进行统计
+| jmeter每次1000次                                             | ![](说明/并发测试/flower-category.png)                       |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 没有缓存，再并发100次                                        | ![](说明/并发测试/flower-category-运行日志-没有缓存.png)     |
-| 日志                                                         | 说明/并发测试/flower-category-运行日志-没有缓存日志.txt      |
-| 有spring-cache缓存，再并发100次                              | ![](说明/并发测试/flower-category-运行日志-缓存.png)         |
-| 日志                                                         | 说明/并发测试/flower-category-运行日志-缓存日志.txt          |
-| 计算说明：性能提升百分比 =(无缓存值‑有缓存值)/ 无缓存值 ×100%；吞吐量提升百分比 =(有缓存‑无缓存)/ 无缓存 ×100%。 | **响应时间**：开启缓存后，接口平均、中位数、90/95/99 分位、最大、最小响应时间全部得到明显优化。无缓存场景平均响应时间 1508ms，开启缓存后平均响应时间降低至 427ms，平均响应性能提升**71.7%**。无缓存时服务需要完成完整业务逻辑、数据库查询；命中缓存直接读取缓存结果，极大降低业务处理耗时。 **吞吐量**：无缓存情况下系统吞吐量为 52.2 请求 / 秒；开启缓存后吞吐量达到 111.9 请求 / 秒，吞吐量提升**114.4%**，系统并发承压能力实现翻倍。 **网络流量**：受吞吐量提升影响，接收速率由 103.98KB/sec 提升至 222.73KB/sec，发送速率由 18.97KB/sec 提升至 40.64KB/sec，单位时间网络处理能力同步提升。 |
+| 没有缓存，并发1000次                                         | ![](说明/并发测试/flower-category-运行日志-没有缓存1.png)    |
+| 没有缓存，并发1000次                                         | ![](说明/并发测试/flower-category-运行日志-没有缓存2.png)    |
+| 没有缓存，并发1000次                                         | ![](说明/并发测试/flower-category-运行日志-没有缓存3.png)    |
+| 无缓存的情况是全程没有使用 redis 的稳定情况                  | 说明/并发测试/flower-category-运行日志-没有缓存日志.txt      |
+| 有spring-cache缓存，再并发1000次                             | ![](说明/并发测试/flower-category-运行日志-缓存1.png)        |
+| 有spring-cache缓存，再并发1000次                             | ![](说明/并发测试/flower-category-运行日志-缓存2.png)        |
+| 有spring-cache缓存，再并发1000次                             | ![](说明/并发测试/flower-category-运行日志-缓存3.png)        |
+| 有缓存的情况是全程有 redis 的稳定情况                        | 说明/并发测试/flower-category-运行日志-缓存日志.txt          |
+| 计算说明：性能提升百分比 =(无缓存值‑有缓存值)/ 无缓存值 ×100%；吞吐量提升百分比 =(有缓存‑无缓存)/ 无缓存 ×100%。 | **响应时间**：开启缓存后接口全量响应指标得到极大优化。无缓存场景平均响应时间 600ms，开启缓存后平均响应仅 10ms，平均响应性能提升**98.3%**。90%、95%、99% 分位耗时下降尤为明显；无缓存场景高百分位接近 1800ms，开启缓存 99 分位仅 98ms。无缓存时需要完整执行业务逻辑、访问数据库；命中缓存直接读取缓存数据，极大降低接口处理时延。 **吞吐量**：无缓存吞吐量 21.8 请求 / 秒；开启缓存吞吐量提升至 29.7 请求 / 秒，吞吐量提升**36.2%**，系统整体并发处理能力增强。 **网络流量**：接收速率从 43.46KB/sec 提升至 59.09KB/sec，发送速率从 7.93KB/sec 提升至 10.78KB/sec，单位时间网络数据处理能力随吞吐量同步上涨。 |
 
 ## 三、flower模块
 
@@ -169,26 +173,38 @@ Q: BCrypt 密码加密存储优点？
 
 ---
 
-**逻辑过期设计**
+**缓存设计**
 
 ```mermaid
-%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':2,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
+%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
 flowchart TD
-    S([Start: readCache]) --> A[GET Redis]
-    A -->|异常| B[降级查 DB]
-    A -->|正常| C{value 为空?}
-    C -->|是| D[加锁查 DB + 写缓存]
-    C -->|否| E[解析 LogicData]
-    D --> R[返回结果]
-    E -->|解析失败| D
-    E -->|成功| F{data 为空?}
-    F -->|是| R
-    F -->|否| G[保存旧数据 old]
-    G --> H{已逻辑过期?}
-    H -->|否| I[返回缓存数据]
-    H -->|是| J[异步提交重建]
-    J --> K[立即返回 old]
-    J --> L[后台线程查 DB 写缓存]
+    S([开始]) --> A[从 Redis 读取缓存]
+    A -->|Redis 宕机 / value 为空| B[加redisson + 查 DB + 写缓存]
+    A -->|命中| C[解析 LogicData]
+    C -->|解析失败 / data 为空| B
+    C -->|成功| D{逻辑时间未过期?}
+    D -->|是 未过期| E[剩余 TTL 不足则延长<br/>返回缓存数据]
+    D -->|否 已过期| F[异步线程池重建缓存<br/>加redisson + 查 DB + 写缓存<br/>返回缓存数据]
+    B --> R([返回结果])
+    E --> R
+    F --> R
+```
+
+
+
+DB查询
+
+```mermaid
+%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
+flowchart TD
+    S([getMysql 开始]) --> A[super.getById id 查数据库]
+    A --> B{flower 是否为 null?}
+    B -->|是 缓存穿透| C[构造空 LogicData data=null 设逻辑过期时间]
+    B -->|否 有数据| D[构造 LogicData data=flower 设逻辑过期时间]
+    C --> E[SET Redis 空值缓存 TTL=REDIS_EXIST_TTL]
+    D --> F[SET Redis 正常缓存 TTL=REDIS_EXIST_TTL]
+    E --> G([返回 null])
+    F --> H([返回 flower])
 ```
 
 

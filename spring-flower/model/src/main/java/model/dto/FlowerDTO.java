@@ -25,7 +25,10 @@ public class FlowerDTO implements Serializable {
      * 鲜花名称
      */
     private String name;
-
+    /**
+     * 鲜花颜色
+     */
+    private String color;
     /**
      * 所属分类 ID
      */
@@ -51,8 +54,4 @@ public class FlowerDTO implements Serializable {
      */
     private Long status;
 
-    /**
-     * 鲜花规格明细（送人对象 + 用途场景）
-     */
-    private List<FlowerDetail> flowerDetails;
 }

@@ -3,8 +3,7 @@ package service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import model.dto.FestivalDTO;
 import model.entity.Festival;
-import model.entity.FestivalDetail;
-import org.springframework.stereotype.Service;
+import model.vo.FestivalVO;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 
 public interface FestivalService extends IService<Festival> {
 
-    Festival readCache(Long id);
+    FestivalVO readCache(Long id);
 
     void updateCache(FestivalDTO festivalDTO);
 
