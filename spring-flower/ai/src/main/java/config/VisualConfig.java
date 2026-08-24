@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class VisualConfiguration {
+public class VisualConfig {
     @Bean
     public ChatClient visualChatClient(OpenAiChatModel model,
                                        @Qualifier("loggerAdvisor") Advisor loggerAdvisor) {  // 日志记录器
