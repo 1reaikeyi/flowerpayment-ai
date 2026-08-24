@@ -97,27 +97,11 @@ Q: BCrypt 密码加密存储优点？
 
 不使用 MD5/SHA256 不可逆哈希，BCrypt 自带随机盐值，抗彩虹表暴力破解，数据库永不存储明文密码。
 Q: 如何用户权限隔离？
- 1.	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
- 2.	@Bean
-    public RoleHierarchy roleHierarchy() {
-        return RoleHierarchyImpl.withDefaultRolePrefix()
-                .role("ADMIN").implies("EMP")
-                .role("ADMIN").implies("USER")
-                .role("EMP").implies("USER")
-                .build();
-    }
-
-    @Bean
-    static MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
-        DefaultMethodSecurityExpressionHandler handler = new DefaultMethodSecurityExpressionHandler();
-        handler.setRoleHierarchy(roleHierarchy);
-        return handler;
-    }
-   3. 	// 只拦截,对于测试使用的pay+auth+role，不拦截
+ 1.	service
+ @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+ 2. controller
 .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_EMP")
 .requestMatchers("/user/**").hasAuthority("ROLE_USER")
-
-
 ```
 
 ------
@@ -191,7 +175,7 @@ index idx_festival_id (festival_id)、index idx_flower_id (flower_id).
 
 ---
 
-**缓存设计：因为flower模块 festival模块的价格存在因为节日，花的保质期限制不能直接返回旧数据，异步更新后返回新数据**
+**缓存设计：因为flower模块 festival模块的价格存在因为节日，花的保质期限制处于动态变化不能直接返回旧数据，异步更新后返回新数据**
 
 
 
@@ -242,19 +226,29 @@ flowchart TD
 
 排除冷启动的（第一次，第 500 次)达到稳定，进行统计。因为本地测试性能影响，最大值设置 500
 
-| flower                       | jmeter的100次并发                               |
-| ---------------------------- | ----------------------------------------------- |
-| 没有缓存，再开启100次并发    | ![](说明/并发测试/flower-运行日志-没有缓存.png) |
-| 没有缓存                     | 说明/并发测试/flower-运行日志-没有缓存.txt      |
-| 有redis缓存，再开启100次并发 | ![](说明/并发测试/flower-运行日志-缓存.png)     |
-| 有redis缓存                  | 说明/并发测试/flower-运行日志-缓存.txt          |
+### flower
 
-| festival                     | jmeter的100次并发                                            |
-| ---------------------------- | ------------------------------------------------------------ |
-| 没有缓存，再开启100次并发    | ![img](file://D:/a.github/flowerpayment-ai/%E8%AF%B4%E6%98%8E/%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/flower-%E8%BF%90%E8%A1%8C%E6%97%A5%E5%BF%97-%E6%B2%A1%E6%9C%89%E7%BC%93%E5%AD%98.png?lastModify=1787466751) |
-| 没有缓存                     | 说明/并发测试/flower-运行日志-没有缓存.txt                   |
-| 有redis缓存，再开启100次并发 | ![img](file://D:/a.github/flowerpayment-ai/%E8%AF%B4%E6%98%8E/%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/flower-%E8%BF%90%E8%A1%8C%E6%97%A5%E5%BF%97-%E7%BC%93%E5%AD%98.png?lastModify=1787466751) |
-| 有redis缓存                  | 说明/并发测试/flower-运行日志-缓存.txt                       |
+| jmeter并发500次                                              | <img src="说明/并发测试/flower.png" style="zoom: 25%;" />    |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 没有缓存，再开启 500次并发                                   | ![](说明/并发测试/flower-运行日志-没有缓存1.png)             |
+| 没有缓存，再开启 500次并发                                   | ![](说明/并发测试/flower-运行日志-没有缓存2.png)             |
+| 没有缓存                                                     | 说明/并发测试/flower-运行日志-没有缓存.txt                   |
+| 有redis缓存，再开启 500次并发                                | ![](说明/并发测试/flower-运行日志-缓存1.png)                 |
+| 有redis缓存，再开启 500次并发                                | ![](说明/并发测试/flower-运行日志-缓存2.png)                 |
+| 有redis缓存                                                  | 说明/并发测试/flower-运行日志-缓存.txt                       |
+| 90% Line 含义：90% 的请求响应耗时不大于该数值，分位数指标用于评估接口稳定性，相比平均响应时间更能反映真实用户访问体验。 | 无缓存场景：90% 请求响应时间 1633ms，95% 请求响应时间 1751ms，99% 请求响应时间 1844ms。 开启缓存场景：90% 请求响应时间 193ms，95% 请求响应时间 237ms，99% 请求响应时间 266ms。<br> 90 分位：响应时间下降 88.18%； 95 分位：响应时间下降 86.46%； 99 分位：响应时间下降 85.57%。 |
+
+### festival
+
+| jmeter并发                    | <img src="说明/并发测试/festival.png" style="zoom: 25%;" />  |
+| ----------------------------- | ------------------------------------------------------------ |
+| 没有缓存，再开启 500次并发    | ![](说明/并发测试/festival-运行日志-没有缓存2.png)           |
+| 没有缓存，再开启 500次并发    | ![](说明/并发测试/festival-运行日志-没有缓存1.png)           |
+| 没有缓存                      | 说明/并发测试/festival-运行日志-没有缓存.txt                 |
+| 有redis缓存，再开启 500次并发 | ![](说明/并发测试/festival-运行日志-缓存2.png)               |
+| 有redis缓存，再开启 500次并发 | ![](说明/并发测试/festival-运行日志-缓存1.png)               |
+| 有redis缓存                   | 说明/并发测试/festival-运行日志-缓存.txt                     |
+| 对比                          | 无缓存场景：接口平均响应时间 761ms，90% 请求响应时间 1595ms，95% 请求响应时间 1629ms，99% 请求响应时间 1746ms，吞吐量 34.3 次每秒，错误率 0%。 开启缓存场景：接口平均响应时间 136ms，90% 请求响应时间 327ms，95% 请求响应时间 346ms，99% 请求响应时间 423ms，吞吐量 150.6 次每秒，错误率 0%。 |
 
 ------
 
@@ -288,7 +282,7 @@ flowchart TD
 %%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
 flowchart TD
     S([getMysql 开始]) --> A[super.getById id 查数据库]
-    A --> B{flower 是否为 null?}
+    A --> B{查询用途或者送人对象 是否为 null?}
     B -->|是 缓存穿透| C[构造空 LogicData data=null 设逻辑过期时间]
     B -->|否 有数据| D[构造 LogicData data=flower 设逻辑过期时间]
     C --> E[SET Redis 空值缓存 TTL=REDIS_EXIST_TTL]
@@ -303,7 +297,7 @@ flowchart TD
 
 ```
 1 待支付 → 2 已付款 → 3 制作中 → 4 骑手待出发 → 5 配送中 → 6 已送达 → 7 已完成 
-        → 8 已取消（未接单退款、商家拒单、超时取消、售后全额退款）
+        → 8 已取消（未接单退款、商家拒单、超时取消、退款）
 ```
 
 ## 六、user模块

@@ -16,7 +16,9 @@ import mapper.FlowerCategoryMapper;
 import model.dto.CategoryPageDTO;
 import model.dto.FlowerCategoryDTO;
 import model.entity.FlowerCategory;
+import model.vo.FestivalVO;
 import model.vo.FlowerCategoryVO;
+import model.vo.FlowerVO;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -99,6 +101,16 @@ public class FlowerCategoryServiceImpl extends ServiceImpl<FlowerCategoryMapper,
             throw new FlowerCategoryFailedException(ErrorConstant.CATEGORY_NOT_EXIST);
         }
         super.removeByIds(ids);
+    }
+
+    @Override
+    public List<FlowerVO> readFlower(Long categoryId) {
+        return List.of();
+    }
+
+    @Override
+    public List<FestivalVO> readFestival(Long categoryId) {
+        return List.of();
     }
 
 

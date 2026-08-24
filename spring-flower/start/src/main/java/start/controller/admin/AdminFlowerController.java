@@ -33,6 +33,7 @@ public class AdminFlowerController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping
     public Result readById(@RequestParam Long id) {
+//        return Result.success(flowerService.getById(id));
         FlowerVO flowerVO = flowerService.readCache(id);
         return Result.success(flowerVO);
     }

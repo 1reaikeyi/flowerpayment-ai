@@ -27,6 +27,7 @@ public class AdminFestivalController {
     @OperationLogging(operation = OperationEnum.CREATE)
     @PostMapping
     public Result create(@RequestBody FestivalDTO festivalDTO) {
+
         FestivalDTO dto = festivalService.create(festivalDTO);
         return Result.success(dto);
     }
@@ -34,6 +35,7 @@ public class AdminFestivalController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping
     public Result readById(@RequestParam Long id) {
+//        return Result.success(festivalService.getById(id));
         FestivalVO festivalVO = festivalService.readCache(id);
         return Result.success(festivalVO);
     }
