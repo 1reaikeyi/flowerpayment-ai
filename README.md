@@ -357,16 +357,17 @@ OSS：上传云端，返回CDN加速访问URL
 >
 > 改成 ai 识别出周围人花 ，用户告诉服务员，想买红色的玫瑰花
 
-spring alibaba graph 编排流程图
+spring alibaba graph 编排流程图：
+
+保留了图片识别结果的返回，下一个节点ai查询信息可能存在不准情况，识别的结果也可以帮助consumer判断和使用
 
 ```mermaid
 %%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
 flowchart TD
-    %% ==================== 主链路 ====================
     Start(("上传图片 + 文字提问"))
     C["ImgComperhendController"]
 
-    subgraph CHAIN ["【图片识别完整链路】"]
+    subgraph CHAIN ["图片识别过程"]
         direction TB
         S1["1. 文件前置校验<br/>图片最大尺寸 2048×2048<br/>限制文件格式"]
         S2["2. SensitiveWordInterceptor 拦截检测<br/>提问文本敏感词 → 命中直接返回 400 拦截"]
@@ -374,47 +375,62 @@ flowchart TD
 
         subgraph GRAPH ["StateGraph 工作流 (异步节点)"]
             direction TB
-            G1["node1 · VisualNode (异步视觉识别)<br/>Base64 封装 Image Media<br/>调用独立 visualChatClient 识别图像内容<br/>→ visualResult 识别文本写入全局 state"]
-            G2["node2 · ToolNode (异步工具查询)<br/>读取 state.visualResult 关键词<br/>调用业务工具检索商品<br/>→ toolResult 写入全局 state"]
+            node1["node1 · VisualNode (异步+流式持续输出，降低堆内存)<br/>"]
+            visualResult["visualResult"]
+            node2["node2 · ToolNode (异步+流式持续输出，降低堆内存)<br/>"]
+            toolResult["toolResult"]
             ST[("全局 State<br/>{visualResult, toolResult}")]
         end
 
-        S5["5. 收集 graph 全部 state 数据<br/>(识别结果 + 匹配商品) 统一返回前端"]
+        S5["5. 收集 graph 全部 state 数据<br/>(识别结果 + 匹配商品) 一起返回"]
     end
 
     End(("前端接收统一响应"))
-     %% ==================== 单节点执行逻辑 ====================
+
+    Start --> C --> S1 --> S2 --> S3
+    S3 --> node1 --> ST
+    node1 --> visualResult --> node2
+    node2 --> toolResult -->ST
+    ST --> S5 --> End
+```
+
+节点
+
+```mermaid
+%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
+flowchart TD
     subgraph NODELOGIC ["【单节点执行逻辑】"]
         direction TB
-        V["VisualNode"]
-        V1["① 读取 Base64 图像"]
-        V2["② 封装 Image Media 多模态对象"]
-        V3["③ 调用独立 visualChatClient 识别图像内容"]
-        V4["④ 识别文本 → visualResult 写入 state"]
 
-        T["ToolNode"]
-        T1["① 读取 state.visualResult"]
-        T2["② 提取关键词检索业务商品"]
-        T3["③ 调用业务 @Tool 工具查询"]
-        T4["④ 检索数据 → toolResult 写入 state"]
+        subgraph VGROUP ["VisualNode · 视觉识别节点"]
+            direction TB
+            V1["① 读取 Base64 图像"]
+            V2["② 封装 Image Media 多模态对象"]
+            V3["③ 调用独立 visualChatClient 识别图像内容"]
+            V4["④ 识别文本 → visualResult 写入 state"]
+            V1 --> V2 --> V3 --> V4
+        end
+
+        subgraph TGROUP ["ToolNode · 工具查询节点"]
+            direction TB
+            T1["① 读取 state.visualResult"]
+            T2["② 提取关键词检索业务商品"]
+            T3["③ 调用业务 @Tool 工具查询"]
+            T4["④ 检索数据 → toolResult 写入 state"]
+            T1 --> T2 --> T3 --> T4
+        end
+
+        
     end
-
-    %% 主链路连线
-    Start --> C --> S1 --> S2 --> S3
-    S3 --> G1 --> ST
-    G1 --> G2
-    G2 --> ST
-    ST --> S5 --> End
-    %% 节点逻辑归属连线
-    G1 -.-o|实现| V
-    G2 -.-o|实现| T
-    V --> V1 --> V2 --> V3 --> V4
-    T --> T1 --> T2 --> T3 --> T4
 ```
 
 2 LLM 生成个性化贺卡文案
 
-
+```
+思路：使用提示词模板，提前写好提示词使用
+PromptTemplate promptTemplate = new PromptTemplate("根据信息{input} 进行文案写作，----等等");
+promptTemplate.add("input", input);
+```
 
 ## 九、aop日志
 
