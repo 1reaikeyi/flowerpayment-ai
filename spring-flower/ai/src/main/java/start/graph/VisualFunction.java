@@ -6,8 +6,10 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.content.Media;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
+import service.VisualService;
 
 import java.net.URI;
 import java.util.Map;
@@ -17,11 +19,11 @@ import java.util.Map;
 @Slf4j
 public class VisualFunction implements NodeAction {
 
+    @Autowired
+    private VisualService visualService;
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         return Map.of();
     }
-    private String chat(){
-        return null;
-    }
+
 }

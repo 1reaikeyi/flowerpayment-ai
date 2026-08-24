@@ -9,6 +9,7 @@ import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import service.ToolService;
 
 import java.util.Map;
 import java.util.Optional;
@@ -17,8 +18,9 @@ import java.util.Optional;
 @Slf4j
 public class ToolFunction implements NodeAction {
 
-    @Resource(name = "toolClient")
-    private ChatClient chatClient;
+    @Autowired
+    private ToolService toolService;
+
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         String input = Optional.ofNullable(state.value("visual"))
@@ -28,14 +30,8 @@ public class ToolFunction implements NodeAction {
                 "根据信息{input}查询");
         promptTemplate.add("input", input);
 
-        Flux<String> result = chat(input);
+        Flux<String> result = toolService.chat(input);
         return Map.of("toolResult", result);
     }
 
-    private Flux<String> chat(String qusetion){
-        return chatClient.prompt()
-                .user(qusetion)
-                .stream()
-                .content();
-    }
 }
