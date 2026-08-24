@@ -176,7 +176,7 @@ index idx_festival_id (festival_id)、index idx_flower_id (flower_id).
 
 ---
 
-**缓存设计：因为flower模块 festival模块的价格存在因为节日，花的保质期限制处于动态变化不能直接返回旧数据，异步更新后返回新数据**
+**缓存设计：因为flower模块 festival模块的价格存在因为节日，花的保质期限制处于动态变化不能直接返回旧数据，异步更新后，堵塞2s获取新数据**
 
 
 
@@ -189,7 +189,7 @@ flowchart TD
     C -->|解析失败 / data 为空| B
     C -->|成功| D{逻辑时间未过期?}
     D -->|是 未过期| E[剩余 TTL 不足则延长<br/>返回缓存数据]
-    D -->|否 已过期| F[异步线程池重建缓存<br/>加redisson + 查 DB + 写缓存<br/>返回缓存数据]
+    D -->|否 已过期| F[异步线程池重建缓存<br/>加redisson + 查 DB + 写缓存<br/>刷新缓存数据，期间堵塞2s获取新数据返回]
     B --> R([返回结果])
     E --> R
     F --> R
