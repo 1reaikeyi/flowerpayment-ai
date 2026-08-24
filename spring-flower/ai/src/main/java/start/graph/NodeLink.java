@@ -1,4 +1,4 @@
-package graph;
+package start.graph;
 
 
 import com.alibaba.cloud.ai.graph.*;

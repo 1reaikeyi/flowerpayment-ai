@@ -11,10 +11,9 @@ import org.springframework.context.annotation.Configuration;
 public class VisualConfiguration {
     @Bean
     public ChatClient visualChatClient(OpenAiChatModel model,
-                                       @Qualifier("loggerAdvisor") Advisor loggerAdvisor,
-                                       @Qualifier("memoryAdvisor") Advisor messageMemoryAdvisor) {  // 日志记录器
+                                       @Qualifier("loggerAdvisor") Advisor loggerAdvisor) {  // 日志记录器
         return ChatClient.builder(model)
-                .defaultAdvisors(loggerAdvisor, messageMemoryAdvisor)
+                .defaultAdvisors(loggerAdvisor)
                 .build();
     }
 }

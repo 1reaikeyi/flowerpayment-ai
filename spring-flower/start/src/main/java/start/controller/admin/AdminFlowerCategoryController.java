@@ -1,32 +1,17 @@
 package start.controller.admin;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.alipay.api.domain.CategoryDTO;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import common.constant.RedisPrefixConstant;
-import common.constant.StatusConstant;
 import common.enums.OperationEnum;
 import common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import model.dto.CategoryPageDTO;
 import model.dto.FlowerCategoryDTO;
-import model.entity.Festival;
-import model.entity.Flower;
-import model.entity.FlowerCategory;
 import model.vo.FestivalVO;
 import model.vo.FlowerCategoryVO;
 import model.vo.FlowerVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import service.FestivalService;
 import service.FlowerCategoryService;
-import service.FlowerService;
 import start.aop.OperationLogging;
 
 import java.util.List;

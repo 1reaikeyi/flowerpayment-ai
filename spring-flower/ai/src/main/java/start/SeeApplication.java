@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"start","graph","config","service"})
+@ComponentScan(basePackages = {"start","config","service"})
 @Slf4j
 public class SeeApplication {
     public static void main(String[] args) {

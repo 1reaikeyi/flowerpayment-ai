@@ -1,4 +1,4 @@
-package graph;
+package start.graph;
 
 import com.alibaba.cloud.ai.graph.OverAllState;
 import com.alibaba.cloud.ai.graph.action.NodeAction;
@@ -20,5 +20,8 @@ public class VisualFunction implements NodeAction {
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         return Map.of();
+    }
+    private String chat(){
+        return null;
     }
 }
