@@ -21,7 +21,7 @@ public class SensitiveWordInterceptor implements HandlerInterceptor {
         if (message != null && !message.isEmpty()) {
             boolean containsSensitiveWord = sensitiveWordBs.contains(message);
             if (containsSensitiveWord) {
-                log.info("检测到敏感词==>请求路径: {}, 参数内容: {}", request.getRequestURI(), message);
+                log.info("检测到敏感词--- uri: {}, param: {}", request.getRequestURI(), message);
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.setContentType("text/plain;charset=UTF-8");
                 response.getWriter().write("请求包含敏感词，请修改后重试");

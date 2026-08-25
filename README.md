@@ -413,11 +413,12 @@ flowchart TD
 
         subgraph TGROUP ["ToolNode · 工具查询节点"]
             direction TB
-            T1["① 读取 state.visualResult"]
-            T2["② 提取关键词检索业务商品"]
-            T3["③ 调用业务 @Tool 工具查询"]
-            T4["④ 检索数据 → toolResult 写入 state"]
-            T1 --> T2 --> T3 --> T4
+            INPUT1["读取 state.visualResult"]
+            INPUT2["获取question<br>null,prompt拼接模糊查询<br>非null,根据quetion精确查询"]
+            T1["根据prompt模板拼接执行"]
+            T2["调用业务 @Tool 工具查询"]
+            T2["检索数据 → toolResult 写入 state"]
+            INPUT1 --> INPUT2 --> T1 --> T2
         end
 
         
