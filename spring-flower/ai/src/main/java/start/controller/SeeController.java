@@ -1,4 +1,4 @@
-package start;
+package start.controller;
 
 import com.alibaba.cloud.ai.graph.CompiledGraph;
 import start.graph.NodeLink;

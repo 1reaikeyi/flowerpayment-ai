@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+logging:
+  charset:
+    console: UTF-8
+  level:
+    org.springframework.ai: debug
+    org.springframework.web.client: info
+
+spring:
+  application:
+    name: love-flower-ai
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  config:
+    import: classpath:redis.yml, classpath:mysql.yml, classpath:ai.yml
+
+image:
+  max-width: 2048
+  max-height: 2048
+

@@ -1,70 +1,33 @@
-spring:
-  # 项目配置文件
-  profiles:
-    active: dev
-  # 数据库配置
-  datasource:
-    driver-class-name: ${flower.datasource.driver-class-name}
-    url: jdbc:mysql://${flower.datasource.host}:${flower.datasource.port}/${flower.datasource.database}
-    username: ${flower.datasource.username}
-    password: ${flower.datasource.password}
-  # redis配置文件
-  data:
-    redis:
-      host: ${flower.redis.host}
-      port: ${flower.redis.port}
-      password: ${flower.redis.password}
-      database: ${flower.redis.database}
-      client-type: lettuce
-      timeout: 3000ms
-      lettuce:
-        pool:
-          max-active: 10
-          max-wait: 3000ms
-          max-idle: 8
-          min-idle: 2
-      # Redisson 配置：单节点模式，复用上方 redis 连接参数
-      # 注意：config 必须使用 | 块标量，内容作为字符串交给 Redisson 自行解析
-      redisson:
-        config: |
-          singleServerConfig:
-            # Redis 连接地址（必须带 redis:// 协议前缀）
-            address: "redis://${restaurant.redis.host}:${restaurant.redis.port}"
-            # 数据库索引
-            database: ${restaurant.redis.database}
-            # 访问密码
-            password: ${restaurant.redis.password}
-            # 连接池大小
-            connectionPoolSize: 10
-            # 最小空闲连接数
-            connectionMinimumIdleSize: 2
-            # 命令执行超时（毫秒）
-            timeout: 3000
-
-  # 缓存配置
-  cache:
-    type: redis
-    redis:
-      cache-null-values: false
-
-  # 文件上传配置
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
-# Mybatis-plus配置
-mybatis-plus:
-  mapper-locations: classpath:mapper/**/*.xml
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    #开启驼峰命名
-    map-underscore-to-camel-case: true
-  type-enums-package: model.entityenum
+#端口
+server:
+  port: 8080
 # 日志配置
 logging:
   level:
     flower:
       web_controller: ${flower.logging:info}
+# springIOC
+spring:
+  application:
+    name: love-flower-main
+  # 项目配置文件
+  profiles:
+    active: dev
+  # 缓存配置
+  cache:
+    type: redis
+    redis:
+      cache-null-values: false
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  # 导入文件
+  config:
+    import: classpath:redis.yml, classpath:mysql.yml, classpath:ai.yml
+
+
 # jwt配置
 jwt:
   # 设置jwt签名加密时使用的秘钥

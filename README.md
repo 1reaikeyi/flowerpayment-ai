@@ -375,9 +375,9 @@ flowchart TD
 
         subgraph GRAPH ["StateGraph 工作流 (异步节点)"]
             direction TB
-            node1["node1 · VisualNode (异步+流式持续输出，降低堆内存)<br/>"]
+            node1["node1 · VisualNode (异步+流式持续输出，降低堆内存，最长时间10s等待)<br/>"]
             visualResult["visualResult"]
-            node2["node2 · ToolNode (异步+流式持续输出，降低堆内存)<br/>"]
+            node2["node2 · ToolNode (异步+流式持续输出，降低堆内存，最长时间30s等待)<br/>"]
             toolResult["toolResult"]
             ST[("全局 State<br/>{visualResult, toolResult}")]
         end

@@ -28,14 +28,11 @@ public class VisualFunction implements NodeAction {
 
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
-        String file = Optional.ofNullable(state.value("file"))
-                .map(Object::toString)
-                .orElse("视觉识别出错");
+        String file = (String) state.value("file").orElse(("文件为空"));
 
         Media media = new Media(MimeTypeUtils.IMAGE_JPEG, URI.create("data:image/jpeg;base64," + file));
 
-        String result =  visualService.chat(media)
-                .collectList()
+        String result =  visualService.chat(media).collectList()
                 .timeout(Duration.ofSeconds(30))
                 .blockOptional(Duration.ofSeconds(60))
                 .toString();

@@ -1,0 +1,8 @@
+spring:
+  ai:
+    openai:
+      base-url: ${flower.ai.base-url}
+      api-key: ${flower.ai.api-key}
+      chat:
+        options:
+          model: ${flower.ai.chat.model}

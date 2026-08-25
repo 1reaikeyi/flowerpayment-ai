@@ -3,13 +3,13 @@ package service.tool;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import mapper.FlowerMapper;
 import model.entity.Flower;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import service.FlowerService;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +17,7 @@ import java.util.Optional;
 @Component
 public class FlowerTool {
     @Autowired
-    private FlowerService flowerService;
+    private FlowerMapper flowerMapper;
 
     private static final String FIELD_NAME_RESULT = "{}_{}";  // 提取格式字符串常量
     private static final String READ_BY_ID = "根据id";
@@ -25,7 +25,7 @@ public class FlowerTool {
     public FlowerJson queryById(@ToolParam(description = READ_BY_ID) Long courseId,
                                       ToolContext toolContext) {
         return Optional.ofNullable(courseId)
-                .map(id -> flowerService.getById(id))
+                .map(id -> flowerMapper.selectById(id))
                 .map(flower -> FlowerJson.of(flower))
                 .map(courseJson -> {
                     // 存储数据的字段名：使用Java原生String.format
@@ -80,7 +80,7 @@ public class FlowerTool {
         wrapper.orderByDesc(Flower::getCreateTime);
 
         // 执行查询 + 转 DTO
-        return flowerService.list(wrapper).stream()
+        return flowerMapper.selectList(wrapper).stream()
                 .map(flower -> BeanUtil.toBean(flower,FlowerJson.class))
                 .toList();
     }

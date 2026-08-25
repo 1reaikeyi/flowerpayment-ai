@@ -1,0 +1,16 @@
+spring:
+  # redis配置文件
+  data:
+    redis:
+      host: ${flower.redis.host}
+      port: ${flower.redis.port}
+      password: ${flower.redis.password}
+      database: ${flower.redis.database}
+      client-type: lettuce
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 10
+          max-wait: 3000ms
+          max-idle: 8
+          min-idle: 2

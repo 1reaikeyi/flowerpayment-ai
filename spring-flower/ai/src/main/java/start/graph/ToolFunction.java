@@ -13,7 +13,6 @@ import service.ToolService;
 
 import java.time.Duration;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -24,26 +23,21 @@ public class ToolFunction implements NodeAction {
 
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
-        String input = Optional.ofNullable(state.value("visual"))
-                .map(Object::toString)
-                .orElse("视觉识别出错");
-        Object question = state.value("visual");
+        Object visualValue = state.value("visualResult").orElse(null);
+        String input = visualValue == null ? "图片出错" : visualValue.toString();
 
-        if (question == null) {
-            question = "查询信息";
-        }
-        question = "解答" + question;
-
-        PromptTemplate promptTemplate = new PromptTemplate("你需要{question}"+
-                "根据信息{input}查询");
+        // question 同样从解包后的值取，缺失时给默认提示
+        String question = visualValue == null ? "查询信息" : visualValue.toString();
+        PromptTemplate promptTemplate = new PromptTemplate(
+                "你是一个花店销售。根据用户描述{input}作为查询条件，并解决用户的问题 {question}。");
         String prompt = promptTemplate.render(
-                Map.of("question", "回答用户问题", "input", "今天天气晴朗")
+                Map.of("input", input, "question", question)
         );
 
         String result =  toolService.chat(prompt)
                 .collectList()
-                .timeout(Duration.ofSeconds(30))
-                .blockOptional(Duration.ofSeconds(60))
+                .timeout(Duration.ofSeconds(80))
+                .blockOptional(Duration.ofSeconds(120))
                 .toString();
         return Map.of("toolResult", result);
     }
