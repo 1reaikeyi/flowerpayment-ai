@@ -25,7 +25,7 @@ spring:
       max-request-size: 10MB
   # 导入文件
   config:
-    import: classpath:redis.yml, classpath:mysql.yml, classpath:ai.yml
+    import: classpath:redis.yml, classpath:mysql.yml
 
 
 # jwt配置

@@ -31,11 +31,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Security：SecurityContextHolder、Authentication 等安全上下文类 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
+
 
         <!-- JJWT 核心 API（编译时依赖）：JWT 的生成和解析 -->
         <dependency>

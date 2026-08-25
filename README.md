@@ -28,7 +28,7 @@
 | 总体设计     | <img src="说明/resource/design2.png" alt="架构" style="zoom:25%;" /> |
 | 项目结构     | flower/<br/>├── spring-flower/            			  # 后端代码（Spring Boot 3 多模块）<br/>│   ├── common/                           # 公共模块<br/>│   ├── model/                            # 实体与数据传输对象<br/>│   ├── mapper/                           # 数据访问层（MyBatis-Plus）<br/>│   ├── service/                          # 业务逻辑模块<br/>│   ├── start/                            # 主业务启动模块<br/>│   └── ai/                           	  # AI服务启动模块<br/>│<br/>├── vue-flower/        					  # 前端管理端（Vue 3）<br/>│   ├── src/<br/>│   │   ├── api/                          # API接口封装（axios）<br/>│   │   ├── views/                        # 页面视图<br/>│   │   ├── layout/                       # 布局组件<br/>│   │   ├── router/                       # 路由配置(router)<br/>│   │   ├── stores/                       # 状态管理（Pinia）<br/>│   │   └── utils/                        # 工具函数<br/>│   └── package.json<br/>│<br/>├── database-sql/                  # 数据库脚本目录<br/>│   ├── sql.txt                    # 数据库create table<br/>│   ├── sql插入数据.txt              # 数据库初始化SQL<br/>│   └── 数据库设计文档.md             # 数据库设计说明<br/>│<br/>└── 说明/                          # 项目说明文档<br/>    ├── 原型功能/                   # 前端原型截图<br/>    ├── resource/                  # md文件使用<br/>    ├── 支付宝+qq/                  # 第三方应用注册和支付<br/>    ├── 并发测试                    # 使用jmeter测试<br/>    		├── flowr-category     使用springcache数据日志+结果<br/>    		├── flowr			   使用redis数据日志+结果<br/>    		├── festival		   使用redis数据日志+结果<br/>    ├── 运行日志.txt                # 运行日志<br/>    ├── admin接口文档.md            #admin接口详情<br/>    └── user接口文档.md             #user接口详情 |
 | 启动步骤     | 1创建数据库并导入 `sql/` 目录脚本。 <br>2 修改 `start/src/main/resources/application-dev.yml` 中数据库与 Redis 配置。<br>3 `npm run dev ` 前端启动服务。 |
-| **升级方案** | 使用nacos+gateway连接主业务+ai业务(两个服务)，灰度更新，分布式部署，故障转移等等。待后续开发。<br>当前使用mysql存储ai会话内容，可以改成redis的IO密集型，性能更强。待后续开发。 |
+| **升级方案** | 使用nacos+gateway连接主业务+ai业务(两个服务)，灰度更新，分布式部署，故障转移等等。待后续开发。<br>当前使用mysql存储ai会话内容，可以改成redis的IO密集型，性能更强。待后续开发。<br>共用：common -- model -- mapper -- service <br/>main服务：start<br/>branch服务：ai |
 
 # 前端说明
 
@@ -51,16 +51,16 @@
 
 ## 用户端界面
 
-|     功能页面     | 截图 |
-| :--------------: | ---- |
-|     登录页面     |      |
-|       分类       |      |
-|     单花销售     |      |
-|     组合销售     |      |
-|       店铺       |      |
-|      购物车      |      |
-|       订单       |      |
-| AI识别（多模态） |      |
+|   功能页面   | 截图 |
+| :----------: | ---- |
+|   登录页面   |      |
+|     分类     |      |
+|   单花销售   |      |
+|   组合销售   |      |
+|     店铺     |      |
+|    购物车    |      |
+|     订单     |      |
+| AI（多模态） |      |
 
 
 
@@ -428,7 +428,7 @@ flowchart TD
 2 LLM 生成个性化贺卡文案
 
 ```
-思路：使用提示词模板，提前写好提示词使用
+思路：使用提示词模板，提前写好提示词使用，匹配个性化贺卡文案
 PromptTemplate promptTemplate = new PromptTemplate("根据信息{input} 进行文案写作，----等等");
 promptTemplate.add("input", input);
 ```

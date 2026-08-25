@@ -45,6 +45,11 @@
     <dependencies>
         <dependency>
             <groupId>org.example</groupId>
+            <artifactId>service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
             <artifactId>mapper</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
@@ -57,12 +62,6 @@
             <groupId>org.example</groupId>
             <artifactId>common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-security</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- Spring AI OpenAI 模型依赖 -->
         <dependency>
