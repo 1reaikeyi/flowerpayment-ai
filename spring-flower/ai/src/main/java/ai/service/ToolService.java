@@ -3,5 +3,5 @@ package ai.service;
 import reactor.core.publisher.Flux;
 
 public interface ToolService {
-    Flux<String> chat(String message);
+    Flux<String> chat(String visualValue, String question);
 }

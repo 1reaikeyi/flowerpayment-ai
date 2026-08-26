@@ -14,5 +14,6 @@ public class ErrorConstant {
     public static final String OPERATION_ERROR = "更新，删除的ID不能为空";
     public static final String USER_NOT_LOGIN = "用户未登录";
     public static final String PASSWORD_EDIT_FAILED = "密码修改失败";
+    public static final String AI_SESSION_ERROR = "ai会话出现异常";
 
 }

@@ -21,17 +21,11 @@ public class ToolFunction implements NodeAction {
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         Object visualValue = state.value("visualResult").orElse(null);
+
         String input = visualValue == null ? "图片出错" : visualValue.toString();
+        String question = visualValue == null ? "查询相关信息" : visualValue.toString();
 
-        // question 同样从解包后的值取，缺失时给默认提示
-        String question = visualValue == null ? "查询信息" : visualValue.toString();
-        PromptTemplate promptTemplate = new PromptTemplate(
-                "你是一个花店查询家。根据用户描述{input}作为查询条件，并解决用户的问题 {question}。");
-        String prompt = promptTemplate.render(
-                Map.of("input", input, "question", question)
-        );
-
-        String result =  toolService.chat(prompt)
+        String result =  toolService.chat(input,question)
                 .collectList()
                 .timeout(Duration.ofSeconds(80))
                 .blockOptional(Duration.ofSeconds(120))

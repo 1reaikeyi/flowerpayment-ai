@@ -1,8 +1,13 @@
 package service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import model.dto.FlowerDTO;
+import model.dto.FlowerDetailDTO;
 import model.entity.FlowerDetail;
+import model.vo.FlowerDetailVO;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 /**
@@ -10,4 +15,11 @@ import org.springframework.stereotype.Service;
  */
 
 public interface FlowerDetailService extends IService<FlowerDetail> {
+    FlowerDetailDTO create(FlowerDetailDTO flowerDetailDTO);
+
+    FlowerDetailVO readCache(Long id);
+
+    void updateCache(FlowerDTO flowerDTO);
+
+    void deleteCache(List<Long> ids);
 }

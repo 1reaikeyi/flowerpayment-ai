@@ -6,3 +6,12 @@ spring:
       chat:
         options:
           model: ${flower.ai.chat.model}
+  config:
+    import: classpath:session.yml
+
+system:
+  chat:
+    file: classpath:session.txt
+    group: DEFAULT_GROUP
+    timeout-ms: 20000
+

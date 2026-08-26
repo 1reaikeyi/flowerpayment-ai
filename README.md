@@ -189,7 +189,7 @@ flowchart TD
     C -->|解析失败 / data 为空| B
     C -->|成功| D{逻辑时间未过期?}
     D -->|是 未过期| E[剩余 TTL 不足则延长<br/>返回缓存数据]
-    D -->|否 已过期| F[异步线程池重建缓存<br/>加redisson + 查 DB + 写缓存<br/>刷新缓存数据，期间堵塞2s获取新数据返回]
+    D -->|否 已过期| F["异步线程池重建缓存加redisson + 查 DB + 写缓存<br>刷新缓存数据，期间堵塞2s获取新数据返回"]
     B --> R([返回结果])
     E --> R
     F --> R
@@ -371,7 +371,7 @@ flowchart TD
         direction TB
         S1["1. 文件前置校验<br/>图片最大尺寸 2048×2048<br/>限制文件格式"]
         S2["2. SensitiveWordInterceptor 拦截检测<br/>提问文本敏感词 → 命中直接返回 400 拦截"]
-        S3["3. 文件统一转 Base64 编码<br/>(本地 File / 上传 byte[] 两套转换方法)"]
+        S3["3. 文件统一转 Base64 编码<br/>(上传 byte[] 转换base64)"]
 
         subgraph GRAPH ["StateGraph 工作流 (异步节点)"]
             direction TB
@@ -414,7 +414,7 @@ flowchart TD
         subgraph TGROUP ["ToolNode · 工具查询节点"]
             direction TB
             INPUT1["读取 state.visualResult"]
-            INPUT2["获取question<br>null,prompt拼接模糊查询<br>非null,根据quetion精确查询"]
+            INPUT2["获取question<br>prompt拼接模糊查询"]
             T1["根据prompt模板拼接执行"]
             T2["调用业务 @Tool 工具查询"]
             T2["检索数据 → toolResult 写入 state"]
@@ -442,5 +442,7 @@ promptTemplate.add("input", input);
 | 日志逻辑侵入业务代码 | 每个 CRUD 方法手动写日志，代码冗余 | AOP 切面统一拦截，注解标记即可自动记录，无业务侵入 | 符合 AOP 面向切面设计思想，日志属于横向通用能力，与业务解耦 |
 
 ## 十、websocket
+
+节日的时效性，某些花需要在特定的时间准时送达到特定场合，通过websocket提醒商家
 
 <img src="说明\resource\websocket.png" alt="websocket" style="zoom:50%;" />
