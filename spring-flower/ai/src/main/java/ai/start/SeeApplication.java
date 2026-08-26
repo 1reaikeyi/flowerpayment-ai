@@ -15,7 +15,7 @@ import service.impl.FlowerServiceImpl;
 
 
 @SpringBootApplication
-@MapperScan("mapper")
+@MapperScan(basePackages = {"mapper","ai.mapper"})
 @ComponentScan(basePackages = {"common","ai"})
 @Import({FestivalServiceImpl.class, FlowerServiceImpl.class, FestivalDetailServiceImpl.class, FlowerDetailServiceImpl.class})
 @Slf4j

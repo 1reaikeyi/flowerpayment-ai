@@ -1,4 +1,4 @@
-package ai.model;
+package ai.model.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

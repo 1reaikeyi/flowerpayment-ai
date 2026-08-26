@@ -13,7 +13,7 @@ import java.util.Base64;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/ai")
+@RequestMapping("/chat")
 public class SeeController {
     @Autowired
     private NodeLink nodeLink;
@@ -29,8 +29,8 @@ public class SeeController {
         // 将文件转为 Base64 字符串再传入 state，避免 graph 框架无法处理 byte[]
         String fileBase64 = Base64.getEncoder().encodeToString(file.getBytes());
         return compiledGraph.invoke(Map.of("file", fileBase64, "question", question))
-                .map(state -> "==>1.识别结果"+state.value("visualResult").orElse("null") +
-                        "==>2.查询结果==>" + state.value("toolResult").orElse("null"))
+                .map(state -> "1.识别结果"+state.value("visualResult").orElse("null") +
+                        "==>2.查询结果" + state.value("toolResult").orElse("null"))
                 .orElse("执行失败");
     }
 }

@@ -1,7 +1,7 @@
 package ai.service.impl;
 
-import ai.model.ChatEventVO;
 import ai.model.enums.ChatEventTypeEnum;
+import ai.model.vo.ChatEventVO;
 import ai.service.ToolService;
 import jakarta.annotation.Resource;
 import org.springframework.ai.chat.client.ChatClient;
