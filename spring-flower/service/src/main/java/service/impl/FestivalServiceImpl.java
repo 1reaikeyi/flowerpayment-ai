@@ -18,6 +18,8 @@ import mapper.FestivalMapper;
 import model.dto.FestivalDTO;
 import model.dto.FestivalPageDTO;
 import model.entity.Festival;
+import model.entity.FestivalDetail;
+import model.entity.Flower;
 import model.vo.FestivalVO;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -86,8 +88,6 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
         }
     }
 
-    // 缓存重建防重标记，key 为 festival 主键
-    private final ConcurrentHashMap<Long, Boolean> check = new ConcurrentHashMap<>();
 
     @Override
     public FestivalVO readCache(Long id) {
@@ -169,15 +169,12 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
                 latestVal = null;
             }
             //缓存已经被重建
-            try {
+            if(latestVal != null) {
                 LogicData latestData = JSONUtil.toBean(latestVal, LogicData.class);
                 if (latestData.getExpireTime().isAfter(LocalDateTime.now())) {
                     return latestData.getData() == null ? null
                             : BeanUtil.toBean(latestData.getData(), Festival.class);
                 }
-            } catch (Exception parseEx) {
-                log.warn("双重检查缓存数据损坏，重新查 DB, key={}",
-                        RedisPrefixConstant.FESTIVAL_PREFIX + id, parseEx);
             }
             //缓存重建失败
             return getMysql(id);
@@ -220,10 +217,6 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
     }
 
     private Festival getRedis(Long id) {
-        if (check.putIfAbsent(id, Boolean.TRUE) != null) {
-            // 已经有线程在重建
-            return null;
-        }
         Future<Festival> future = null;
         try {
             future = festivalExecutor.submit(() -> {
@@ -237,27 +230,20 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
                         log.error("删除key失败, id={}", id, ex);
                     }
                     return null;
-                } finally {
-                    check.remove(id); // ★ 无论成败，解除防重标记
                 }
             });
-
             return future.get(3, TimeUnit.SECONDS);
 
         } catch (TimeoutException e) {
-            // 超时：任务还在后台跑，check 标记等任务结束由 finally 清理
-            log.warn("缓存重建超时(3s), id={}, 返回null让下次请求重试", id);
+            // 阻塞超时
+            log.info("缓存重建超时(3s), id={}, 返回null", id);
             return null;
-        } catch (Exception e) {
-            log.error("获取 Festival 失败, id={}", id, e);
+        } catch (InterruptedException | ExecutionException e) {
+            // 任务执行失败或被中断
+            log.error("获取 Flower 失败, id={}", id, e);
             return null;
-        } finally {
-            // ★ future == null 说明 submit() 都没成功（RejectedExecutionException），
-            //   任务里的 finally 不会执行，所以这里兜底清理
-            if (future == null) {
-                check.remove(id);
-            }
         }
+
     }
 
     @Override
@@ -290,6 +276,7 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
             updateWrapper.set(Festival::getNumber, festivalDTO.getNumber());
         }
         super.update(updateWrapper);
+        stringRedisTemplate.delete(RedisPrefixConstant.FESTIVAL_PREFIX + festivalDTO.getId());
     }
 
     @Override

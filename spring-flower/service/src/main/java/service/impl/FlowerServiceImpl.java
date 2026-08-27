@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import mapper.FlowerMapper;
 import model.dto.FlowerDTO;
 import model.dto.FlowerPageDTO;
+import model.entity.FestivalDetail;
 import model.entity.Flower;
 import model.vo.FlowerVO;
 import org.redisson.api.RLock;
@@ -166,15 +167,12 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
                 latestVal = null;
             }
             //缓存已经被重建
-            try {
+            if(latestVal != null) {
                 LogicData latestData = JSONUtil.toBean(latestVal, LogicData.class);
                 if (latestData.getExpireTime().isAfter(LocalDateTime.now())) {
                     return latestData.getData() == null ? null
                             : BeanUtil.toBean(latestData.getData(), Flower.class);
                 }
-            } catch (Exception parseEx) {
-                log.warn("双重检查缓存数据损坏，重新查 DB, key={}",
-                        RedisPrefixConstant.FLOWER_PREFIX + id, parseEx);
             }
             //缓存重建失败
             return getMysql(id);
@@ -274,6 +272,7 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
             updateWrapper.set(Flower::getColor, flowerDTO.getColor());
         }
         super.update(updateWrapper);
+        stringRedisTemplate.delete(RedisPrefixConstant.FLOWER_PREFIX + flowerDTO.getId());
     }
 
     @Override

@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import mapper.FlowerDetailMapper;
 import model.dto.FlowerDTO;
 import model.dto.FlowerDetailDTO;
+import model.entity.FestivalDetail;
 import model.entity.FlowerDetail;
 import model.vo.FlowerDetailVO;
 
@@ -60,12 +61,12 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
                 },
                 new ThreadPoolExecutor.AbortPolicy()
         );
-        log.info("Flower 缓存重建线程池初始化完成");
+        log.info("flowerDetail缓存重建线程池初始化完成");
     }
     @PreDestroy
     public void destroy() {
         if (flowerDetailExecutor != null && !flowerDetailExecutor.isShutdown()) {
-            log.info("Flower 缓存重建线程池开始关闭...");
+            log.info("flowerDetail缓存重建线程池开始关闭...");
             flowerDetailExecutor.shutdown(); // 不再接受新任务，已提交的任务继续执行
             try {
                 if (!flowerDetailExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
@@ -76,7 +77,7 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
                 Thread.currentThread().interrupt();
                 flowerDetailExecutor.shutdownNow();
             }
-            log.info("Flower 缓存重建线程池已关闭");
+            log.info("flowerDetail缓存重建线程池已关闭");
         }
     }
 
@@ -139,8 +140,6 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
         return old;
     }
 
-
-
     private FlowerDetail getCache(Long id) {
         String key = "flowerDetail:lock:" + id;
         RLock lock = redissonClient.getLock(key);
@@ -165,15 +164,12 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
                 latestVal = null;
             }
             //缓存已经被重建
-            try {
+            if(latestVal != null) {
                 LogicData latestData = JSONUtil.toBean(latestVal, LogicData.class);
                 if (latestData.getExpireTime().isAfter(LocalDateTime.now())) {
                     return latestData.getData() == null ? null
                             : BeanUtil.toBean(latestData.getData(), FlowerDetail.class);
                 }
-            } catch (Exception parseEx) {
-                log.info("双重检查缓存数据损坏，重新查 DB, key={}",
-                        RedisPrefixConstant.FLOWER_PREFIX + id, parseEx);
             }
             //缓存重建失败
             return getMysql(id);
@@ -210,35 +206,20 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
         }
         return flowerDetail;
     }
-    private FlowerDetail getRedis(Long id) {
-        Future<FlowerDetail> future = null;
-        try {
-            future = flowerDetailExecutor.submit(() -> {
-                try {
-                    //return 把缓存存起来
-                    return getCache(id);
-                } catch (Exception e) {
-                    log.error("异步刷新缓存失败, id={}, 删除key", id, e);
-                    try {
-                        stringRedisTemplate.delete(RedisPrefixConstant.FLOWER_PREFIX + id);
-                    } catch (Exception ex) {
-                        log.error("删除key失败, id={}", id, ex);
-                    }
-                    return null;
-                }
-            });
-            //把缓存返回,真实返回值
-            return future.get(3, TimeUnit.SECONDS);
 
-        } catch (TimeoutException e) {
-            // 阻塞超时
-            log.info("缓存重建超时(3s), id={}, 返回null", id);
-            return null;
-        } catch (InterruptedException | ExecutionException e) {
-            // 任务执行失败或被中断
-            log.error("获取 Flower 失败, id={}", id, e);
-            return null;
-        }
+    private void getRedis(Long id) {
+        flowerDetailExecutor.submit(() -> {
+            try {
+                getCache(id);
+            } catch (Exception e) {
+                log.error("异步刷新缓存失败, id={}, 删除key", id, e);
+                try {
+                    stringRedisTemplate.delete(RedisPrefixConstant.FLOWER_PREFIX + id);
+                } catch (Exception ex) {
+                    log.error("删除key失败, id={}", id, ex);
+                }
+            }
+        });
     }
     @Override
     public void updateCache(FlowerDetailDTO flowerDetailDTO) {
@@ -257,6 +238,7 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
             updateWrapper.set(FlowerDetail::getSpecOptions,flowerDetailDTO.getSpecOptions());
         }
         super.update(updateWrapper);
+        stringRedisTemplate.delete(RedisPrefixConstant.FLOWERDETAIL_PREFIX + flowerDetailDTO.getId());
     }
 
     @Override

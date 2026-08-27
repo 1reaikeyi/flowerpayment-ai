@@ -56,8 +56,5 @@ public class FestivalDTO implements Serializable {
      */
     private String image;
 
-    /**
-     * 礼盒内鲜花明细
-     */
-    private List<FestivalDetail> festivalDetails;
+
 }
