@@ -19,7 +19,7 @@ public interface FlowerDetailService extends IService<FlowerDetail> {
 
     FlowerDetailVO readCache(Long id);
 
-    void updateCache(FlowerDTO flowerDTO);
+    void updateCache(FlowerDetailDTO flowerDetailDTO);
 
     void deleteCache(List<Long> ids);
 }

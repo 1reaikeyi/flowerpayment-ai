@@ -178,8 +178,6 @@ index idx_festival_id (festival_id)、index idx_flower_id (flower_id).
 
 **缓存设计：因为flower模块 festival模块的价格存在因为节日，花的保质期限制处于动态变化不能直接返回旧数据，异步更新后，堵塞2s获取新数据**
 
-
-
 ```mermaid
 %%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
 flowchart TD
@@ -291,8 +289,6 @@ flowchart TD
     E --> G([返回 null])
     F --> H([返回 flower])
 ```
-
-
 
 ## 五、订单状态流转
 

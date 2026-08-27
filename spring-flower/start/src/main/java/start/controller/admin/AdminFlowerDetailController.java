@@ -40,9 +40,9 @@ public class AdminFlowerDetailController {
 
     @OperationLogging(operation = OperationEnum.UPDATE)
     @PutMapping
-    public Result updateByObject(@RequestBody FlowerDTO flowerDTO) {
-        flowerDetailService.updateCache(flowerDTO);
-        return Result.success(flowerDTO);
+    public Result updateByObject(@RequestBody FlowerDetailDTO flowerDetailDTO) {
+        flowerDetailService.updateCache(flowerDetailDTO);
+        return Result.success(flowerDetailDTO);
     }
 
     @OperationLogging(operation = OperationEnum.DELETE)

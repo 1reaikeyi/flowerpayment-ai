@@ -51,6 +51,7 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
     private static final long REDIS_EXIST_TTL = 86400L;
     private static final Random RANDOM = new Random();
     private ExecutorService flowerExecutor;
+
     @PostConstruct
     public void init() {
         flowerExecutor = new ThreadPoolExecutor(
@@ -73,7 +74,7 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
             flowerExecutor.shutdown(); // 不再接受新任务，已提交的任务继续执行
             try {
                 if (!flowerExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
-                    log.warn("线程池未能在10秒内优雅关闭，执行 shutdownNow");
+                    log.warn("线程池未能在10秒内关闭，执行 shutdownNow");
                     flowerExecutor.shutdownNow(); // 强制中断
                 }
             } catch (InterruptedException e) {
@@ -83,7 +84,7 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
             log.info("Flower 缓存重建线程池已关闭");
         }
     }
-    private final ConcurrentHashMap<Long, Boolean> check = new ConcurrentHashMap<>();
+
 
     @Override
     public FlowerVO readCache(Long id) {
@@ -215,10 +216,6 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
 
     }
     private Flower getRedis(Long id) {
-        if (check.putIfAbsent(id, Boolean.TRUE) != null) {
-            // 已经有线程在重建
-            return null;
-        }
         Future<Flower> future = null;
         try {
             future = flowerExecutor.submit(() -> {
@@ -232,26 +229,18 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
                         log.error("删除key失败, id={}", id, ex);
                     }
                     return null;
-                } finally {
-                    check.remove(id); // ★ 无论成败，解除防重标记
                 }
             });
-
             return future.get(3, TimeUnit.SECONDS);
 
         } catch (TimeoutException e) {
-            // 超时：任务还在后台跑，check 标记等任务结束由 finally 清理
-            log.warn("缓存重建超时(3s), id={}, 返回null让下次请求重试", id);
+            // 阻塞超时
+            log.info("缓存重建超时(3s), id={}, 返回null", id);
             return null;
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
+            // 任务执行失败或被中断
             log.error("获取 Flower 失败, id={}", id, e);
             return null;
-        } finally {
-            // ★ future == null 说明 submit() 都没成功（RejectedExecutionException），
-            //   任务里的 finally 不会执行，所以这里兜底清理
-            if (future == null) {
-                check.remove(id);
-            }
         }
     }
 

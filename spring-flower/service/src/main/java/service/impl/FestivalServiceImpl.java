@@ -10,8 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import common.constant.ErrorConstant;
 import common.constant.RedisPrefixConstant;
-import common.constant.StatusConstant;
-import common.exception.FlowerFailedException;
+import common.exception.FestivalFailedException;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -264,7 +263,7 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
     @Override
     public void updateCache(FestivalDTO festivalDTO) {
         if (festivalDTO.getId() == null) {
-            throw new FlowerFailedException(ErrorConstant.OPERATION_ERROR);
+            throw new FestivalFailedException(ErrorConstant.OPERATION_ERROR);
         }
         LambdaUpdateWrapper<Festival> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(Festival::getId, festivalDTO.getId());
