@@ -17,7 +17,7 @@ import start.aop.OperationLogging;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/flower")
+@RequestMapping("/admin/flowerDetail")
 @Slf4j
 public class AdminFlowerDetailController {
     @Autowired
