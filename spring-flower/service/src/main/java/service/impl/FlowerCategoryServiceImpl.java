@@ -2,8 +2,6 @@ package service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.NumberUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -13,7 +11,7 @@ import common.constant.ErrorConstant;
 import common.constant.RedisPrefixConstant;
 import common.exception.FlowerCategoryFailedException;
 import mapper.FlowerCategoryMapper;
-import model.dto.CategoryPageDTO;
+import model.dto.FlowerCategoryPageDTO;
 import model.dto.FlowerCategoryDTO;
 import model.entity.FlowerCategory;
 import model.vo.FestivalVO;
@@ -59,10 +57,10 @@ public class FlowerCategoryServiceImpl extends ServiceImpl<FlowerCategoryMapper,
     }
     @CacheEvict(allEntries = true)
     @Override
-    public List<FlowerCategoryVO> readPage(CategoryPageDTO categoryPageDTO) {
+    public List<FlowerCategoryVO> readPage(FlowerCategoryPageDTO flowerCategoryPageDTO) {
         LambdaQueryWrapper<FlowerCategory> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(categoryPageDTO.getType() != null, FlowerCategory::getType, categoryPageDTO.getType());
-        IPage page = new Page(categoryPageDTO.getPage(),categoryPageDTO.getPageSize());
+        queryWrapper.like(flowerCategoryPageDTO.getType() != null, FlowerCategory::getType, flowerCategoryPageDTO.getType());
+        IPage page = new Page(flowerCategoryPageDTO.getPage(), flowerCategoryPageDTO.getPageSize());
         IPage<FlowerCategory> flowerCategoryIPage = super.page(page,queryWrapper);
         List<FlowerCategoryVO> voList = flowerCategoryIPage.getRecords().stream()
                 .map(flowerCategory -> BeanUtil.copyProperties(flowerCategory, FlowerCategoryVO.class))

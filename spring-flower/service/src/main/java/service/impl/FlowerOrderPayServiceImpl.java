@@ -6,5 +6,5 @@ import model.entity.FlowerOrderPay;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FlowerOrderPayService extends ServiceImpl<FlowerOrderPayMapper, FlowerOrderPay> implements service.FlowerOrderPayService {
+public class FlowerOrderPayServiceImpl extends ServiceImpl<FlowerOrderPayMapper, FlowerOrderPay> implements service.FlowerOrderPayService {
 }

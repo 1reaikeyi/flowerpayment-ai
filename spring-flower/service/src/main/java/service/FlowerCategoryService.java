@@ -1,7 +1,7 @@
 package service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import model.dto.CategoryPageDTO;
+import model.dto.FlowerCategoryPageDTO;
 import model.dto.FlowerCategoryDTO;
 import model.entity.FlowerCategory;
 import model.vo.FestivalVO;
@@ -20,7 +20,7 @@ public interface FlowerCategoryService extends IService<FlowerCategory> {
 
     List<FlowerCategoryVO> readByType(Long type);
 
-    List<FlowerCategoryVO> readPage(CategoryPageDTO categoryPageDTO);
+    List<FlowerCategoryVO> readPage(FlowerCategoryPageDTO flowerCategoryPageDTO);
 
     void updateByObject(FlowerCategoryDTO categoryDTO);
 

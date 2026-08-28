@@ -3,7 +3,7 @@ package start.controller.admin;
 import common.enums.OperationEnum;
 import common.result.Result;
 import lombok.extern.slf4j.Slf4j;
-import model.dto.CategoryPageDTO;
+import model.dto.FlowerCategoryPageDTO;
 import model.dto.FlowerCategoryDTO;
 import model.vo.FestivalVO;
 import model.vo.FlowerCategoryVO;
@@ -40,8 +40,8 @@ public class AdminFlowerCategoryController {
 
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/all")
-    public Result readPage( @Validated CategoryPageDTO categoryPageDTO) {
-        List<FlowerCategoryVO> flowerCategoryVOList = flowerCategoryService.readPage(categoryPageDTO);
+    public Result readPage( @Validated FlowerCategoryPageDTO flowerCategoryPageDTO) {
+        List<FlowerCategoryVO> flowerCategoryVOList = flowerCategoryService.readPage(flowerCategoryPageDTO);
         return Result.success(flowerCategoryVOList);
     }
 

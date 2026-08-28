@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryPageDTO implements Serializable {
+public class FlowerCategoryPageDTO implements Serializable {
     @Min(value = 1, message = "页码不能小于1")
     private Long page = 1L;
 

@@ -31,11 +31,11 @@
 //    @Autowired
 //    private FestivalService festivalService;
 //    @Autowired
-//    private FlowerOrderService orderService;
+//    private FlowerOrderServiceImpl orderService;
 //    @Autowired
-//    private FlowerOrderDetailService orderDetailService;
+//    private FlowerOrderDetailServiceImpl orderDetailService;
 //    @Autowired
-//    private FlowerOrderPayService orderPayService;
+//    private FlowerOrderPayServiceImpl orderPayService;
 //
 //    private static final Integer TOP_NUMBER = 7;
 //
