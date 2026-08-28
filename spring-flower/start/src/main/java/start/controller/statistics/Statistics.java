@@ -30,13 +30,7 @@
 //    private FlowerService flowerService;
 //    @Autowired
 //    private FestivalService festivalService;
-//    @Autowired
-//    private FlowerOrderServiceImpl orderService;
-//    @Autowired
-//    private FlowerOrderDetailServiceImpl orderDetailService;
-//    @Autowired
-//    private FlowerOrderPayServiceImpl orderPayService;
-//
+//    
 //    private static final Integer TOP_NUMBER = 7;
 //
 //    // 菜品销量：按 dish_id 聚合订单明细中的销量与金额

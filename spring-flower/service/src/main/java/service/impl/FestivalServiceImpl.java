@@ -20,6 +20,7 @@ import model.dto.FestivalPageDTO;
 import model.entity.Festival;
 import model.entity.FestivalDetail;
 import model.entity.Flower;
+import model.vo.FestivalDetailVO;
 import model.vo.FestivalVO;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -306,6 +307,16 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
                 .map(festival ->BeanUtil.toBean(festival, FestivalVO.class))
                 .collect(Collectors.toList());
         return voList;
+    }
+
+    @Override
+    public List<FestivalDetailVO> readFestivalDetailObject(Long id) {
+        return List.of();
+    }
+
+    @Override
+    public List<FestivalDetailVO> readFestivalDetailOption(Long id) {
+        return List.of();
     }
 
 

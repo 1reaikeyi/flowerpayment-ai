@@ -5,6 +5,7 @@ import model.dto.FestivalDTO;
 import model.dto.FestivalPageDTO;
 import model.dto.FlowerPageDTO;
 import model.entity.Festival;
+import model.vo.FestivalDetailVO;
 import model.vo.FestivalVO;
 
 import java.util.List;
@@ -25,4 +26,7 @@ public interface FestivalService extends IService<Festival> {
 
     List<FestivalVO> readPage(FestivalPageDTO festivalPageDTO);
 
+    List<FestivalDetailVO> readFestivalDetailObject(Long id);
+
+    List<FestivalDetailVO> readFestivalDetailOption(Long id);
 }

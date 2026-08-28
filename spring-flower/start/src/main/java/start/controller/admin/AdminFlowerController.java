@@ -5,6 +5,8 @@ import common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import model.dto.FlowerDTO;
 import model.dto.FlowerPageDTO;
+import model.vo.FestivalDetailVO;
+import model.vo.FlowerDetailVO;
 import model.vo.FlowerVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,8 @@ public class AdminFlowerController {
 
     @Autowired
     private FlowerService flowerService;
+    @Autowired
+    private FlowerDetailService flowerDetailService;
 
     @OperationLogging(operation = OperationEnum.CREATE)
     @PostMapping
@@ -60,5 +64,16 @@ public class AdminFlowerController {
         flowerService.deleteCache(ids);
         return Result.success(ids);
     }
-
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("/of/flowerDetail/object")
+    public Result readFlowerDetailObject(@RequestParam Long id) {
+        List<FlowerDetailVO> flowerDetailVOList = flowerService.readFestivalDetailObject(id);
+        return Result.success(flowerDetailVOList);
+    }
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("/of/flowerDetail/option")
+    public Result readFlowerDetailOption(@RequestParam Long id) {
+        List<FlowerDetailVO> flowerDetailVOList= flowerService.readFestivalDetailOption(id);
+        return Result.success(flowerDetailVOList);
+    }
 }

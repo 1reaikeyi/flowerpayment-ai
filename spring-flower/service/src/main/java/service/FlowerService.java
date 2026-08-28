@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import model.dto.FlowerDTO;
 import model.dto.FlowerPageDTO;
 import model.entity.Flower;
+import model.vo.FlowerDetailVO;
 import model.vo.FlowerVO;
 
 import java.util.List;
@@ -23,4 +24,8 @@ public interface FlowerService extends IService<Flower> {
     List<FlowerVO> readPage(FlowerPageDTO flowerPageDTO);
 
     FlowerDTO create(FlowerDTO flowerDTO);
+
+    List<FlowerDetailVO> readFestivalDetailOption(Long id);
+
+    List<FlowerDetailVO> readFestivalDetailObject(Long id);
 }

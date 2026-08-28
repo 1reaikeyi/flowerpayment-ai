@@ -22,4 +22,5 @@ public interface FlowerDetailService extends IService<FlowerDetail> {
     void updateCache(FlowerDetailDTO flowerDetailDTO);
 
     void deleteCache(List<Long> ids);
+
 }

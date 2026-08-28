@@ -13,17 +13,23 @@ import common.exception.FlowerCategoryFailedException;
 import mapper.FlowerCategoryMapper;
 import model.dto.FlowerCategoryPageDTO;
 import model.dto.FlowerCategoryDTO;
+import model.entity.Festival;
+import model.entity.Flower;
 import model.entity.FlowerCategory;
 import model.vo.FestivalVO;
 import model.vo.FlowerCategoryVO;
 import model.vo.FlowerVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import service.FestivalService;
 import service.FlowerCategoryService;
+import service.FlowerService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +37,10 @@ import java.util.stream.Collectors;
 @CacheConfig(cacheNames = RedisPrefixConstant.CATEGORY_TYPE_PREFIX)
 @Transactional(rollbackFor = Exception.class)
 public class FlowerCategoryServiceImpl extends ServiceImpl<FlowerCategoryMapper, FlowerCategory> implements FlowerCategoryService {
+    @Autowired
+    private FlowerService flowerService;
+    @Autowired
+    private FestivalService festivalService;
 
     @CacheEvict(allEntries = true)
     @Override
@@ -103,13 +113,19 @@ public class FlowerCategoryServiceImpl extends ServiceImpl<FlowerCategoryMapper,
 
     @Override
     public List<FlowerVO> readFlower(Long categoryId) {
-        return List.of();
+        List<Flower> flowerList = flowerService.lambdaQuery().eq(Flower::getCategoryId,categoryId).list();
+        List<FlowerVO> flowerVOList = flowerList.stream()
+                .map(flower -> BeanUtil.toBean(flower, FlowerVO.class))
+                .collect(Collectors.toList());
+        return flowerVOList;
     }
 
     @Override
     public List<FestivalVO> readFestival(Long categoryId) {
-        return List.of();
+        List<Festival> festivalList = festivalService.lambdaQuery().eq(Festival::getCategoryId, categoryId).list();
+        List<FestivalVO> festivalVOList = festivalList.stream()
+                .map(festival -> BeanUtil.toBean(festival, FestivalVO.class))
+                .collect(Collectors.toList());
+        return festivalVOList;
     }
-
-
 }

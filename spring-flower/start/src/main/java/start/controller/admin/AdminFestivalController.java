@@ -7,10 +7,12 @@ import model.dto.FestivalDTO;
 import model.dto.FestivalPageDTO;
 import model.dto.FlowerDTO;
 import model.dto.FlowerPageDTO;
+import model.vo.FestivalDetailVO;
 import model.vo.FestivalVO;
 import model.vo.FlowerVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import service.FestivalDetailService;
 import service.FestivalService;
 import service.FlowerService;
 import start.aop.OperationLogging;
@@ -21,8 +23,10 @@ import java.util.List;
 @RequestMapping("/admin/festival")
 @Slf4j
 public class AdminFestivalController {
+
     @Autowired
     private FestivalService festivalService;
+
 
     @OperationLogging(operation = OperationEnum.CREATE)
     @PostMapping
@@ -61,5 +65,18 @@ public class AdminFestivalController {
     public Result deleteById(@RequestParam List<Long> ids) {
         festivalService.deleteCache(ids);
         return Result.success(ids);
+    }
+
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("/of/festivalDetail/object")
+    public Result readFestivalDetailObject(@RequestParam Long id) {
+        List<FestivalDetailVO> festivalDetailVOList = festivalService.readFestivalDetailObject(id);
+        return Result.success(festivalDetailVOList);
+    }
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("/of/festivalDetail/option")
+    public Result readFestivalDetailOption(@RequestParam Long id) {
+        List<FestivalDetailVO> festivalDetailVOList = festivalService.readFestivalDetailOption(id);
+        return Result.success(festivalDetailVOList);
     }
 }

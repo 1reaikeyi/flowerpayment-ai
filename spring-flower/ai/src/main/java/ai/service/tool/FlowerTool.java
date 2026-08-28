@@ -23,23 +23,23 @@ public class FlowerTool {
     private static final String FIELD_NAME_RESULT = "{}_{}";  // 提取格式字符串常量
     private static final String READ_BY_ID = "根据id";
     @Tool(description = READ_BY_ID)
-    public FlowerJson queryById(@ToolParam(description = READ_BY_ID) Long courseId,
+    public FlowerJson queryById(@ToolParam(description = READ_BY_ID) Long flowerId,
                                       ToolContext toolContext) {
-        return Optional.ofNullable(courseId)
+        return Optional.ofNullable(flowerId)
                 .map(id -> flowerService.getById(id))
                 .map(flower -> FlowerJson.of(flower))
-                .map(courseJson -> {
+                .map(flowerJson -> {
                     // 存储数据的字段名：使用Java原生String.format
                     String className = FlowerJson.class.getSimpleName();
                     // 将首字母转为小写
                     String lowerClassName = className.isEmpty() ? className
                             : Character.toLowerCase(className.charAt(0)) + className.substring(1);
-                    String field = String.format(FIELD_NAME_RESULT, lowerClassName, courseJson.getId());
+                    String field = String.format(FIELD_NAME_RESULT, lowerClassName, flowerJson.getId());
                     // 存储的key
                     Object requestIdObj = toolContext.getContext().get(READ_BY_ID);
                     String requestId = requestIdObj != null ? String.valueOf(requestIdObj) : null;
-                    ToolResultHolder.put(requestId, field, courseJson);
-                    return courseJson;
+                    ToolResultHolder.put(requestId, field, flowerJson);
+                    return flowerJson;
                 })
                 .orElse(null);
     }

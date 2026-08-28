@@ -19,6 +19,7 @@ import model.dto.FlowerDTO;
 import model.dto.FlowerPageDTO;
 import model.entity.FestivalDetail;
 import model.entity.Flower;
+import model.vo.FlowerDetailVO;
 import model.vo.FlowerVO;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -289,6 +290,16 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
         super.save(flower);
         FlowerDTO dto = BeanUtil.copyProperties(flower, FlowerDTO.class);
         return dto;
+    }
+
+    @Override
+    public List<FlowerDetailVO> readFestivalDetailOption(Long id) {
+        return List.of();
+    }
+
+    @Override
+    public List<FlowerDetailVO> readFestivalDetailObject(Long id) {
+        return List.of();
     }
 
     @Override

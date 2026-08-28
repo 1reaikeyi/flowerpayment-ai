@@ -20,4 +20,5 @@ public interface FestivalDetailService extends IService<FestivalDetail> {
     void updateCache(FestivalDetailDTO festivalDetailDTO);
 
     void deleteCache(List<Long> ids);
+
 }
