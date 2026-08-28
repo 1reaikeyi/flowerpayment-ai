@@ -1,4 +1,4 @@
-package start.metaHandler;
+package start.metaobjecthandler;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 
@@ -8,9 +8,6 @@ import org.springframework.stereotype.Component;
 import start.security.SecurityContextParam;
 
 import java.time.LocalDateTime;
-import java.util.Map;
-
-import static common.constant.FillHandleConstant.CREATE_TIME_HANDLER;
 
 @Component
 public class AutoMetaObjectHandler implements MetaObjectHandler {

@@ -29,8 +29,6 @@ public class PayController {
     @Autowired
     private ZhifubaoService zhifubaoService;
     @Autowired
-    private ZhifubaoConfig zhifubaoConfig;
-    @Autowired
     private ZhifubaoProperties zhifubaoProperties;
 
     /** 电脑网站支付：浏览器打开此接口会跳转到支付宝沙箱收银台 */

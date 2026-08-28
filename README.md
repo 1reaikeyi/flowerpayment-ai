@@ -21,14 +21,142 @@
 </div>
 ------
 
-# 架构图
+# 数据流向图
 
-| 数据流向     | <img src="说明/resource/design1.png" alt="架构" style="zoom: 50%;" /> |
+```mermaid
+	flowchart TB
+	%% ============ 基建层 ============
+    subgraph INFRA["基建层"]
+        direction LR
+        I1["Linux 服务器"]
+        I2["Docker 容器化"]
+        I3["硬盘存储"]
+        I4["阿里云OSS"]
+    end
+     %% ============ 数据层 ============
+    subgraph DATA["数据层"]
+        direction LR
+        D1["MySQL 业务主库"]
+        D2["Redis 缓存/分布式锁"]
+        D3["阿里云 OSS 商品图片"]
+        D4["本地硬盘 私有文件"]
+        D5["Excel 导出 报表数据"]
+    end
+ 	%% ============ 业务支撑层 ============
+    subgraph BIZ["业务支撑层"]
+        direction LR
+        BK1["后台管理服务"]
+        BK2["统计数据分析"]
+        BK3["Spring Security权限"]
+        BK4["AI 识花服务"]
+        BK5["文件上传服务"]
+        BK6["Redis缓存服务"]
+        BK7["aop日志服务"]
+    end
+    
+    %% ============ 服务层（业务模块）============
+    subgraph SERVICE["服务层"]
+        direction LR
+        S1["用户模块"]
+        S2["员工模块"]
+        S3["分类模块"]
+        S4["鲜花单品模块"]
+        S5["节日礼盒模块"]
+        S6["购物车模块"]
+        S7["订单模块"]
+        S8["支付模块"]
+    end
+  	%% ============ 请求转发层 ============
+    subgraph GATEWAY["请求转发层"]
+        direction LR
+        GB1["Nginx 负载均衡"]
+        GB2["敏感词拦截"]
+        GB3["黑名单"]
+    end
+
+    %% ============ 客户端 ============
+    subgraph CLIENT["客户端"]
+        direction LR
+        C1["管理端（店长/员工）"]
+        C2["用户端"]
+    end
+```
+
+业务
+
+```mermaid
+%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
+flowchart LR
+
+    %% ============ 入口（平行）============
+    EMP["emp / 管理员"]
+    USE["user / 用户"]
+    LOGIN["注册登录"]
+
+    %% ============ 管理员路径 ============
+    subgraph ADMIN ["管理员路径"]
+        direction TB
+        AD["管理端"]
+        A["数据大屏"]
+        B["业务"]
+
+        subgraph AA ["数据大屏"]
+            direction LR
+            A1["业务数据大屏-echarts"]
+            A2["用户数据大屏-excel"]
+        end
+
+        subgraph BB ["业务"]
+            direction LR
+            B1["category"]
+            B2["flower"]
+            B3["festival"]
+            B4["order"]
+            B5["支付数据"]
+        end
+    end
+
+    %% ============ 用户路径 ============
+    subgraph USER ["用户路径"]
+        direction TB
+        U["用户端"]
+		S["业务"]
+        subgraph SS ["业务"]
+            direction LR
+            U1["category"]
+            U2["flower"]
+            U3["festival"]
+            U4["order 数据"]
+        end
+    end
+
+    %% ============ 箭头 ============
+    EMP --> LOGIN
+    USE --> LOGIN
+    LOGIN --> AD
+    AD --> A
+    AD --> B
+    A --> A1
+    A --> A2
+    B --> B1
+    B --> B2
+    B --> B3
+    B --> B4
+    B --> B5
+    LOGIN --> U
+    U --> S
+    S --> U1
+    S --> U2
+    S --> U3
+    S --> U4
+```
+
+
+
+| 启动步骤     | 1创建数据库并导入 `sql/` 目录脚本。 <br/>2 修改 `start/src/main/resources/application-dev.yml` 中数据库与 Redis 配置。<br/>3 `npm run dev ` 前端启动服务。 |
 | ------------ | ------------------------------------------------------------ |
-| 总体设计     | <img src="说明/resource/design2.png" alt="架构" style="zoom:25%;" /> |
-| 项目结构     | flower/<br/>├── spring-flower/            			  # 后端代码（Spring Boot 3 多模块）<br/>│   ├── common/                           # 公共模块<br/>│   ├── model/                            # 实体与数据传输对象<br/>│   ├── mapper/                           # 数据访问层（MyBatis-Plus）<br/>│   ├── service/                          # 业务逻辑模块<br/>│   ├── start/                            # 主业务启动模块<br/>│   └── ai/                           	  # AI服务启动模块<br/>│<br/>├── vue-flower/        					  # 前端管理端（Vue 3）<br/>│   ├── src/<br/>│   │   ├── api/                          # API接口封装（axios）<br/>│   │   ├── views/                        # 页面视图<br/>│   │   ├── layout/                       # 布局组件<br/>│   │   ├── router/                       # 路由配置(router)<br/>│   │   ├── stores/                       # 状态管理（Pinia）<br/>│   │   └── utils/                        # 工具函数<br/>│   └── package.json<br/>│<br/>├── database-sql/                  # 数据库脚本目录<br/>│   ├── sql.txt                    # 数据库create table<br/>│   ├── sql插入数据.txt              # 数据库初始化SQL<br/>│   └── 数据库设计文档.md             # 数据库设计说明<br/>│<br/>└── 说明/                          # 项目说明文档<br/>    ├── 原型功能/                   # 前端原型截图<br/>    ├── resource/                  # md文件使用<br/>    ├── 支付宝+qq/                  # 第三方应用注册和支付<br/>    ├── 并发测试                    # 使用jmeter测试<br/>    		├── flowr-category     使用springcache数据日志+结果<br/>    		├── flowr			   使用redis数据日志+结果<br/>    		├── festival		   使用redis数据日志+结果<br/>    ├── 运行日志.txt                # 运行日志<br/>    ├── admin接口文档.md            #admin接口详情<br/>    └── user接口文档.md             #user接口详情 |
-| 启动步骤     | 1创建数据库并导入 `sql/` 目录脚本。 <br>2 修改 `start/src/main/resources/application-dev.yml` 中数据库与 Redis 配置。<br>3 `npm run dev ` 前端启动服务。 |
-| **升级方案** | 使用nacos+gateway连接主业务+ai业务(两个服务)，灰度更新，分布式部署，故障转移等等。待后续开发。<br>当前使用mysql存储ai会话内容，可以改成redis的IO密集型，性能更强。待后续开发。<br>共用：common -- model -- mapper -- service <br/>main服务：start<br/>branch服务：ai |
+| 项目结构     | flower/<br/>├── spring-flower/            	 # 后端代码（Spring Boot 3 多模块）<br/>│   ├── common/                      # 公共模块<br/>│   ├── model/                          # 实体与数据传输对象<br/>│   ├── mapper/                       # 数据访问层（MyBatis-Plus）<br/>│   ├── service/                         # 业务逻辑模块<br/>│   ├── start/                            # 主业务启动模块<br/>│   └── ai/                           	  # AI服务启动模块<br/>│<br/>├── vue-flower/        					  # 前端管理端（Vue 3）<br/>│   ├── src/<br/>│   │   ├── api/                             # API接口封装（axios）<br/>│   │   ├── views/                        # 页面视图<br/>│   │   ├── layout/                       # 布局组件<br/>│   │   ├── router/                       # 路由配置(router)<br/>│   │   ├── stores/                       # 状态管理（Pinia）<br/>│   │   └── utils/                          # 工具函数<br/>│   └── package.json<br/>│<br/>├── database-sql/                       # 数据库脚本目录<br/>│   ├── sql.txt                               # 数据库create table<br/>│   ├── sql插入数据.txt                # 数据库初始化SQL<br/>│   └── 数据库设计文档.md        # 数据库设计说明<br/>│<br/>└── 说明/                                 # 项目说明文档<br/>    ├── 原型功能/                     # 前端原型截图<br/>    ├── 支付宝+qq/                  # 第三方应用注册和支付<br/>    ├── 并发测试                      # 使用jmeter测试<br/>    		├── flowr-category     使用springcache数据日志+结果<br/>    		├── flowr			          使用redis数据日志+结果<br/>    		├── festival		          使用redis数据日志+结果<br/>    ├── 运行日志.txt                      # 运行日志<br/>    ├── admin接口文档.md         #admin接口详情<br/>    └── user接口文档.md             #user接口详情<br/>共用：common -- model -- mapper -- service <br/>main服务：start<br/>branch服务：ai |
+| **升级方案** | 使用nacos+gateway连接主业务+ai业务(两个服务)，灰度更新，分布式部署，故障转移等等。待后续开发。 |
 
 # 前端说明
 
@@ -73,11 +201,6 @@
 |                          支付宝授权                          |                           授权成功                           | 集成到订单                                                   | 支付过程                                                     |                           同步支付                           |                           异步检验                           |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | ------------------------------------------------------------ | ------------------------------------------------------------ | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | <img src="说明/支付宝+qq/ali1.png" alt="支付宝" style="zoom:25%;" /> | <img src="说明/支付宝+qq/ali2.png" alt="支付宝" style="zoom:50%;" /> | <img src="说明/支付宝+qq/1.png" alt="支付" style="zoom:25%;" /> | <img src="说明/支付宝+qq/2.png" alt="支付" style="zoom: 25%;" /> | <img src="说明/支付宝+qq/3.png" alt="支付" style="zoom: 25%;" /> | <img src="说明/支付宝+qq/4.png" alt="支付" style="zoom: 25%;" /> |
-
-## **第三方授权登录流程图和支付流程**：qq
-
-| 待后续开发 |      |      |      |      |
-| ---------- | ---- | ---- | ---- | ---- |
 
 ### 迭代过程
 
@@ -441,4 +564,15 @@ promptTemplate.add("input", input);
 
 节日的时效性，某些花需要在特定的时间准时送达到特定场合，通过websocket提醒商家
 
-<img src="说明\resource\websocket.png" alt="websocket" style="zoom:50%;" />
+```mermaid
+sequenceDiagram
+    participant 用户
+    participant websocket
+    participant 商户
+
+    用户->>websocket:1 用户催单
+    websocket->>商户:2 发送用户请求
+   商户-->>websocket:3 商家回复收到
+    websocket-->>用户:4 发送商家请求
+```
+

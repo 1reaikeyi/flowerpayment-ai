@@ -14,8 +14,10 @@ import start.aop.OperationLogging;
 @RestController
 @RequestMapping("/user/shop")
 public class ShopController {
+
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping
     public Result read() {

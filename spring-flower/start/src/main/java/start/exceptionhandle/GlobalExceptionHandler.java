@@ -1,4 +1,4 @@
-package start.exceptionHandle;
+package start.exceptionhandle;
 
 import common.constant.ErrorConstant;
 import common.exception.BaseException;
