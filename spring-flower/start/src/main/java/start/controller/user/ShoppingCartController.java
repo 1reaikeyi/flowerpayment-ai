@@ -17,7 +17,7 @@
 //
 //@RestController
 //@RequestMapping("/user/shopping")
-//public class ShoppingCartController {
+//public class ShoppingController {
 //    @Autowired
 //    private StringRedisTemplate stringRedisTemplate;
 //

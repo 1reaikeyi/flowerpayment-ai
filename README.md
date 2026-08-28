@@ -2,10 +2,10 @@
   <h1>flowerpayment-ai 鲜花商店 + ai</h1>
   <h2>flowerpayment-ai：B2C 经营模式，一个花店卖家，多个买家。鲜花服务由店长、店员和客户组成。</h2>
   <h4>
-    一个由 Spring Boot 3 + Vue 3 的前后端分离架构，中间件使用 Redis + nginx，主业务为鲜花礼品订单和支付的全栈系统和
-    Spring AI（spring-ai-starter-model-openai + 阿里云），通过图像识别,让顾客了解郁金香等专业花名花材，推荐相似花束，并支持 LLM 生成个性化贺卡文案。
+    一个由 Spring Boot 3 + Vue 3 的前后端分离架构，中间件使用 Redis + nginx，主业务为鲜花礼品订单和支付的全栈系统和Spring AI（spring-ai-starter-model-openai 使用阿里云），通过图像识别,帮顾客推荐相似花束，并支持 LLM 生成贺卡文案，tts配音贺语。
   </h4>
 </div>
+
 
 
 <div align="center">
@@ -210,20 +210,15 @@ flowchart LR
 
 ```
 Q：为什么不用一个过滤器统一解析两种 Token？
-
 答：单过滤器会出现大量类型判断分支，后续扩展第三方登录、多角色账号时维护成本极高；拆分过滤器采用接力放行模式，每个过滤器只关心自己对应的账号类型，符合开闭原则。
-
 Q：滑动过期会不会产生大量无效 Redis Key？
-
 答：设置最大基础 TTL 兜底，即使用户长期不操作，缓存自动(expire:24小时)淘汰；登出接口主动删除对应 key，减少无效缓存堆积。
-
-Q: BCrypt 密码加密存储优点？
-
+Q: 放弃 MD5，使用BCrypt 密码加密存储优点？
 不使用 MD5/SHA256 不可逆哈希，BCrypt 自带随机盐值，抗彩虹表暴力破解，数据库永不存储明文密码。
 Q: 如何用户权限隔离？
- 1.	service
+ 1.	service的方法层拦截
  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
- 2. controller
+ 2. controller的url拦截
 .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_EMP")
 .requestMatchers("/user/**").hasAuthority("ROLE_USER")
 ```
@@ -299,7 +294,7 @@ index idx_festival_id (festival_id)、index idx_flower_id (flower_id).
 
 ---
 
-**缓存设计：因为flower模块 festival模块的价格存在因为节日，花的保质期限制处于动态变化不能直接返回旧数据，异步更新后，堵塞2s获取新数据**
+**缓存设计：因为flower模块 festival模块的价格存在因为节日，花的保质期限制处于动态变化不能直接返回旧数据，异步更新后拿到新数据再返回，返回新数据**
 
 ```mermaid
 %%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
