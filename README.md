@@ -155,48 +155,7 @@ flowchart LR
 
 | 启动步骤     | 1创建数据库并导入 `sql/` 目录脚本。 <br/>2 修改 `start/src/main/resources/application-dev.yml` 中数据库与 Redis 配置。<br/>3 `npm run dev ` 前端启动服务。 |
 | ------------ | ------------------------------------------------------------ |
-| **升级方向** | 使用nacos+gateway连接主业务+ai业务，灰度更新，分布式部署，故障转移等等。〈br/〉 使用nacos切换购物车存储，节假日使用redis，平时使用MySQL，购物车数据不重要，不需要强一致性互通 |
-
-仓库结构
-
-```
-flower/
-├── spring-flower/                 # 后端代码（Spring Boot 3 多模块）
-│   ├── common/                    # [共用] 公共模块（工具类、全局配置、异常等）
-│   ├── model/                     # [共用] 实体类与数据传输对象（Entity/DTO/VO）
-│   ├── mapper/                    # [共用] 数据访问层（MyBatis-Plus Mapper）
-│   ├── service/                   # [共用] 业务逻辑层（Service接口及实现）
-│   ├── start/                     # [main服务] 主业务启动模块
-│   └── ai/                        # [branch服务] AI扩展服务启动模块
-│
-├── vue-flower/                    # 前端管理端（Vue 3）
-│   ├── src/
-│   │   ├── api/                   # API接口封装（axios 请求）
-│   │   ├── views/                 # 页面视图组件
-│   │   ├── layout/                # 全局布局组件
-│   │   ├── router/                # 路由配置
-│   │   ├── stores/                # 状态管理（Pinia）
-│   │   └── utils/                 # 前端工具函数
-│   └── package.json               # 前端依赖配置
-│
-├── database-sql/                  # 数据库脚本目录
-│   ├── sql.txt                    # 数据库建表语句
-│   ├── sql插入数据.txt             # 数据库初始化数据SQL
-│   └── 数据库设计文档.md           # 数据库表结构设计与说明
-│
-└── 说明/                           # 项目说明与文档目录
-    ├── 原型功能/                   # 前端原型截图
-    ├── 支付宝+qq/                  # 第三方应用注册与支付集成说明
-    ├── 并发测试/                   # 使用 JMeter 进行并发测试的日志与结果
-    │   ├── flowr-category/         # Spring Cache 数据日志与压测结果
-    │   ├── flowr/                  # Redis 数据日志与压测结果
-    │   └── festival/               # Redis 数据日志与压测结果
-    ├── 运行日志.txt                 # 项目运行日志
-    ├── admin接口文档.md             # 管理员端接口详情
-    └── user接口文档.md              # 用户端接口详情
-```
-
-
+| **升级方向** | 使用nacos+gateway连接主业务+ai业务，灰度更新，分布式部署，故障转移等等。<br/> 使用nacos切换购物车存储，节假日使用redis，平时使用MySQL，购物车数据不重要，不需要强一致性互通 |
 
 # 前端说明
 
@@ -233,6 +192,8 @@ flower/
 
 
 # 后端说明
+
+├── common/                    # [共用] 公共模块（工具类、全局配置、异常等）<br/>├── model/                     # [共用] 实体类与数据传输对象（Entity/DTO/VO）<br/>├── mapper/                    # [共用] 数据访问层（MyBatis-Plus Mapper）<br/>├── service/                   # [共用] 业务逻辑层（Service接口及实现）<br/>├── start/                     # [main服务] 主业务启动模块<br/>└── ai/                        # [branch服务] AI扩展服务启动模块
 
 ## 一、店长、店员和客户多端端登录认证模块
 
@@ -467,8 +428,8 @@ flowchart TD
 ### user-shopping
 
 ```
-Q:放弃 MySQL 持久化，采用 Redis Hash 存储?
-购物车是临时会话数据，用户退出、下单完成即可清空，不需要持久化；Redis 读写 O (1)，支撑高并发增减购物车操作，集群多实例数据共享。
+Q:MySQL 持久化，还采用 Redis Hash 存储?
+节假日使用redis，平时使用MySQL，购物车数据不重要，不需要强一致性数据互通；Redis 读写 O (1)，支撑高并发增减购物车操作，集群多实例数据共享。
 Q:Redis Hash 结构
    外层 key：shopping_cart:{userId}
    内层 field：购物项唯一 id，value：商品完整信息 JSON（菜品 / 套餐 id、名称、数量、口味、金额）

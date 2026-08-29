@@ -57,7 +57,7 @@ public class ZhifubaoService {
         /**
          * 支付宝异步通知地址
          */
-        request.setNotifyUrl(zhifubaoProperties.getNotifyUrl());
+//        request.setNotifyUrl(zhifubaoProperties.getNotifyUrl());
         /**
          * 支付宝同步通知地址
          */
