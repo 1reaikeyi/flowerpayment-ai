@@ -51,8 +51,6 @@ public class AdminFestivalController {
         return Result.success(festivalVOList);
     }
 
-
-
     @OperationLogging(operation = OperationEnum.UPDATE)
     @PutMapping
     public Result updateByObject(@RequestBody FestivalDTO festivalDTO) {

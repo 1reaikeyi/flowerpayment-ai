@@ -25,7 +25,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/oauth")
-public class OAuthLoginController {
+public class ZhifubaoLoginController {
     // 新版沙箱授权域名：openauth-sandbox.dl.alipaydev.com
     private static final String AUTHORIZE_URL = "https://openauth-sandbox.dl.alipaydev.com/oauth2/publicAppAuthorize.htm";
 

@@ -24,7 +24,6 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 防小人，不防君子
      * @param e
      * @return
      */
@@ -33,35 +32,7 @@ public class GlobalExceptionHandler {
         log.error("未知异常: {}", e.getMessage(), e);  // 关键:打印堆栈,方便排查
         return Result.error("服务器开小差了,请稍后再试");
     }
-    /**
-     * 处理数据库唯一约束冲突（如重复用户名）
-     */
-    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public Result handleSQLIntegrityConstraintViolationException(DataIntegrityViolationException e) {
-        String message = e.getMessage();
-        if (message.contains("Duplicate entry")) {
-            String[] split = message.split("'");
-            String username = split[1];
-            String Message = username + ErrorConstant.USERNAME_EXIST;
-            return Result.error(Message);
-        } else {
-            return Result.error(ErrorConstant.ERROR + e.getMessage());
-        }
-    }
-    /**
-     *  ① 数据库层(JDBC):
-     *      MySQL 抛 java.sql.SQLIntegrityConstraintViolationException   (checked SQLException)
-     *
-     *   ② MyBatis 内核(mapper 执行器):
-     *      └─ ExceptionFactory.wrapException() 把 SQLException 包成
-     *          org.apache.ibatis.exceptions.PersistenceException        (RuntimeException)
-     *
-     *   ③ mybatis-spring(SqlSessionTemplate 代理):
-     *      └─ MybatisExceptionTranslator.translateExceptionIfPossible()
-     *           ├─ 解包出 cause = SQLException
-     *           └─ 交给 Spring 的 SQLErrorCodeSQLExceptionTranslator,按数据库错误码翻译
-     *                (MySQL 错误码 1062 = Duplicate entry) → org.springframework.dao.DuplicateKeyException
-     */
+
 
 
 }

@@ -3,7 +3,9 @@ package start.controller.user;
 import common.enums.OperationEnum;
 import common.result.Result;
 import model.dto.FlowerCategoryPageDTO;
+import model.vo.FestivalVO;
 import model.vo.FlowerCategoryVO;
+import model.vo.FlowerVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,5 +36,17 @@ public class FlowerCategoryController {
     public Result readPage( @Validated FlowerCategoryPageDTO flowerCategoryPageDTO) {
         List<FlowerCategoryVO> flowerCategoryVOList = flowerCategoryService.readPage(flowerCategoryPageDTO);
         return Result.success(flowerCategoryVOList);
+    }
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("/of/flower")
+    public Result readFlower(@RequestParam("id") Long categoryId) {
+        List<FlowerVO> flowerVOList = flowerCategoryService.readFlower(categoryId);
+        return Result.success(flowerVOList);
+    }
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("of/festival")
+    public Result getFestival(@RequestParam("id") Long categoryId) {
+        List<FestivalVO> festivalList = flowerCategoryService.readFestival(categoryId);
+        return Result.success(festivalList);
     }
 }
