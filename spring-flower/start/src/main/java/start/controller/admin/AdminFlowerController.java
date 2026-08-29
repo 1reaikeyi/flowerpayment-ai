@@ -65,15 +65,10 @@ public class AdminFlowerController {
         return Result.success(ids);
     }
     @OperationLogging(operation = OperationEnum.READ)
-    @GetMapping("/of/flowerDetail/object")
-    public Result readFlowerDetailObject(@RequestParam Long id) {
-        List<FlowerDetailVO> flowerDetailVOList = flowerService.readFestivalDetailObject(id);
+    @GetMapping("/of/flowerDetail")
+    public Result readFlowerDetail(@RequestParam Long id) {
+        List<FlowerDetailVO> flowerDetailVOList = flowerService.readFestivalDetail(id);
         return Result.success(flowerDetailVOList);
     }
-    @OperationLogging(operation = OperationEnum.READ)
-    @GetMapping("/of/flowerDetail/option")
-    public Result readFlowerDetailOption(@RequestParam Long id) {
-        List<FlowerDetailVO> flowerDetailVOList= flowerService.readFestivalDetailOption(id);
-        return Result.success(flowerDetailVOList);
-    }
+
 }

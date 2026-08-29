@@ -14,11 +14,13 @@ import common.exception.FlowerFailedException;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import mapper.FlowerDetailMapper;
 import mapper.FlowerMapper;
 import model.dto.FlowerDTO;
 import model.dto.FlowerPageDTO;
 import model.entity.FestivalDetail;
 import model.entity.Flower;
+import model.entity.FlowerDetail;
 import model.vo.FlowerDetailVO;
 import model.vo.FlowerVO;
 import org.redisson.api.RLock;
@@ -28,10 +30,12 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import redisdata.LogicData;
+import service.FlowerDetailService;
 import service.FlowerService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
@@ -46,6 +50,8 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private RedissonClient redissonClient;
+    @Autowired
+    private FlowerDetailService flowerDetailService;
 
     // 时间统一使用s结算
     private static final long FLASH_CACHE_TTL = 30L;
@@ -293,16 +299,6 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
     }
 
     @Override
-    public List<FlowerDetailVO> readFestivalDetailOption(Long id) {
-        return List.of();
-    }
-
-    @Override
-    public List<FlowerDetailVO> readFestivalDetailObject(Long id) {
-        return List.of();
-    }
-
-    @Override
     public List<FlowerVO> readPage(FlowerPageDTO flowerPageDTO) {
         LambdaQueryWrapper<Flower> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(flowerPageDTO.getName() != null, Flower::getName, flowerPageDTO.getName());
@@ -314,6 +310,14 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
         return voList;
     }
 
+    @Override
+    public List<FlowerDetailVO> readFestivalDetail(Long id) {
+        List<FlowerDetail> flowerDetailList = flowerDetailService.lambdaQuery().eq(FlowerDetail::getFlowerId, id).list();
+        List<FlowerDetailVO> flowerDetailVOList = flowerDetailList.stream()
+                .map(flowerDetail -> BeanUtil.copyProperties(flowerDetail, FlowerDetailVO.class))
+                .toList();
+        return flowerDetailVOList;
+    }
 
 
 

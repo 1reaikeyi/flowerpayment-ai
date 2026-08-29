@@ -1,4 +1,4 @@
-package start.controller.zhifubao.config;
+package service.zhifubao.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

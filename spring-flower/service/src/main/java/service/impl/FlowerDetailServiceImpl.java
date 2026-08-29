@@ -234,8 +234,8 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
         if (StrUtil.isNotBlank(flowerDetailDTO.getSpecObject())){
             updateWrapper.set(FlowerDetail::getSpecObject,flowerDetailDTO.getSpecObject());
         }
-        if (StrUtil.isNotBlank(flowerDetailDTO.getSpecOptions())){
-            updateWrapper.set(FlowerDetail::getSpecOptions,flowerDetailDTO.getSpecOptions());
+        if (StrUtil.isNotBlank(flowerDetailDTO.getSpecOption())){
+            updateWrapper.set(FlowerDetail::getSpecOption,flowerDetailDTO.getSpecOption());
         }
         super.update(updateWrapper);
         stringRedisTemplate.delete(RedisPrefixConstant.FLOWERDETAIL_PREFIX + flowerDetailDTO.getId());

@@ -51,6 +51,6 @@ public class FestivalDetail implements Serializable {
     /**
      * 用途标注：该花在礼盒中的用途场景
      */
-    @TableField("spec_options")
-    private String specOptions;
+    @TableField("spec_option")
+    private String specOption;
 }

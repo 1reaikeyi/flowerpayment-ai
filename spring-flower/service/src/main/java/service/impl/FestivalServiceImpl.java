@@ -29,10 +29,12 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import redisdata.LogicData;
+import service.FestivalDetailService;
 import service.FestivalService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
@@ -47,6 +49,8 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private RedissonClient redissonClient;
+    @Autowired
+    private FestivalDetailService festivalDetailService;
 
     // 时间统一使用s结算
     private static final long FLASH_CACHE_TTL = 30L;
@@ -310,13 +314,21 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
     }
 
     @Override
-    public List<FestivalDetailVO> readFestivalDetailObject(Long id) {
-        return List.of();
+    public List<FestivalDetailVO> readFestivalDetail(Long id) {
+        List<FestivalDetail> festivalList = festivalDetailService.lambdaQuery().eq(FestivalDetail::getFestivalId, id).list();
+        List<FestivalDetailVO> festivalDetailVOList = festivalList.stream()
+                .map(festivalDetailVO -> BeanUtil.toBean(festivalDetailVO, FestivalDetailVO.class) )
+                .toList();
+        return festivalDetailVOList;
     }
 
     @Override
-    public List<FestivalDetailVO> readFestivalDetailOption(Long id) {
-        return List.of();
+    public List<FestivalDetailVO> readFlower(Long id) {
+        List<FestivalDetail> festivalList = festivalDetailService.lambdaQuery().eq(FestivalDetail::getFlowerId, id).list();
+        List<FestivalDetailVO> festivalDetailVOList = festivalList.stream()
+                .map(festivalDetailVO -> BeanUtil.toBean(festivalDetailVO, FestivalDetailVO.class) )
+                .toList();
+        return festivalDetailVOList;
     }
 
 

@@ -29,7 +29,7 @@ public interface FlowerOrderService extends IService<FlowerOrder> {
 
     void update8(Long id);
 
-    void update1();
+    void update1(Long id);
 
-    void update2();
+    void update2(Long id);
 }

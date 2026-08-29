@@ -45,6 +45,6 @@ public class FlowerDetail implements Serializable {
     /**
      * 用途/场景，如：表白、生日、道歉
      */
-    @TableField("spec_options")
-    private String specOptions;
+    @TableField("spec_option")
+    private String specOption;
 }

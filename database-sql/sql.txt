@@ -134,9 +134,8 @@ create table flower_order
     status                  bigint default 1 not null comment '订单状态
 1用户下单2用户确认支付
 3商家制作
-4快递员取货5快递员开始配送6快递员已到达
-7系统自动确认
-8已取消：超时未付/商家拒单/用户取消/退款',
+4工作人员取货5工作人员开始配送6工作人员已到达
+7用户确认8已取消：超时未付/商家拒单/用户取消/退款',
     user_id                 bigint           not null comment '下单用户id',
     username                varchar(32)      null comment '用户名称',
     consignee               varchar(32)      null comment '收花人',

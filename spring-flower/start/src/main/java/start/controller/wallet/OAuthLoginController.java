@@ -1,4 +1,4 @@
-package start.controller.zhifubao;
+package start.controller.wallet;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import start.controller.zhifubao.config.ZhifubaoConfig;
+import service.zhifubao.config.ZhifubaoConfig;
+import service.zhifubao.config.ZhifubaoProperties;
 import jakarta.servlet.http.HttpServletResponse;
-import start.controller.zhifubao.config.ZhifubaoProperties;
 
 import java.io.IOException;
 import java.net.URLEncoder;

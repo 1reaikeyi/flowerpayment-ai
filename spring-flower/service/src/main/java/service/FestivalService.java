@@ -26,7 +26,7 @@ public interface FestivalService extends IService<Festival> {
 
     List<FestivalVO> readPage(FestivalPageDTO festivalPageDTO);
 
-    List<FestivalDetailVO> readFestivalDetailObject(Long id);
+    List<FestivalDetailVO> readFestivalDetail(Long id);
 
-    List<FestivalDetailVO> readFestivalDetailOption(Long id);
+    List<FestivalDetailVO> readFlower(Long id);
 }

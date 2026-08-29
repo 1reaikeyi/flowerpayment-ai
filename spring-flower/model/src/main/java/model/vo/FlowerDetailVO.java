@@ -31,5 +31,5 @@ public class FlowerDetailVO implements Serializable {
      * 用途/场景，如：表白、生日
      */
 
-    private String specOptions;
+    private String specOption;
 }

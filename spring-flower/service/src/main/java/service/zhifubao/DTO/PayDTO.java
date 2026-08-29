@@ -1,4 +1,4 @@
-package start.controller.zhifubao.DTO;
+package service.zhifubao.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,24 +8,18 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RefundDTO {
-
+public class PayDTO {
     /**
      * 商户订单号
      */
     private String outTradeNo;
-
     /**
-     * 退款金额（单位：元）
+     * 订单金额（单位：元）
      */
-    private BigDecimal refundAmount;
+    private BigDecimal totalAmount;
     /**
-     * 退款订单号
+     * 订单名称
      */
-    private String outRefundNo;
-    /**
-     * 退款原因
-     */
-    private String refundReason;
+    private String subject;
 
 }

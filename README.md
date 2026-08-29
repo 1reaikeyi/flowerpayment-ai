@@ -2,7 +2,7 @@
   <h1>flowerpayment-ai 鲜花商店 + ai</h1>
   <h2>flowerpayment-ai：B2C 经营模式，一个花店卖家，多个买家。鲜花服务由店长、店员和客户组成。</h2>
   <h4>
-    一个由 Spring Boot 3 + Vue 3 的前后端分离架构，中间件使用 Redis + nginx，主业务为鲜花礼品订单和支付的全栈系统和Spring AI（spring-ai-starter-model-openai 使用阿里云），通过图像识别,帮顾客推荐相似花束，并支持 LLM 生成贺卡文案，tts配音贺语。
+    一个由 Spring Boot 3 + Vue 3 的前后端分离架构，中间件使用 Redis + nginx，主业务为鲜花礼品订单和支付的全栈系统和Spring AI（使用阿里云的qwen），通过图像识别,帮顾客推荐相似花束，并支持 LLM 生成贺卡文案，tts配音贺语。
   </h4>
 </div>
 
@@ -156,7 +156,7 @@ flowchart LR
 | 启动步骤     | 1创建数据库并导入 `sql/` 目录脚本。 <br/>2 修改 `start/src/main/resources/application-dev.yml` 中数据库与 Redis 配置。<br/>3 `npm run dev ` 前端启动服务。 |
 | ------------ | ------------------------------------------------------------ |
 | 项目结构     | flower/<br/>├── spring-flower/            	 # 后端代码（Spring Boot 3 多模块）<br/>│   ├── common/                      # 公共模块<br/>│   ├── model/                          # 实体与数据传输对象<br/>│   ├── mapper/                       # 数据访问层（MyBatis-Plus）<br/>│   ├── service/                         # 业务逻辑模块<br/>│   ├── start/                            # 主业务启动模块<br/>│   └── ai/                           	  # AI服务启动模块<br/>│<br/>├── vue-flower/        					  # 前端管理端（Vue 3）<br/>│   ├── src/<br/>│   │   ├── api/                             # API接口封装（axios）<br/>│   │   ├── views/                        # 页面视图<br/>│   │   ├── layout/                       # 布局组件<br/>│   │   ├── router/                       # 路由配置(router)<br/>│   │   ├── stores/                       # 状态管理（Pinia）<br/>│   │   └── utils/                          # 工具函数<br/>│   └── package.json<br/>│<br/>├── database-sql/                       # 数据库脚本目录<br/>│   ├── sql.txt                               # 数据库create table<br/>│   ├── sql插入数据.txt                # 数据库初始化SQL<br/>│   └── 数据库设计文档.md        # 数据库设计说明<br/>│<br/>└── 说明/                                 # 项目说明文档<br/>    ├── 原型功能/                     # 前端原型截图<br/>    ├── 支付宝+qq/                  # 第三方应用注册和支付<br/>    ├── 并发测试                      # 使用jmeter测试<br/>    		├── flowr-category     使用springcache数据日志+结果<br/>    		├── flowr			          使用redis数据日志+结果<br/>    		├── festival		          使用redis数据日志+结果<br/>    ├── 运行日志.txt                      # 运行日志<br/>    ├── admin接口文档.md         #admin接口详情<br/>    └── user接口文档.md             #user接口详情<br/>共用：common -- model -- mapper -- service <br/>main服务：start<br/>branch服务：ai |
-| **升级方案** | 使用nacos+gateway连接主业务+ai业务(两个服务)，灰度更新，分布式部署，故障转移等等。待后续开发。 |
+| **升级方案** | 使用nacos+gateway连接主业务+ai业务(两个服务)，灰度更新，分布式部署，故障转移等等。 |
 
 # 前端说明
 
@@ -239,15 +239,12 @@ Q: 如何用户权限隔离？
 
    索引：type 普通索引，按类型快速筛选分类。
 
-3. Redis 缓存结构，flower-category的并发量小，选择spring-cache缓存
+3. Redis 缓存结构，成本低
 
    ```
    @CacheConfig(cacheNames = RedisPrefixConstant.CATEGORY_TYPE_PREFIX)
    ```
 
-   key：type（1/2），value：全量分类列表 JSON；
-
-   修改分类直接清空整个命名空间，规避无法枚举所有关联 key 的问题。
 
 ### 迭代过程
 排除冷启动的（第一次，第1000次)达到稳定，进行统计
@@ -305,7 +302,7 @@ flowchart TD
     C -->|解析失败 / data 为空| B
     C -->|成功| D{逻辑时间未过期?}
     D -->|是 未过期| E[剩余 TTL 不足则延长<br/>返回缓存数据]
-    D -->|否 已过期| F["异步线程池重建缓存加redisson + 查 DB + 写缓存<br>刷新缓存数据，期间堵塞2s获取新数据返回"]
+    D -->|否 已过期| F["异步线程池重建缓存加redisson + 查 DB + 写缓存<br>刷新缓存数据，获取新数据返回"]
     B --> R([返回结果])
     E --> R
     F --> R
@@ -411,7 +408,7 @@ flowchart TD
 ## 五、订单状态流转
 
 ```
-1 待支付 → 2 已付款 → 3 制作中 → 4 骑手待出发 → 5 配送中 → 6 已送达 → 7 已完成 
+1 用户下单 → 2 用户确认支付 → 3 商家制作 → 4 工作人员取货 → 5 工作人员开始配送 → 6 工作人员已到达 → 7 用户确认
         → 8 已取消（未接单退款、商家拒单、超时取消、退款）
 ```
 

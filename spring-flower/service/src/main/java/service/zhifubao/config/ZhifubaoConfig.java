@@ -1,4 +1,4 @@
-package start.controller.zhifubao.config;
+package service.zhifubao.config;
 
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;

@@ -68,15 +68,15 @@ public class AdminFestivalController {
     }
 
     @OperationLogging(operation = OperationEnum.READ)
-    @GetMapping("/of/festivalDetail/object")
-    public Result readFestivalDetailObject(@RequestParam Long id) {
-        List<FestivalDetailVO> festivalDetailVOList = festivalService.readFestivalDetailObject(id);
+    @GetMapping("/of/festivalDetail")
+    public Result readFestivalDetail(@RequestParam Long id) {
+        List<FestivalDetailVO> festivalDetailVOList = festivalService.readFestivalDetail(id);
         return Result.success(festivalDetailVOList);
     }
     @OperationLogging(operation = OperationEnum.READ)
-    @GetMapping("/of/festivalDetail/option")
-    public Result readFestivalDetailOption(@RequestParam Long id) {
-        List<FestivalDetailVO> festivalDetailVOList = festivalService.readFestivalDetailOption(id);
+    @GetMapping("/of/flower")
+    public Result readFlower(@RequestParam Long id) {
+        List<FestivalDetailVO> festivalDetailVOList = festivalService.readFlower(id);
         return Result.success(festivalDetailVOList);
     }
 }

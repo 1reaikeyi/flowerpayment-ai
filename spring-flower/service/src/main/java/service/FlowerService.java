@@ -25,7 +25,5 @@ public interface FlowerService extends IService<Flower> {
 
     FlowerDTO create(FlowerDTO flowerDTO);
 
-    List<FlowerDetailVO> readFestivalDetailOption(Long id);
-
-    List<FlowerDetailVO> readFestivalDetailObject(Long id);
+    List<FlowerDetailVO> readFestivalDetail(Long id);
 }

@@ -41,6 +41,6 @@ public class FestivalDetailVO implements Serializable {
      * 用途标注：该花在礼盒中的用途场景
      */
 
-    private String specOptions;
+    private String specOption;
 }
 

@@ -242,8 +242,8 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
         if (StrUtil.isNotBlank(festivalDetailDTO.getSpecObject())){
             updateWrapper.set(FestivalDetail::getSpecObject,festivalDetailDTO.getSpecObject());
         }
-        if (StrUtil.isNotBlank(festivalDetailDTO.getSpecOptions())){
-            updateWrapper.set(FestivalDetail::getSpecOptions,festivalDetailDTO.getSpecOptions());
+        if (StrUtil.isNotBlank(festivalDetailDTO.getSpecOption())){
+            updateWrapper.set(FestivalDetail::getSpecOption,festivalDetailDTO.getSpecOption());
         }
         super.update(updateWrapper);
         stringRedisTemplate.delete(RedisPrefixConstant.FESTIVALDETAIL_PREFIX + festivalDetailDTO.getId());
