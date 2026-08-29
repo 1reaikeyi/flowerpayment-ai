@@ -155,8 +155,48 @@ flowchart LR
 
 | 启动步骤     | 1创建数据库并导入 `sql/` 目录脚本。 <br/>2 修改 `start/src/main/resources/application-dev.yml` 中数据库与 Redis 配置。<br/>3 `npm run dev ` 前端启动服务。 |
 | ------------ | ------------------------------------------------------------ |
-| 项目结构     | flower/<br/>├── spring-flower/            	 # 后端代码（Spring Boot 3 多模块）<br/>│   ├── common/                      # 公共模块<br/>│   ├── model/                          # 实体与数据传输对象<br/>│   ├── mapper/                       # 数据访问层（MyBatis-Plus）<br/>│   ├── service/                         # 业务逻辑模块<br/>│   ├── start/                            # 主业务启动模块<br/>│   └── ai/                           	  # AI服务启动模块<br/>│<br/>├── vue-flower/        					  # 前端管理端（Vue 3）<br/>│   ├── src/<br/>│   │   ├── api/                             # API接口封装（axios）<br/>│   │   ├── views/                        # 页面视图<br/>│   │   ├── layout/                       # 布局组件<br/>│   │   ├── router/                       # 路由配置(router)<br/>│   │   ├── stores/                       # 状态管理（Pinia）<br/>│   │   └── utils/                          # 工具函数<br/>│   └── package.json<br/>│<br/>├── database-sql/                       # 数据库脚本目录<br/>│   ├── sql.txt                               # 数据库create table<br/>│   ├── sql插入数据.txt                # 数据库初始化SQL<br/>│   └── 数据库设计文档.md        # 数据库设计说明<br/>│<br/>└── 说明/                                 # 项目说明文档<br/>    ├── 原型功能/                     # 前端原型截图<br/>    ├── 支付宝+qq/                  # 第三方应用注册和支付<br/>    ├── 并发测试                      # 使用jmeter测试<br/>    		├── flowr-category     使用springcache数据日志+结果<br/>    		├── flowr			          使用redis数据日志+结果<br/>    		├── festival		          使用redis数据日志+结果<br/>    ├── 运行日志.txt                      # 运行日志<br/>    ├── admin接口文档.md         #admin接口详情<br/>    └── user接口文档.md             #user接口详情<br/>共用：common -- model -- mapper -- service <br/>main服务：start<br/>branch服务：ai |
 | **升级方向** | 使用nacos+gateway连接主业务+ai业务，灰度更新，分布式部署，故障转移等等。 |
+
+仓库结构
+
+```
+flower/
+├── spring-flower/                 # 后端代码（Spring Boot 3 多模块）
+│   ├── common/                    # [共用] 公共模块（工具类、全局配置、异常等）
+│   ├── model/                     # [共用] 实体类与数据传输对象（Entity/DTO/VO）
+│   ├── mapper/                    # [共用] 数据访问层（MyBatis-Plus Mapper）
+│   ├── service/                   # [共用] 业务逻辑层（Service接口及实现）
+│   ├── start/                     # [main服务] 主业务启动模块
+│   └── ai/                        # [branch服务] AI扩展服务启动模块
+│
+├── vue-flower/                    # 前端管理端（Vue 3）
+│   ├── src/
+│   │   ├── api/                   # API接口封装（axios 请求）
+│   │   ├── views/                 # 页面视图组件
+│   │   ├── layout/                # 全局布局组件
+│   │   ├── router/                # 路由配置
+│   │   ├── stores/                # 状态管理（Pinia）
+│   │   └── utils/                 # 前端工具函数
+│   └── package.json               # 前端依赖配置
+│
+├── database-sql/                  # 数据库脚本目录
+│   ├── sql.txt                    # 数据库建表语句
+│   ├── sql插入数据.txt             # 数据库初始化数据SQL
+│   └── 数据库设计文档.md           # 数据库表结构设计与说明
+│
+└── 说明/                           # 项目说明与文档目录
+    ├── 原型功能/                   # 前端原型截图
+    ├── 支付宝+qq/                  # 第三方应用注册与支付集成说明
+    ├── 并发测试/                   # 使用 JMeter 进行并发测试的日志与结果
+    │   ├── flowr-category/         # Spring Cache 数据日志与压测结果
+    │   ├── flowr/                  # Redis 数据日志与压测结果
+    │   └── festival/               # Redis 数据日志与压测结果
+    ├── 运行日志.txt                 # 项目运行日志
+    ├── admin接口文档.md             # 管理员端接口详情
+    └── user接口文档.md              # 用户端接口详情
+```
+
+
 
 # 前端说明
 

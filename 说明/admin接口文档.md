@@ -1218,19 +1218,11 @@ public Result handleException(Exception e) {
 
 ## 附录
 
-### 缓存策略说明
+**异常处理**
 
-本项目中多个 Controller 使用了以下缓存策略（以 Flower/Festival/FestivalDetail/FlowerDetail 为例）：
+spring-flower/start/src/main/java/start/exceptionhandle
 
-1. **逻辑过期缓存（LogicData）**：缓存数据包含 `data` 和 `expireTime`，Redis key 本身设置较长 TTL（86400s），通过 expireTime 控制逻辑过期
-2. **缓存穿透防护**：数据库查不到时也缓存 null 值（带随机 TTL）
-3. **Redis 宕机降级**：捕获 Redis 异常后直查数据库
-4. **Redisson 分布式锁**：在缓存重建时获取 `tryLock(10s)` 保护
-5. **缓存重建线程池**：独立 ThreadPoolExecutor（核心 2、最大 2），异步重建，阻塞时超时 3s
-6. **随机过期时间**：在基础 TTL 上 ±10% 随机，防止缓存雪崩
-7. **Spring Cache**：FlowerCategory 使用注解式缓存（@Cacheable/@CacheEvict），增删改后清空全量缓存
-
-### 认证方式
+**认证方式**
 
 - **员工登录**：POST `/admin/employee/login`，返回 JWT Token
 - **Token 存储**：Redis key 前缀 `emp:auth:` + 员工 ID
