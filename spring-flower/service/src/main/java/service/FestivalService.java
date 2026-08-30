@@ -7,6 +7,7 @@ import model.dto.FlowerPageDTO;
 import model.entity.Festival;
 import model.vo.FestivalDetailVO;
 import model.vo.FestivalVO;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  */
 
 public interface FestivalService extends IService<Festival> {
-
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     FestivalVO readCache(Long id);
 
     void updateCache(FestivalDTO festivalDTO);

@@ -2,9 +2,11 @@
   <h1>flowerpayment-ai 鲜花商店 + ai</h1>
   <h2>flowerpayment-ai：B2C 经营模式，一个花店卖家，多个买家。鲜花服务由店长、店员和客户组成。</h2>
   <h4>
-    一个由 Spring Boot 3 + Vue 3 的前后端分离架构，中间件使用 Redis + nginx，主业务为鲜花礼品订单和支付的全栈系统和Spring AI（使用阿里云的qwen），通过图像识别,帮顾客推荐相似花束，并支持 LLM 生成贺卡文案，tts配音贺语。
+    一个由 Spring Boot 3 + Vue 3 的前后端分离架构，中间件使用 Redis + nginx，主业务为鲜花礼品订单和支付的全栈系统和Spring AI（使用阿里云的qwen），通过图像识别推荐相似花束，支持LLM生成贺卡文案+tts配音贺语，rag连通购物车数据+ai带货下单。
   </h4>
 </div>
+
+
 
 
 
@@ -193,15 +195,21 @@ flowchart LR
 
 # 后端说明
 
-├── common/                    # [共用] 公共模块（工具类、全局配置、异常等）<br/>├── model/                     # [共用] 实体类与数据传输对象（Entity/DTO/VO）<br/>├── mapper/                    # [共用] 数据访问层（MyBatis-Plus Mapper）<br/>├── service/                   # [共用] 业务逻辑层（Service接口及实现）<br/>├── start/                     # [main服务] 主业务启动模块<br/>└── ai/                        # [branch服务] AI扩展服务启动模块
+├── common/              # [共用] 公共模块（工具类、全局配置、异常等）
+
+├── model/                  # [共用] 实体类与数据传输对象（Entity/DTO/VO）
+
+├── mapper/               # [共用] 数据访问层（MyBatis-Plus Mapper）
+
+├── service/                 # [共用] 业务逻辑层（Service接口及实现）
+
+├── start/                     # [main服务] 主业务启动模块
+
+└── ai/                          # [branch服务] AI扩展服务启动模块
 
 ## 一、店长、店员和客户多端端登录认证模块
 
 ### 迭代过程
-
-1. 早期版本：单过滤器 if-else 区分账号类型，新增 QQ / 支付宝第三方登录后逻辑爆炸；优化为过滤器链接力模式，解耦多端登录逻辑。
-2. 早期只校验 JWT 签名，支持伪造永久 Token；新增 Redis 缓存校验，实现登录状态后端可控。
-3. 最初使用固定 TTL，活跃用户频繁掉线；改造为滑动过期，留存提升明显。
 
 ```
 Q：为什么不用一个过滤器统一解析两种 Token？
@@ -255,7 +263,7 @@ Q: 如何用户权限隔离？
 | 有缓存的情况是全程有 redis 的稳定情况                        | 说明/并发测试/flower-category-运行日志-缓存日志.txt          |
 | 计算说明：性能提升百分比 =(无缓存值‑有缓存值)/ 无缓存值 ×100%；吞吐量提升百分比 =(有缓存‑无缓存)/ 无缓存 ×100%。 | **响应时间**：开启缓存后接口全量响应指标得到极大优化。无缓存场景平均响应时间 600ms，开启缓存后平均响应仅 10ms，平均响应性能提升**98.3%**。90%、95%、99% 分位耗时下降尤为明显；无缓存场景高百分位接近 1800ms，开启缓存 99 分位仅 98ms。无缓存时需要完整执行业务逻辑、访问数据库；命中缓存直接读取缓存数据，极大降低接口处理时延。 **吞吐量**：无缓存吞吐量 21.8 请求 / 秒；开启缓存吞吐量提升至 29.7 请求 / 秒，吞吐量提升**36.2%**，系统整体并发处理能力增强。 **网络流量**：接收速率从 43.46KB/sec 提升至 59.09KB/sec，发送速率从 7.93KB/sec 提升至 10.78KB/sec，单位时间网络数据处理能力随吞吐量同步上涨。 |
 
-## 三、flower模块，festival模块
+## 三、flower，festival，flower-detial，festival-detail模块
 
 1. 鲜花单品模块
 
@@ -320,7 +328,27 @@ flowchart TD
     F --> H([返回 flower])
 ```
 
+**flower-detial，festival-detail使用逻辑过期处理**
 
+```mermaid
+%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
+flowchart TD
+    S([查询]) --> A[直接查询Redis]
+    A -->|redis宕机| B[降级查 DB]
+    A -->|正常| C{value为空?}
+    C -->|是| D[加锁查 DB + 写缓存]
+    C -->|否| E[解析 LogicData]
+    D --> R[返回结果]
+    E -->|json解析失败?| D
+    E -->|成功| F{data 为空?}
+    F -->|返回null,DB防穿透| R
+    F -->|否| G[保存旧数据 old]
+    G --> H{已逻辑过期?}
+    H -->|否| I[返回缓存数据]
+    H -->|是| J[异步提交重建]
+    J --> K[立即返回 old]
+    J --> L[后台线程查 DB 写缓存]
+```
 
 ### 迭代过程
 
@@ -359,55 +387,15 @@ flowchart TD
 | 有redis缓存                   | 说明/并发测试/festival-运行日志-缓存.txt                     |
 | 对比                          | 无缓存场景：接口平均响应时间 761ms，90% 请求响应时间 1595ms，95% 请求响应时间 1629ms，99% 请求响应时间 1746ms，吞吐量 34.3 次每秒，错误率 0%。 开启缓存场景：接口平均响应时间 136ms，90% 请求响应时间 327ms，95% 请求响应时间 346ms，99% 请求响应时间 423ms，吞吐量 150.6 次每秒，错误率 0%。 |
 
-------
-
-##  四、flower-detial模块，festival-detail模块
-
-**缓存设计**
-
-```mermaid
-%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
-flowchart TD
-    S([查询]) --> A[直接查询Redis]
-    A -->|redis宕机| B[降级查 DB]
-    A -->|正常| C{value为空?}
-    C -->|是| D[加锁查 DB + 写缓存]
-    C -->|否| E[解析 LogicData]
-    D --> R[返回结果]
-    E -->|json解析失败?| D
-    E -->|成功| F{data 为空?}
-    F -->|返回null,DB防穿透| R
-    F -->|否| G[保存旧数据 old]
-    G --> H{已逻辑过期?}
-    H -->|否| I[返回缓存数据]
-    H -->|是| J[异步提交重建]
-    J --> K[立即返回 old]
-    J --> L[后台线程查 DB 写缓存]
-```
-
-**DB查询**
-
-```mermaid
-%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
-flowchart TD
-    S([getMysql 开始]) --> A[super.getById id 查数据库]
-    A --> B{查询用途或者送人对象 是否为 null?}
-    B -->|是 缓存穿透| C[构造空 LogicData data=null 设逻辑过期时间]
-    B -->|否 有数据| D[构造 LogicData data=flower 设逻辑过期时间]
-    C --> E[SET Redis 空值缓存 TTL=REDIS_EXIST_TTL]
-    D --> F[SET Redis 正常缓存 TTL=REDIS_EXIST_TTL]
-    E --> G([返回 null])
-    F --> H([返回 flower])
-```
-
-## 五、订单状态流转
+## 四、订单状态流转
 
 第三方授权登录流程图和支付流程：支付宝
 
-沙箱网关固定为：https://openapi-sandbox.dl.alipaydev.com/gateway.do
-生产网关一般为：https://openapi.alipay.com/gateway.do
+`沙箱网关固定为：https://openapi-sandbox.dl.alipaydev.com/gateway.do`
 
-|                          支付宝授权                          |                           授权成功                           | 集成到订单                                                   | 支付过程                                                     |                           同步支付                           |                           异步检验                           |
+`生产网关一般为：https://openapi.alipay.com/gateway.do`
+
+|                          支付宝授权                          |                           授权成功                           | 集成到订单                                                   | 支付过程                                                     |                           同步支付                           |                           异步回调                           |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | ------------------------------------------------------------ | ------------------------------------------------------------ | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | <img src="说明/支付宝+qq/ali1.png" alt="支付宝" style="zoom:25%;" /> | <img src="说明/支付宝+qq/ali2.png" alt="支付宝" style="zoom:50%;" /> | <img src="说明/支付宝+qq/1.png" alt="支付" style="zoom:25%;" /> | <img src="说明/支付宝+qq/2.png" alt="支付" style="zoom: 25%;" /> | <img src="说明/支付宝+qq/3.png" alt="支付" style="zoom: 25%;" /> | <img src="说明/支付宝+qq/4.png" alt="支付" style="zoom: 25%;" /> |
 
@@ -416,7 +404,7 @@ flowchart TD
         → 8 已取消（未接单退款、商家拒单、超时取消、退款）
 ```
 
-## 六、user模块
+## 五、user模块
 
 ### user-address
 
@@ -429,7 +417,7 @@ flowchart TD
 
 ```
 Q:MySQL 持久化，还采用 Redis Hash 存储?
-节假日使用redis，平时使用MySQL，购物车数据不重要，不需要强一致性数据互通；Redis 读写 O (1)，支撑高并发增减购物车操作，集群多实例数据共享。
+节假日使用redis，平时使用MySQL，单一商店的购物车数据不重要，不需要强一致性数据互通。
 Q:Redis Hash 结构
    外层 key：shopping_cart:{userId}
    内层 field：购物项唯一 id，value：商品完整信息 JSON（菜品 / 套餐 id、名称、数量、口味、金额）
@@ -446,9 +434,27 @@ Q:Redis Hash 结构
 | 高频查询店铺营业状态 | 每个用户进店、下单前都校验状态，并发访问频繁 | Redis 单 key 存储状态，查询无数据库 IO  |  相比 MySQL 查询延迟大幅降低，减轻数据库压力   |
 |    集群状态不同步    |      单实例内存变量存储，多节点状态独立      | 统一 Redis 集中存储店铺状态，全实例共享 | 分布式环境全局状态标准存储方案，一致性实时保障 |
 
-## 七、文件管理，数据分析，aop日志
+### websocket
 
-1 使用excel分许
+节日的时效性，某些花需要在特定的时间准时送达到特定场合，通过websocket提醒商家
+
+```mermaid
+sequenceDiagram
+    participant 用户
+    participant websocket
+    participant 商户
+
+    用户->>websocket:1 用户催单
+    websocket->>商户:2 发送用户请求
+   商户-->>websocket:3 商家回复收到
+    websocket-->>用户:4 发送商家请求
+```
+
+
+
+## 六、文件管理，数据分析，aop日志
+
+1 使用excel分析
 
 POST /report/excel/read EasyExcel流式逐行读取解析，不加载全表到内存
 GET /report/excel/download 流式写入Response输出流，边写边返回，不占用堆内存
@@ -456,8 +462,6 @@ GET /report/excel/download 流式写入Response输出流，边写边返回，不
 2 折线图，条形图，块图分析
 
 3 文件上传
-本地：写入项目image目录，返回本地访问路径
-OSS：上传云端，返回CDN加速访问URL
 
 1. 双存储环境隔离
    使用硬盘存储，对于内部的用户数据，敏感数据和重要文档。切换 OSS 加速、多实例共享文件、无限扩容，存储公共数据。
@@ -470,9 +474,9 @@ OSS：上传云端，返回CDN加速访问URL
 | :------------------: | :--------------------------------: | :------------------------------------------------: | :---------------------------------------------------------: |
 | 日志逻辑侵入业务代码 | 每个 CRUD 方法手动写日志，代码冗余 | AOP 切面统一拦截，注解标记即可自动记录，无业务侵入 | 符合 AOP 面向切面设计思想，日志属于横向通用能力，与业务解耦 |
 
-## 八、AI模块
+## 七、AI模块
 
-1 拍照识别鲜花，帮助消费者识别专有的鲜花名,  帮助购买。
+### 拍照识别鲜花，帮助消费者识别专业的鲜花名,  帮助购买。
 
 > 对面买的那多花？不知这个，就是那朵红色花？
 >
@@ -496,11 +500,36 @@ flowchart TD
 
         subgraph GRAPH ["StateGraph 工作流 (异步节点)"]
             direction TB
-            node1["node1 · VisualNode (异步+流式持续输出，降低堆内存，最长时间10s等待)<br/>"]
+            
+            subgraph VGROUP ["node1 · VisualNode (异步+流式持续输出，最长10s)"]
+                direction TB
+                V1["① 读取 Base64 图像"]
+                V2["② 封装 Image Media 多模态对象"]
+                V3["③ 调用独立 visualChatClient 识别图像内容"]
+                V4["④ 识别文本 → visualResult 写入 state"]
+                V1 --> V2 --> V3 --> V4
+            end
+            
             visualResult["visualResult"]
-            node2["node2 · ToolNode (异步+流式持续输出，降低堆内存，最长时间30s等待)<br/>"]
+            
+            subgraph TGROUP ["node2 · ToolNode (异步+流式持续输出，最长30s)"]
+                direction TB
+                INPUT1["读取 state.visualResult"]
+                INPUT2["获取 question<br/>prompt 拼接模糊查询"]
+                T1["根据 prompt 模板拼接执行"]
+                T2["调用业务 @Tool 工具查询<br/>检索数据 → toolResult 写入 state"]
+                INPUT1 --> INPUT2 --> T1 --> T2
+            end
+            
             toolResult["toolResult"]
             ST[("全局 State<br/>{visualResult, toolResult}")]
+            
+            %% 节点间数据流连接
+            VGROUP --> visualResult
+            visualResult --> TGROUP
+            visualResult --> ST
+            TGROUP --> toolResult
+            toolResult --> ST
         end
 
         S5["5. 收集 graph 全部 state 数据<br/>(识别结果 + 匹配商品) 一起返回"]
@@ -508,65 +537,19 @@ flowchart TD
 
     End(("前端接收统一响应"))
 
+    %% 主流程串联
     Start --> C --> S1 --> S2 --> S3
-    S3 --> node1 --> ST
-    node1 --> visualResult --> node2
-    node2 --> toolResult -->ST
+    S3 --> VGROUP
     ST --> S5 --> End
 ```
 
-节点
-
-```mermaid
-%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
-flowchart TD
-    subgraph NODELOGIC ["【单节点执行逻辑】"]
-        direction TB
-
-        subgraph VGROUP ["VisualNode · 视觉识别节点"]
-            direction TB
-            V1["① 读取 Base64 图像"]
-            V2["② 封装 Image Media 多模态对象"]
-            V3["③ 调用独立 visualChatClient 识别图像内容"]
-            V4["④ 识别文本 → visualResult 写入 state"]
-            V1 --> V2 --> V3 --> V4
-        end
-
-        subgraph TGROUP ["ToolNode · 工具查询节点"]
-            direction TB
-            INPUT1["读取 state.visualResult"]
-            INPUT2["获取question<br>prompt拼接模糊查询"]
-            T1["根据prompt模板拼接执行"]
-            T2["调用业务 @Tool 工具查询"]
-            T2["检索数据 → toolResult 写入 state"]
-            INPUT1 --> INPUT2 --> T1 --> T2
-        end
-
-        
-    end
-```
-
-2 LLM 生成个性化贺卡文案
+### 支持LLM生成贺卡文案+tts配音贺语
 
 ```
-思路：使用提示词模板，提前写好提示词使用，匹配个性化贺卡文案
+思路：使用提示词模板，提前写好提示词使用，匹配个性化贺卡文案，tts连接文字转语音模型，匹配个性化贺语
 PromptTemplate promptTemplate = new PromptTemplate("根据信息{input} 进行文案写作，----等等");
 promptTemplate.add("input", input);
 ```
 
-## 九、websocket
-
-节日的时效性，某些花需要在特定的时间准时送达到特定场合，通过websocket提醒商家
-
-```mermaid
-sequenceDiagram
-    participant 用户
-    participant websocket
-    participant 商户
-
-    用户->>websocket:1 用户催单
-    websocket->>商户:2 发送用户请求
-   商户-->>websocket:3 商家回复收到
-    websocket-->>用户:4 发送商家请求
-```
+### rag连通购物车数据,ai带货下单
 

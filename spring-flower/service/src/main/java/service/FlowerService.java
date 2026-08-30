@@ -6,6 +6,7 @@ import model.dto.FlowerPageDTO;
 import model.entity.Flower;
 import model.vo.FlowerDetailVO;
 import model.vo.FlowerVO;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 
 public interface FlowerService extends IService<Flower> {
 
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     FlowerVO readCache(Long id);
 
     void updateCache(FlowerDTO flowerDTO);

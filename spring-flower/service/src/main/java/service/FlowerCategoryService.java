@@ -7,6 +7,7 @@ import model.entity.FlowerCategory;
 import model.vo.FestivalVO;
 import model.vo.FlowerCategoryVO;
 import model.vo.FlowerVO;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -18,8 +19,9 @@ public interface FlowerCategoryService extends IService<FlowerCategory> {
 
     FlowerCategoryDTO create(FlowerCategoryDTO flowerCategoryDTO);
 
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FlowerCategoryVO> readByType(Long type);
-
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FlowerCategoryVO> readPage(FlowerCategoryPageDTO flowerCategoryPageDTO);
 
     void updateByObject(FlowerCategoryDTO categoryDTO);

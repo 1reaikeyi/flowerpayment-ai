@@ -7,6 +7,7 @@ import model.vo.FestivalVO;
 import model.vo.FlowerCategoryVO;
 import model.vo.FlowerVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,12 +38,16 @@ public class FlowerCategoryController {
         List<FlowerCategoryVO> flowerCategoryVOList = flowerCategoryService.readPage(flowerCategoryPageDTO);
         return Result.success(flowerCategoryVOList);
     }
+
+
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/of/flower")
     public Result readFlower(@RequestParam("id") Long categoryId) {
         List<FlowerVO> flowerVOList = flowerCategoryService.readFlower(categoryId);
         return Result.success(flowerVOList);
     }
+
+
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("of/festival")
     public Result getFestival(@RequestParam("id") Long categoryId) {
