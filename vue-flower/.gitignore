@@ -1,0 +1,51 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 核心：忽略所有 npm 下载的依赖包（实现去除npm包）
+node_modules/
+
+# 系统文件
+.DS_Store
+
+# 构建输出
+dist/
+dist-ssr/
+coverage/
+*.local
+
+# 包管理器缓存
+.npm/
+.yarn/
+.pnpm-store/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# TS 编译缓存
+*.tsbuildinfo
+
+# Eslint 缓存
+.eslintcache
+
+# Cypress
+/cypress/videos/
+/cypress/screenshots/
+
+# Vitest
+__screenshots__/
+
+# Vite
+*.timestamp-*-*.mjs
