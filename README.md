@@ -425,7 +425,7 @@ Q:MySQL 持久化，还采用 Redis Hash 存储?
 节假日使用redis，平时使用MySQL。
 Q:Redis Hash 结构
    外层 key：shopping_cart:{userId}
-   内层 field：购物项唯一 id，value：商品完整信息 JSON（菜品 / 套餐 id、名称、数量、口味、金额）
+   内层 field：购物项唯一 id，value：商品完整信息 JSON
    优势：单用户购物车聚合存储，增删单项无需操作整条数据，性能优于 String 序列化列表。。
 
 ```

@@ -143,7 +143,6 @@ const searchForm = reactive({
   name: ''
 })
 
-// 分页参数：对齐后端 DishPageDTO 字段 page / pageSize
 const pagination = reactive({
   page: 1,
   pageSize: 10
@@ -154,7 +153,6 @@ const tableData = ref([])
 const total = ref(0)
 const loading = ref(false)
 
-// 分类名反查表：categoryId -> name（套餐分类用 type=2）
 const categoryNameMap = ref({})
 
 // 启停切换中按钮 loading 的行 id
@@ -180,7 +178,6 @@ const resolveImageUrl = (image) => {
   return `/api/local?fileName=${encodeURIComponent(image)}`
 }
 
-// 拉取套餐分类（type=2），构建 categoryId -> name 反查表
 const fetchCategoryMap = async () => {
   try {
     const res = await getCategoryByType(2)
@@ -191,11 +188,10 @@ const fetchCategoryMap = async () => {
     })
     categoryNameMap.value = map
   } catch (e) {
-    console.error('获取套餐分类失败:', e)
+    console.error('获取分类失败:', e)
   }
 }
 
-// 拉取套餐分页列表
 const fetchList = async () => {
   loading.value = true
   try {
@@ -235,12 +231,10 @@ const handleSizeChange = () => {
   fetchList()
 }
 
-// 新增套餐：跳 /admin/festival/add
 const handleAdd = () => {
   router.push('/admin/festival/add')
 }
 
-// 编辑套餐：带 query.id 跳新增/编辑共用页
 const handleEdit = (row) => {
   router.push({ path: '/admin/festival/add', query: { id: row.id } })
 }
@@ -340,7 +334,6 @@ $primary-dark: $sys-indigo;                  // 主色深色
   }
 }
 
-/* 套餐列表 */
 .festival-table {
   width: 100%;
   margin-bottom: 20px;

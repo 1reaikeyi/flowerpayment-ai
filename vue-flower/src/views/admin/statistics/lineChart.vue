@@ -1,10 +1,9 @@
 <template>
   <div class="dashboard-container">
-    <!-- ECharts 折线图卡片：菜品销量趋势 -->
     <div class="chart-card">
       <header class="chart-header">
         <div class="header-title">
-          <h3>菜品销量趋势</h3>
+          <h3>销量趋势</h3>
           <p>动态数据加载与实时更新</p>
         </div>
         <span class="status-badge">在线</span>
@@ -29,7 +28,6 @@ import * as echarts from 'echarts'
 // 按任务要求使用的 API 函数（禁止改名）
 import { getDishScore } from '@/api/admin/statistics.js'
 
-// flowerScore: List<DishStatisticsVO> { flowerId, name, number, amount } - 折线图数据源
 const flowerScore = ref([])
 
 // ===== 图表 DOM ref 与实例 =====
@@ -42,7 +40,6 @@ const autoUpdate = ref(false)
 const updateInterval = 5000 // 5 秒刷新一次
 
 // ===== 数据获取 =====
-// 拉取菜品销量：折线图数据源
 const fetchData = async () => {
   try {
     const res = await getDishScore()
@@ -69,12 +66,10 @@ const toggleAutoUpdate = () => {
 }
 
 // ===== ECharts 渲染 =====
-// 折线图：菜品销量分布（参考折线.html 风格 - 平滑曲线 + 渐变区域填充）
 const renderChart = () => {
   if (!chartRef.value) return
   if (!chart) chart = echarts.init(chartRef.value)
 
-  // 取菜品名作为 X 轴，销量作为 Y 值
   const names = flowerScore.value.map(d => d.name || '未知菜品')
   const numbers = flowerScore.value.map(d => Number(d.number) || 0)
 

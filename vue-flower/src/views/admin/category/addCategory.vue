@@ -97,7 +97,6 @@ const typeOptions = [
 // 是否为编辑模式：query.id 存在即编辑
 const isEdit = computed(() => !!route.query.id)
 
-// 表单数据：字段与后端 RestaurantCategoryDTO 对齐（id/type/name/sort/status）
 const formData = reactive({
   id: null,
   type: 1,

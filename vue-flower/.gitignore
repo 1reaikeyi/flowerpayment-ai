@@ -12,6 +12,8 @@ node_modules/
 
 # 系统文件
 .DS_Store
+Thumbs.db
+Desktop.ini
 
 # 构建输出
 dist/
@@ -25,8 +27,7 @@ coverage/
 .pnpm-store/
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
+.vscode/
 .idea/
 *.suo
 *.ntvs*

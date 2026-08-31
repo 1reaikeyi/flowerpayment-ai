@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'userPlan'
+  name: 'user'
 }
 </script>
 

@@ -20,11 +20,11 @@ spring:
         config: |
           singleServerConfig:
             # Redis 连接地址（必须带 redis:// 协议前缀）
-            address: "redis://${restaurant.redis.host}:${restaurant.redis.port}"
+            address: "redis://${flower.redis.host}:${flower.redis.port}"
             # 数据库索引
-            database: ${restaurant.redis.database}
+            database: ${flower.redis.database}
             # 访问密码
-            password: ${restaurant.redis.password}
+            password: ${flower.redis.password}
             # 连接池大小
             connectionPoolSize: 10
             # 最小空闲连接数

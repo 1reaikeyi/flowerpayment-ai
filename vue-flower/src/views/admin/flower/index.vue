@@ -182,7 +182,7 @@ const resolveImageUrl = (image) => {
   return `/api/local?fileName=${encodeURIComponent(image)}`
 }
 
-// 拉取菜品分类（type=1），构建 categoryId -> name 反查表
+
 const fetchCategoryMap = async () => {
   try {
     const res = await getCategoryByType(1)
@@ -197,7 +197,7 @@ const fetchCategoryMap = async () => {
   }
 }
 
-// 拉取菜品分页列表
+
 const fetchList = async () => {
   loading.value = true
   try {
@@ -238,12 +238,10 @@ const handleSizeChange = () => {
   fetchList()
 }
 
-// 新增菜品：跳 /admin/flower/add
 const handleAdd = () => {
   router.push('/admin/flower/add')
 }
 
-// 编辑菜品：带 query.id 跳新增/编辑共用页
 const handleEdit = (row) => {
   router.push({ path: '/admin/flower/add', query: { id: row.id } })
 }
@@ -344,7 +342,6 @@ $primary-dark: $sys-indigo;                  // 主色深色
   }
 }
 
-/* 菜品列表 */
 .flower-table {
   width: 100%;
   margin-bottom: 20px;

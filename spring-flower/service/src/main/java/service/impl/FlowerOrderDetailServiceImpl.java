@@ -28,6 +28,7 @@ public class FlowerOrderDetailServiceImpl extends ServiceImpl<FlowerOrderDetailM
     @Autowired
     private FestivalService festivalService;
 
+    private static final int TOP_NUMBER = 7;
     @Override
     public List<StatisticsVO> flowerSale() {
         List<FlowerOrderDetail> details = super.lambdaQuery()
@@ -81,27 +82,17 @@ public class FlowerOrderDetailServiceImpl extends ServiceImpl<FlowerOrderDetailM
 
     @Override
     public List<TopStatisticsVO> top1() {
-//        List<OrderDetail> details = orderDetailService.lambdaQuery()
-//                .isNotNull(OrderDetail::getDishId)
-//                .list();
-//        // 按 dish_id 分组累计销量
-//        Map<Long, Long> numberMap = new HashMap<>();
-//        for (OrderDetail d : details) {
-//            numberMap.merge(d.getDishId(), d.getNumber(), Long::sum);
-//        }
-//        // 降序排序取前
-//        List<TopStatisticsVO> dishStatisticsVOList = new ArrayList<>();
-//        numberMap.entrySet().stream()
-//                .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
-//                .limit(TOP_NUMBER)
-//                .forEach(e -> {
-//                    TopStatisticsVO dishStatistics = new TopStatisticsVO();
-//                    Dish dish = dishService.readCache(e.getKey());
-//                    dishStatistics.setId(e.getKey());
-//                    dishStatistics.setName(dish != null ? dish.getName() : null);
-//                    dishStatistics.setNumber(e.getValue());
-//                    dishStatisticsVOList.add(dishStatistics);
-//                });
+        List<FlowerOrderDetail> details = super.lambdaQuery()
+                .isNotNull(FlowerOrderDetail::getFlowerId)
+                .list();
+
+        Map<Long, Long> numberMap = new HashMap<>();
+        for (FlowerOrderDetail d : details) {
+            numberMap.merge(d.getFlowerId(), d.getNumber(), Long::sum);
+        }
+        // 降序排序取前
+        List<TopStatisticsVO> topStatisticsVOList = new ArrayList<>();
+
         return null;
     }
 

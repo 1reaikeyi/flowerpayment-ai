@@ -9,11 +9,11 @@ redisson:
           - "redis://192.168.80.129:27001"
           - "redis://192.168.80.130:27002"
         # Redis 主/从节点访问密码
-        password: "${weibo.redis.password}"
+        password: "${flower.redis.password}"
         # 哨兵自身密码（本项目所有密码相同，复用同一个）
-        sentinelPassword: "${weibo.redis.password}"
+        sentinelPassword: "${flower.redis.password}"
         # 数据库索引（哨兵模式支持 0~15）
-        database: ${weibo.redis.database}
+        database: ${flower.redis.database}
         # 读模式：MASTER_SLAVE 表示主从都可读（默认 SLAVE 只读从节点）
         readMode: "MASTER_SLAVE"
         # 主节点连接池大小

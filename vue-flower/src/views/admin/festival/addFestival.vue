@@ -221,8 +221,6 @@ const fetchFestivalDetail = async () => {
   }
 }
 
-// ========== 以下"套餐菜品弹窗"相关逻辑已删除（后端 FestivalDTO 无 setmealDishes 字段） ==========
-
 // 统一图片 URL 解析策略
 const resolveImageUrl = (image) => {
   if (!image) return ''
@@ -375,7 +373,6 @@ $primary-dark: $sys-indigo;                  // 主色深色
   }
 }
 
-/* 套餐菜品样式 */
 .flower-box {
   width: 100%;
 }
@@ -469,7 +466,6 @@ $primary-dark: $sys-indigo;                  // 主色深色
   }
 }
 
-/* 添加菜品弹窗样式 */
 .add-flower-dialog {
   .search-box {
     margin-bottom: 15px;

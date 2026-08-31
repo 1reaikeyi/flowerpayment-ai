@@ -219,7 +219,7 @@ const fetchFlowerDetail = async () => {
   }
 }
 
-// ========== 以下口味相关方法已删除（后端 FlowerDTO 无 flavors 字段） ==========
+
 
 // 统一图片 URL 解析策略（本地文件优先，兼容多来源）
 // 数据库 image 字段可能有多种形态：
@@ -383,7 +383,7 @@ $primary-dark: $sys-indigo;                  // 主色深色
   }
 }
 
-/* 口味配置样式 */
+
 .flavor-box {
   width: 100%;
 }

@@ -46,7 +46,6 @@
       :header-cell-style="{ background: 'rgba(10, 132, 255, 0.1)', color: '#0A84FF', fontWeight: 'bold' }"
     >
       <el-table-column prop="id" label="ID" width="100" align="center" />
-      <!-- 分类类型：el-tag 展示「菜品分类/套餐分类」 -->
       <el-table-column label="分类类型" width="140" align="center">
         <template #default="{ row }">
           <el-tag :type="getTypeTag(row.type).type">
@@ -221,7 +220,6 @@ const handleEdit = (row) => {
   })
 }
 
-// 启停切换：以当前行数据为基础翻转 status，传完整 RestaurantCategoryDTO
 // 注意：后端分页仅返回 status=1，禁用后刷新列表该行将不再显示
 const handleStatusChange = async (row) => {
   const newStatus = row.status === 1 ? 0 : 1

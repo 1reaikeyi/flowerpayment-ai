@@ -1,10 +1,10 @@
 <template>
   <div class="dashboard-container">
-    <!-- ECharts 柱状图卡片：套餐销量排行 -->
+    <!-- ECharts 柱状图卡片：套量排行 -->
     <div class="chart-card">
       <header class="chart-header">
         <div class="header-title">
-          <h3>套餐销量排行</h3>
+          <h3>销量排行</h3>
           <p>Axios 动态数据加载</p>
         </div>
         <div class="data-status">{{ dataStatus }}</div>
@@ -29,7 +29,6 @@ import * as echarts from 'echarts'
 // 按任务要求使用的 API 函数（禁止改名）
 import { getSetmealScore } from '@/api/admin/statistics.js'
 
-// setmealScore: List<PlanStatisticsVO> { festivalId, name, number, amount } - 柱状图数据源
 const setmealScore = ref([])
 
 // ===== 图表 DOM ref 与实例 =====
@@ -43,7 +42,6 @@ const updateInterval = 5000
 const dataStatus = ref('等待数据...')
 
 // ===== 数据获取 =====
-// 拉取套餐销量：柱状图数据源
 const fetchData = async () => {
   dataStatus.value = '正在加载数据...'
   try {
@@ -74,12 +72,10 @@ const toggleAutoUpdate = () => {
 }
 
 // ===== ECharts 渲染 =====
-// 柱状图：套餐销量排行（参考柱形图.html 风格 - 圆角柱 + 背景纹）
 const renderChart = () => {
   if (!chartRef.value) return
   if (!chart) chart = echarts.init(chartRef.value)
 
-  // 取套餐名作为 X 轴，销量作为 Y 值
   const names = setmealScore.value.map(p => p.name || '未知套餐')
   const numbers = setmealScore.value.map(p => Number(p.number) || 0)
 
