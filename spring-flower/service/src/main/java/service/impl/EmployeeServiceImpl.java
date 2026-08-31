@@ -27,7 +27,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -61,8 +60,38 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
     @Override
     public Employee findEmployeename(String username) {
-        return super.lambdaQuery().eq(Employee::getUsername, username).one();
+        return super.lambdaQuery()
+                .eq(Employee::getUsername, username)
+                .one();
     }
+
+    @Override
+    public String admin1(LoginDTO loginDTO) {
+        String username = loginDTO.getUsername();
+        String password = loginDTO.getPassword();
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                username, password,
+                Collections.singletonList(new SimpleGrantedAuthority(RoleConstant.ROLE_ADMIN)));
+        authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+        Employee employee = this.findEmployeename(username);
+        Map<String,Object> map = new HashMap<>();
+        map.put(JwtConstant.ADMIN_ID, employee.getId());
+        map.put(JwtConstant.ADMIN_NAME, employee.getUsername());
+        map.put(JwtConstant.TYPE,RoleConstant.ROLE_ADMIN);
+        String token = JwtUtil.createJWT(jwtProperties.getAdminSecretKey(), jwtProperties.getAdminTtl(), map);
+        stringRedisTemplate.opsForValue().set(RedisPrefixConstant.ADMIN_AUTH_PREFIX+ employee.getId(), token,
+                jwtProperties.getAdminTtl(), TimeUnit.SECONDS);
+        return token;
+    }
+
+    @Override
+    public void admin2(Long id) {
+        // 修复：使用正确的 Redis key 前缀删除 admin token
+        stringRedisTemplate.delete(RedisPrefixConstant.ADMIN_AUTH_PREFIX + id);
+        SecurityContextHolder.clearContext();
+    }
+
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -88,19 +117,26 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         String password = loginDTO.getPassword();
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                 username, password,
-                Collections.singletonList(new SimpleGrantedAuthority(RoleConstant.ROLE_ADMIN)));
+                Collections.singletonList(new SimpleGrantedAuthority(RoleConstant.ROLE_EMP)));
         authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         // 认证成功后，查询用户完整信息
         Employee employee = this.findEmployeename(username);
         Map<String,Object> map = new HashMap<>();
         map.put(JwtConstant.EMP_ID, employee.getId());
         map.put(JwtConstant.EMP_NAME, employee.getUsername());
-        map.put(JwtConstant.TYPE,RoleConstant.ROLE_ADMIN);
+        map.put(JwtConstant.TYPE,RoleConstant.ROLE_EMP);
 
-        String token = JwtUtil.createJWT(jwtProperties.getAdminSecretKey(), jwtProperties.getAdminTtl(), map);
+        String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), map);
         stringRedisTemplate.opsForValue().set(RedisPrefixConstant.EMP_AUTH_PREFIX+ employee.getId(), token,
                 jwtProperties.getAdminTtl(), TimeUnit.SECONDS);
         return token;
+    }
+
+    @Override
+    public void logout(Long userId) {
+        // 修复：使用正确的 Redis key 前缀删除 emp token
+        stringRedisTemplate.delete(RedisPrefixConstant.EMP_AUTH_PREFIX + userId);
+        SecurityContextHolder.clearContext();
     }
 
     @Override
@@ -182,10 +218,14 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         }
         Employee employee = super.getById(id);
         employee.setPassword(newPassword);
-        stringRedisTemplate.delete(RoleConstant.ROLE_ADMIN+ id);
+        // 修复：修改密码后清除该用户所有角色的 token，强制重新登录
+        stringRedisTemplate.delete(RedisPrefixConstant.ADMIN_AUTH_PREFIX + id);
+        stringRedisTemplate.delete(RedisPrefixConstant.EMP_AUTH_PREFIX + id);
         SecurityContextHolder.clearContext();
         super.updateById(employee);
     }
+
+
 
 
 }

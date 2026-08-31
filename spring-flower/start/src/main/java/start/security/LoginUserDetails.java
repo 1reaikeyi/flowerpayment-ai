@@ -31,7 +31,7 @@ public class LoginUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role; // ← 直接返回外面传进来的，不拼不加
+        return role;
     }
 
     @Override

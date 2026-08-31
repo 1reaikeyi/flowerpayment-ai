@@ -2,9 +2,10 @@
   <h1>flowerpayment-ai 鲜花商店 + ai</h1>
   <h2>flowerpayment-ai：B2C 经营模式，一个花店卖家，多个买家。鲜花服务由店长、店员和客户组成。</h2>
   <h4>
-    一个由 Spring Boot 3 + Vue 3 的前后端分离架构，中间件使用 Redis + nginx，主业务为鲜花售卖和Spring AI（使用阿里云的qwen），通过图像识别推荐相似花束，支持LLM生成贺卡文案+tts配音贺语，rag连通购物车数据+ai带货下单。
+    一个由 Spring Boot 3 + Vue 3 的前后端分离架构，中间件使用 Redis + nginx，主业务为鲜花售卖，分支业务Spring AI（使用阿里云的qwen），通过图像识别推荐相似花束，支持LLM生成贺卡文案+tts配音贺语，rag连通购物车数据+ai带货下单。
   </h4>
 </div>
+
 
 
 
@@ -218,15 +219,13 @@ flowerpayment-ai\说明\admin接口文档.md
 ### 迭代过程
 
 ```
-Q：为什么不用一个过滤器统一解析两种 Token？
-答：单过滤器会出现大量类型判断分支，后续扩展第三方登录、多角色账号时维护成本极高；拆分过滤器采用接力放行模式，每个过滤器只关心自己对应的账号类型，符合开闭原则。
 Q：滑动过期会不会产生大量无效 Redis Key？
 答：设置最大基础 TTL 兜底，即使用户长期不操作，缓存自动(expire:24小时)淘汰；登出接口主动删除对应 key，减少无效缓存堆积。
 Q: 放弃 MD5，使用BCrypt 密码加密存储优点？
 不使用 MD5/SHA256 不可逆哈希，BCrypt 自带随机盐值，抗彩虹表暴力破解，数据库永不存储明文密码。
-Q: 如何用户权限隔离？
+Q: 如何role权限隔离, 不越级？
  1.	service的方法层拦截
- @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+ interface使用@PreAuthorize("hasAuthority('ROLE_ADMIN')")
  2. controller的url拦截
 .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_EMP")
 .requestMatchers("/user/**").hasAuthority("ROLE_USER")

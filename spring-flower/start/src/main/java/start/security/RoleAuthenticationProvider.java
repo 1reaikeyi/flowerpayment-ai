@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import service.EmployeeService;
 import service.UserService;
 
+import java.util.Collection;
 import java.util.Collections;
 
 @Component
@@ -33,13 +34,13 @@ public class RoleAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = (String) authentication.getCredentials();
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(RoleConstant.ROLE_ADMIN::equals);
-        if (isAdmin) {
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        String role = authorities.iterator().next().getAuthority();
+
+        if (role.equals(RoleConstant.ROLE_ADMIN)) {
             Employee employee = employeeService.findEmployeename(username);
             if (employee == null || !passwordEncoder.matches(password, employee.getPassword())) {
-                throw new PasswordErrorException("用户名或密码错误");
+                throw new PasswordErrorException("admin用户名或密码错误");
             }
             // 管理员认证成功，返回带有 ROLE_ADMIN 权限的认证对象
             return new UsernamePasswordAuthenticationToken(
@@ -49,7 +50,20 @@ public class RoleAuthenticationProvider implements AuthenticationProvider {
                     null,
                     Collections.singletonList(new SimpleGrantedAuthority(RoleConstant.ROLE_ADMIN)));
         }
-
+        if (role.equals(RoleConstant.ROLE_EMP)) {
+            Employee employee = employeeService.findEmployeename(username);
+            if (employee == null || !passwordEncoder.matches(password, employee.getPassword())) {
+                throw new PasswordErrorException("employee用户名或密码错误");
+            }
+            // 管理员认证成功，返回带有 ROLE_ADMIN 权限的认证对象
+            return new UsernamePasswordAuthenticationToken(
+                    new LoginUserDetails(employee.getId(), employee.getUsername(), employee.getPassword(),
+                            Collections.singletonList(new SimpleGrantedAuthority(RoleConstant.ROLE_EMP))
+                    ),
+                    null,
+                    Collections.singletonList(new SimpleGrantedAuthority(RoleConstant.ROLE_EMP)));
+        }
+//        if (role.equals(RoleConstant.ROLE_USER)) {}
         User user = userService.findUsername(username);
         if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
             throw new PasswordErrorException("用户名或密码错误");

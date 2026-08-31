@@ -1,0 +1,51 @@
+package start.controller.employee;
+
+
+
+
+import common.enums.OperationEnum;
+import common.constant.ErrorConstant;
+import start.aop.OperationLogging;
+import common.result.Result;
+import lombok.extern.slf4j.Slf4j;
+import model.dto.EmployeeDTO;
+import model.dto.LoginDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import service.EmployeeService;
+
+import start.security.SecurityContextParam;
+
+@RestController
+@RequestMapping("/employee")
+@Slf4j
+public class EmployeeController {
+
+    @Autowired
+    private EmployeeService employeeService;
+
+    @PostMapping("/register")
+    public Result register(@RequestBody EmployeeDTO employeeDTO) {
+        employeeService.register(employeeDTO);
+        return Result.success("register");
+    }
+
+    @PostMapping("/login")
+    public Result login(@RequestBody LoginDTO loginDTO) {
+        String token = employeeService.login(loginDTO);
+        return Result.success(token);
+    }
+
+    @OperationLogging(operation = OperationEnum.CREATE)
+    @PostMapping("/logout")
+    public Result logout() {
+        // 获取当前登录用户ID
+        Long userId = SecurityContextParam.getCurrentUserId();
+        if (userId == null) {
+            return Result.error(ErrorConstant.ACCOUNT_NOT_EXIST);
+        }
+        employeeService.logout(userId);
+        return Result.success("logout");
+    }
+
+}

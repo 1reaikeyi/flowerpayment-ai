@@ -69,7 +69,7 @@ public class EmployeeRefreshRequestFilter extends OncePerRequestFilter {
         }
 
         try {
-            Map<String, Object> claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
+            Map<String, Object> claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);
             if (claims == null) {
                 filterChain.doFilter(request, response);
                 return;
@@ -77,12 +77,12 @@ public class EmployeeRefreshRequestFilter extends OncePerRequestFilter {
             String empId = claims.get(JwtConstant.EMP_ID).toString();
             String empName = claims.get(JwtConstant.EMP_NAME).toString();
             String type = claims.get(JwtConstant.TYPE).toString();
-            if (!RoleConstant.ROLE_ADMIN.equals(type)) {
+            if (!RoleConstant.ROLE_EMP.equals(type)) {
                 filterChain.doFilter(request, response);
                 return;
             }
-            String standardToken = stringRedisTemplate.opsForValue().get(RedisPrefixConstant.EMP_AUTH_PREFIX + empId);
 
+            String standardToken = stringRedisTemplate.opsForValue().get(RedisPrefixConstant.EMP_AUTH_PREFIX + empId);
             if (!token.equals(standardToken)) {
                 log.error("emp Token 验证失败，已注销登录, 员工ID: {}", empId);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -93,12 +93,13 @@ public class EmployeeRefreshRequestFilter extends OncePerRequestFilter {
             stringRedisTemplate.expire(RedisPrefixConstant.EMP_AUTH_PREFIX + empId,
                     jwtProperties.getAdminTtl(), TimeUnit.SECONDS);
 
+            // 注意：EMP 员工应该被授予 ROLE_EMP 角色，而不是 ROLE_ADMIN
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     new LoginUserDetails(Long.parseLong(empId), empName,
-                            Collections.singletonList(new SimpleGrantedAuthority(RoleConstant.ROLE_ADMIN))
+                            Collections.singletonList(new SimpleGrantedAuthority(RoleConstant.ROLE_EMP))
                     ),
                     null,
-                    Collections.singletonList(new SimpleGrantedAuthority(RoleConstant.ROLE_ADMIN))
+                    Collections.singletonList(new SimpleGrantedAuthority(RoleConstant.ROLE_EMP))
             );
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             filterChain.doFilter(request, response);

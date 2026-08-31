@@ -22,6 +22,8 @@ public interface EmployeeService extends IService<Employee> {
 
     String login(LoginDTO loginDTO);
 
+    void logout(Long userId);
+
     EmployeeVO readById(Long id);
 
     List<EmployeeVO> readPage(EmployeePageDTO employeePageDTO);
@@ -32,4 +34,7 @@ public interface EmployeeService extends IService<Employee> {
 
     void updatePassword(PasswordDTO passwordDTO, Long id);
 
+    String admin1(LoginDTO loginDTO);
+
+    void admin2(Long id);
 }

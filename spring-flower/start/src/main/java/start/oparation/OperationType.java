@@ -33,8 +33,8 @@ public class OperationType {
         if(message.toString().equals("password")){
             message = "不许偷看";
         }
-        log.info("role: " + operationType.type+" , :ID:"+operationType.id+", 执行操作: "+operationType.operation
-                +", 使用参数: "+ message +", "+operationType.status);
+        log.info("role: " + operationType.type+", ID:"+operationType.id+", 执行操作: "+operationType.operation+
+                ", 使用参数: "+ message +", 运行状态"+operationType.status);
         return operationType;
     }
 
@@ -47,8 +47,8 @@ public class OperationType {
         if(message.toString().equals("password")){
             message = "不许偷看";
         }
-        log.info("role: " + operationType.type+", :ID:"+operationType.id+", 执行操作:"+operationType.operation
-                +", 使用参数: "+ message +", "+operationType.status);
+        log.info("role: " + operationType.type+", :ID:"+operationType.id+", 执行操作:"+operationType.operation +
+                ", 使用参数: "+ message +", 运行状态"+operationType.status);
         return operationType;
     }
 }

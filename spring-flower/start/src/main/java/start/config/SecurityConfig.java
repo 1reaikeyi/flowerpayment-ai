@@ -6,7 +6,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -31,7 +30,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+import start.filter.AdminRefreshRequestFilter;
 import start.filter.EmployeeRefreshRequestFilter;
 import start.filter.InformationRequestFilter;
 import start.filter.UserRefreshRequestFilter;
@@ -79,6 +78,7 @@ public class SecurityConfig {
             HttpSecurity http,
             JwtProperties jwtProperties,
             StringRedisTemplate stringRedisTemplate) throws Exception {
+        AdminRefreshRequestFilter adminRefreshRequestFilter = new AdminRefreshRequestFilter(jwtProperties, stringRedisTemplate);
         UserRefreshRequestFilter userRefreshRequestFilter = new UserRefreshRequestFilter(jwtProperties, stringRedisTemplate);
         EmployeeRefreshRequestFilter employeeRefreshRequestFilter = new EmployeeRefreshRequestFilter(jwtProperties, stringRedisTemplate);
         InformationRequestFilter informationRequestFilter = new InformationRequestFilter();
@@ -91,9 +91,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 登录、注册、退出等接口保持放行（需先于 /user/** 拦截规则匹配）
                         .requestMatchers("/user/register", "/user/login").permitAll()
-                        .requestMatchers("/admin/employee/register", "/admin/employee/login").permitAll()
-                        // 只拦截,对于测试使用的pay+auth+role，不拦截
+                        .requestMatchers("/admin/register", "/admin/login").permitAll()
+                        .requestMatchers("/employee/register", "/employee/login").permitAll()
+                        // 只拦截
                         .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_EMP")
+                        .requestMatchers("/employee/**").hasAnyAuthority( "ROLE_EMP")
                         .requestMatchers("/user/**").hasAuthority("ROLE_USER")
                         // 其他接口全部放行
                         .anyRequest().permitAll()
@@ -102,6 +104,8 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint())
                         .accessDeniedHandler(accessDeniedHandler())
                 )
+                // admin 刷新过滤器（处理 admin token，其他 token 放行）
+                .addFilterBefore(adminRefreshRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 // user 刷新过滤器（处理 user token，其他 token 放行）
                 .addFilterBefore(userRefreshRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 // emp 刷新过滤器（处理 emp token，其他 token 放行）

@@ -26,11 +26,16 @@ public class InformationRequestFilter extends OncePerRequestFilter {
         }
         String uri = request.getRequestURI();
         // 登录和注册接口不需要认证，直接放行
-        if (uri.equals("/user/login") || uri.equals("/user/register") ||
-                uri.equals("/admin/employee/login") || uri.equals("/admin/employee/register")) {
+        if (uri.equals("/user/login") ||
+                uri.equals("/user/register") ||
+                uri.equals("/employee/login") ||
+                uri.equals("/employee/register")||
+                uri.equals("/admin/login") ||
+                uri.equals("/admin/register")) {
             return true;
         }
         return !uri.startsWith("/admin") &&
+                !uri.startsWith("/employee") &&
                 !uri.startsWith("/user");
     }
 
