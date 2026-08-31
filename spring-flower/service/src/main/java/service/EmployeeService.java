@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import model.dto.EmployeeDTO;
 import model.dto.EmployeePageDTO;
 import model.dto.LoginDTO;
+import model.dto.PasswordDTO;
 import model.entity.Employee;
 import model.vo.EmployeeVO;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -29,5 +29,7 @@ public interface EmployeeService extends IService<Employee> {
     void updateByObject(EmployeeDTO employeeDTO);
 
     void deleteById(List<Long> ids);
+
+    void updatePassword(PasswordDTO passwordDTO, Long id);
 
 }

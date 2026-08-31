@@ -2,7 +2,7 @@
   <h1>flowerpayment-ai 鲜花商店 + ai</h1>
   <h2>flowerpayment-ai：B2C 经营模式，一个花店卖家，多个买家。鲜花服务由店长、店员和客户组成。</h2>
   <h4>
-    一个由 Spring Boot 3 + Vue 3 的前后端分离架构，中间件使用 Redis + nginx，主业务为鲜花礼品订单和支付的全栈系统和Spring AI（使用阿里云的qwen），通过图像识别推荐相似花束，支持LLM生成贺卡文案+tts配音贺语，rag连通购物车数据+ai带货下单。
+    一个由 Spring Boot 3 + Vue 3 的前后端分离架构，中间件使用 Redis + nginx，主业务为鲜花售卖和Spring AI（使用阿里云的qwen），通过图像识别推荐相似花束，支持LLM生成贺卡文案+tts配音贺语，rag连通购物车数据+ai带货下单。
   </h4>
 </div>
 
@@ -157,7 +157,7 @@ flowchart LR
 
 | 启动步骤     | 1创建数据库并导入 `sql/` 目录脚本。 <br/>2 修改 `start/src/main/resources/application-dev.yml` 中数据库与 Redis 配置。<br/>3 `npm run dev ` 前端启动服务。 |
 | ------------ | ------------------------------------------------------------ |
-| **升级方向** | 使用nacos+gateway连接主业务+ai业务，灰度更新，分布式部署，故障转移等等。<br/> 使用nacos切换购物车存储，节假日使用redis，平时使用MySQL，购物车数据不重要，不需要强一致性互通 |
+| **升级方向** | 使用nacos+gateway连接主业务+ai业务，灰度更新，分布式部署，故障转移等等。<br/> 使用nacos切换购物车存储，节假日使用redis，平时使用MySQL。 |
 
 # 前端说明
 
@@ -168,12 +168,12 @@ flowchart LR
 | 功能页面  |                             截图                             |
 | :-------: | :----------------------------------------------------------: |
 | 登录页面  | <img src="说明/原型功能/admin1.png" alt="管理端登录" style="zoom: 25%;" /> |
-|   分类    |                                                              |
-| 单花销售  |                                                              |
-| 组合销售  |                                                              |
+|   分类    | <img src="说明/原型功能/admin2.png" alt="管理端登录" style="zoom: 25%;" /> |
+| 单花销售  | <img src="说明/原型功能/admin3.png" alt="管理端登录" style="zoom: 25%;" /> |
+| 多花组合  |                                                              |
 | 订单管理  |                                                              |
-|   店铺    |                                                              |
-|   员工    |                                                              |
+|   店铺    | <img src="说明/原型功能/admin6.png" alt="管理端登录" style="zoom: 25%;" /> |
+|   员工    | <img src="说明/原型功能/admin7.png" alt="管理端登录" style="zoom: 25%;" /> |
 | 业务大屏1 |                                                              |
 | 业务大屏2 |                                                              |
 | 业务大屏3 |                                                              |
@@ -185,7 +185,7 @@ flowchart LR
 |   登录页面   |      |
 |     分类     |      |
 |   单花销售   |      |
-|   组合销售   |      |
+|   多花组合   |      |
 |     店铺     |      |
 |    购物车    |      |
 |     订单     |      |
@@ -206,6 +206,12 @@ flowchart LR
 ├── start/                     # [main服务] 主业务启动模块
 
 └── ai/                          # [branch服务] AI扩展服务启动模块
+
+接口文档
+
+flowerpayment-ai\说明\admin接口文档.md
+
+flowerpayment-ai\说明\admin接口文档.md
 
 ## 一、店长、店员和客户多端端登录认证模块
 
@@ -273,11 +279,11 @@ Q: 如何用户权限隔离？
 > - spec_object：送人对象（恋人 / 朋友 / 长辈）
 > - spec_option：用途（表白、生日、道歉）
 
-2. 节日礼盒模块
+2. 多花组合模块
 
-- `festival`节日礼盒主表，代表一个成品礼盒商品（比如 “520 热恋礼盒”）
+- `festival`多花组合主表，代表一个成品礼盒商品（比如 “520 热恋礼盒”）
 
-- `festival_detail`礼盒明细：一个礼盒包含多朵鲜花，一条明细代表礼盒里面的一款鲜花，同时携带该鲜花的送人对象、用途规格。
+- `festival_detail`多花组合明细：一个礼盒包含多朵鲜花，一条明细代表礼盒里面的一款鲜花，同时携带该鲜花的送人对象、用途规格。
 
 - 关系：`festival` : `festival_detail` = 1 : N
 
@@ -417,7 +423,7 @@ flowchart TD
 
 ```
 Q:MySQL 持久化，还采用 Redis Hash 存储?
-节假日使用redis，平时使用MySQL，单一商店的购物车数据不重要，不需要强一致性数据互通。
+节假日使用redis，平时使用MySQL。
 Q:Redis Hash 结构
    外层 key：shopping_cart:{userId}
    内层 field：购物项唯一 id，value：商品完整信息 JSON（菜品 / 套餐 id、名称、数量、口味、金额）

@@ -20,9 +20,7 @@ public class FlowerOrderPageDTO {
     @Max(value = 20, message = "每页条数不能超过20")
     private Long pageSize = 10L;
 
-    // 起始时间
-    private String startTime;
-
-    // 结束时间
-    private String endTime;
+    @Min(value = 1, message = "不能小于1")
+    @Max(value = 8, message = "不能超过8")
+    private Long status = 3L;
 }

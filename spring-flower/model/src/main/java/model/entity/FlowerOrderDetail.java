@@ -1,17 +1,16 @@
 package model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * 鲜花订单明细实体类（对应 flower_order_detail 表）
- * 下单商品明细（鲜花单品 / 节日礼盒）
+ * 下单商品明细（鲜花单品 / 节日多花）
  */
 
 @Builder
@@ -56,7 +55,7 @@ public class FlowerOrderDetail implements Serializable {
     private Long flowerId;
 
     /**
-     * 节日礼盒 ID，购买礼盒时赋值
+     * 节日多花 ID，购买多花礼盒时赋值
      */
     @TableField("festival_id")
     private Long festivalId;
@@ -74,8 +73,21 @@ public class FlowerOrderDetail implements Serializable {
     private BigDecimal amount;
 
     /**
-     * 礼盒包装费
+     * 多花礼盒包装费
      */
     @TableField("wrap_fee")
     private Long wrapFee;
+    /**
+     * 记录创建时间
+     */
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
+
+    /**
+     * 记录更新时间
+     */
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateTime;
 }

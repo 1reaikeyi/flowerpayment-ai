@@ -31,7 +31,7 @@ public class UserShopping implements Serializable {
     private Long id;
 
     /**
-     * 商品名称，鲜花或礼盒名称
+     * 商品名称，鲜花或多花礼盒名称
      */
     @TableField("name")
     private String name;
@@ -55,7 +55,7 @@ public class UserShopping implements Serializable {
     private Long flowerId;
 
     /**
-     * 节日礼盒 ID，选购礼盒时赋值
+     * 节日多花 ID，选购多花礼盒时赋值
      */
     @TableField("festival_id")
     private Long festivalId;

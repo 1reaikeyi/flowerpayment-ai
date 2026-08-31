@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * 节日礼盒销量统计 VO
+ * 鲜花单品销量统计 VO
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FestivalStatisticsVO {
-    private Long festivalId;
+public class StatisticsVO {
+    private Long id;
     private String name;
-    private Long number;
-    private BigDecimal amount;
+    private Long count;
+    private BigDecimal totalAccount;
 }

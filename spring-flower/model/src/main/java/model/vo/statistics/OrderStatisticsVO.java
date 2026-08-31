@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FlowerOrderStatisticsVO {
+public class OrderStatisticsVO {
     private Long status;
     private String name;
     private Long count;

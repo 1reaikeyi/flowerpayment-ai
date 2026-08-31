@@ -1,15 +1,21 @@
 package service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.alipay.api.response.AlipayTradeRefundResponse;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import mapper.FlowerOrderMapper;
 import model.dto.FlowerOrderPageDTO;
+import model.entity.FlowerCategory;
 import model.entity.FlowerOrder;
 import model.entity.FlowerOrderDetail;
 import model.entity.FlowerOrderPay;
 import model.enums.OrderStatusEnum;
 import model.enums.PayStatusEnum;
+import model.vo.FlowerCategoryVO;
 import model.vo.FlowerOrderVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +29,7 @@ import service.zhifubao.service.ZhifubaoService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FlowerOrderServiceImpl extends ServiceImpl<FlowerOrderMapper, FlowerOrder> implements service.FlowerOrderService {
@@ -36,12 +43,21 @@ public class FlowerOrderServiceImpl extends ServiceImpl<FlowerOrderMapper, Flowe
 
     @Override
     public FlowerOrderVO readById(Long id) {
-        return null;
+        FlowerOrder flowerOrder = super.getById(id);
+        FlowerOrderVO flowerOrderVO = BeanUtil.toBean(flowerOrder, FlowerOrderVO.class);
+        return flowerOrderVO;
     }
 
     @Override
     public List<FlowerOrderVO> readPage(FlowerOrderPageDTO flowerOrderPageDTO) {
-        return List.of();
+        LambdaQueryWrapper<FlowerOrder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(FlowerOrder::getStatus, flowerOrderPageDTO.getStatus());
+        IPage page = new Page(flowerOrderPageDTO.getPage(),flowerOrderPageDTO.getPageSize());
+        IPage<FlowerOrder> flowerOrderIPage= super.page(page,queryWrapper);
+        List<FlowerOrderVO> voList = flowerOrderIPage.getRecords().stream()
+                .map(flowerOrder -> BeanUtil.copyProperties(flowerOrder, FlowerOrderVO.class))
+                .collect(Collectors.toList());
+        return voList;
     }
 
     @Override

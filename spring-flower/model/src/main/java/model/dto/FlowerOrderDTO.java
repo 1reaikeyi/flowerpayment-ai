@@ -59,10 +59,7 @@ public class FlowerOrderDTO {
      */
     private String address;
 
-    /**
-     * 支付状态：0 未支付，1 已支付，2 退款
-     */
-    private PayStatusEnum payStatus;
+
 
     /**
      * 备注信息（可存 AI 生成的贺卡文案）

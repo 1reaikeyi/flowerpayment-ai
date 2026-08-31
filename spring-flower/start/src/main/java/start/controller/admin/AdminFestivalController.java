@@ -31,7 +31,6 @@ public class AdminFestivalController {
     @OperationLogging(operation = OperationEnum.CREATE)
     @PostMapping
     public Result create(@RequestBody FestivalDTO festivalDTO) {
-
         FestivalDTO dto = festivalService.create(festivalDTO);
         return Result.success(dto);
     }

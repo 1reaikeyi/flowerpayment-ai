@@ -1,11 +1,16 @@
 package model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class FestivalVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -22,12 +27,12 @@ public class FestivalVO implements Serializable {
 
 
     /**
-     * 礼盒名称
+     * 多花名称
      */
     private String name;
 
     /**
-     * 礼盒价格
+     * 多花礼盒价格
      */
     private BigDecimal price;
 
@@ -47,12 +52,12 @@ public class FestivalVO implements Serializable {
     private String statusDesc;
 
     /**
-     * 礼盒描述
+     * 多花礼盒描述
      */
     private String description;
 
     /**
-     * 礼盒图片 URL
+     * 多花礼盒图片 URL
      */
     private String image;
 

@@ -10,23 +10,25 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import common.constant.*;
-import common.enums.OperationErrorEnum;
 import common.exception.EmployeeFailedException;
 import common.exception.LoginFailedException;
+import common.exception.PasswordErrorException;
 import common.properties.JwtProperties;
 import common.utils.JwtUtil;
 import mapper.EmployeeMapper;
 import model.dto.EmployeeDTO;
 import model.dto.EmployeePageDTO;
 import model.dto.LoginDTO;
+import model.dto.PasswordDTO;
 import model.vo.EmployeeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import model.entity.Employee;
@@ -169,6 +171,20 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
             throw new EmployeeFailedException(ErrorConstant.OPERATION_ERROR);
         }
         super.removeByIds(ids);
+    }
+
+    @Override
+    public void updatePassword(PasswordDTO passwordDTO, Long id) {
+        String newPassword = passwordDTO.getNewPassword();
+        String confirmPassword = passwordDTO.getConfirmPassword();
+        if (!newPassword.equals(confirmPassword)) {
+            throw new PasswordErrorException(ErrorConstant.PASSWORD_EDIT_FAILED);
+        }
+        Employee employee = super.getById(id);
+        employee.setPassword(newPassword);
+        stringRedisTemplate.delete(RoleConstant.ROLE_ADMIN+ id);
+        SecurityContextHolder.clearContext();
+        super.updateById(employee);
     }
 
 

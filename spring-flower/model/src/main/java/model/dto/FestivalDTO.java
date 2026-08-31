@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 节日礼盒 DTO（对应 festival 表的传输对象，附带礼盒内鲜花明细）
+ * 节日多花 DTO
  */
 @Data
 @AllArgsConstructor
@@ -27,17 +27,17 @@ public class FestivalDTO implements Serializable {
     private Long categoryId;
 
     /**
-     * 礼盒名称
+     * 多花礼盒名称
      */
     private String name;
 
     /**
-     * 礼盒价格
+     * 多花礼盒价格
      */
     private BigDecimal price;
 
     /**
-     * 鲜花总数量，礼盒内花朵总数
+     * 鲜花总数量，多花礼盒内花朵总数
      */
     private Long number;
 
@@ -47,12 +47,12 @@ public class FestivalDTO implements Serializable {
     private Long status;
 
     /**
-     * 礼盒描述
+     * 多花礼盒描述
      */
     private String description;
 
     /**
-     * 礼盒图片
+     * 多花礼盒图片
      */
     private String image;
 

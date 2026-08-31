@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 节日礼盒分页查询 DTO
+ * 多花分页查询 DTO
  */
 @Data
 @AllArgsConstructor
@@ -22,6 +22,6 @@ public class FestivalPageDTO implements Serializable {
     @Max(value = 20, message = "每页条数不能超过20")
     private Long pageSize = 10L;
 
-    // 礼盒名称（模糊查询）
+    // 多花礼盒名称（模糊查询）
     private String name;
 }

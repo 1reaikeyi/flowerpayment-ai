@@ -161,7 +161,7 @@ public Result handleException(Exception e) {
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 |------|------|------|--------|------|
 | page | Long | 否 | 1 | 页码，最小 1 |
-| pageSize | Long | 否 | 10 | 每页条数，范围 1-20 |
+| pageSize | Long | 否 | 10 | 每页条数 |
 | employeename | String | 否 | - | 用户名模糊搜索 |
 
 **业务逻辑**:
@@ -225,30 +225,54 @@ public Result handleException(Exception e) {
 
 ---
 
-## 2. 节日礼盒管理 AdminFestivalController
+### 1.8 修改密码
+
+- **方法**: `PUT`
+- **路径**: `/admin/employee/password`
+- **描述**: 修改密码
+- **权限**: 需登录
+
+**请求参数 (PAsswordDTO, Query 参数)**:
+
+| 参数           | 类型   | 必填      | 说明     |
+| -------------- | ------ | --------- | -------- |
+| newPassword    | String | @NotBlank | 新密码   |
+| configPassword | String | @NotBlank | 确认密码 |
+
+**业务逻辑**:
+
+1修改密码
+
+2删除redis的token
+
+**响应**: `Result<id>` → 修改人的id
+
+---
+
+## 2. 节日多花管理 AdminFestivalController
 
 **基础路径**: `/admin/festival`
 
-该控制器负责节日礼盒的增删改查，使用 Redis 缓存 + Redisson 分布式锁 + 逻辑过期策略。
+该控制器负责节日多花礼盒的增删改查，使用 Redis 缓存 + Redisson 分布式锁 + 逻辑过期策略。
 
-### 2.1 新增节日礼盒
+### 2.1 新增节日多花礼盒
 
 - **方法**: `POST`
 - **路径**: `/admin/festival`
-- **描述**: 创建新的节日礼盒
+- **描述**: 创建新的节日多花礼盒
 - **权限**: 需登录
 
 **请求体 (FestivalDTO)**:
 
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| name | String | 是 | 礼盒名称 |
+| name | String | 是 | 多花礼盒名称 |
 | categoryId | Long | 是 | 所属分类 ID |
-| price | BigDecimal | 是 | 礼盒价格 |
+| price | BigDecimal | 是 | 多花礼盒价格 |
 | number | Long | 否 | 鲜花总数量 |
 | status | Long | 否 | 售卖状态 0:下架 1:在售 |
-| description | String | 否 | 礼盒描述 |
-| image | String | 否 | 礼盒图片 URL |
+| description | String | 否 | 多花礼盒描述 |
+| image | String | 否 | 多花礼盒图片 URL |
 
 **业务逻辑**:
 1. 将 DTO 拷贝为 Festival 实体
@@ -259,18 +283,18 @@ public Result handleException(Exception e) {
 
 ---
 
-### 2.2 根据 ID 查询节日礼盒
+### 2.2 根据 ID 查询节日多花礼盒
 
 - **方法**: `GET`
 - **路径**: `/admin/festival`
-- **描述**: 查询单个礼盒详情（带缓存）
+- **描述**: 查询单个多花礼盒详情（带缓存）
 - **权限**: 需登录
 
 **请求参数**:
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| id | Long | 是 | 礼盒主键 ID |
+| id | Long | 是 | 多花礼盒主键 ID |
 
 **业务逻辑**:
 1. 优先查 Redis 缓存，key 前缀 `festival:` + ID
@@ -285,7 +309,7 @@ public Result handleException(Exception e) {
 |------|------|------|
 | id | Long | 主键 |
 | categoryId | Long | 所属分类 ID |
-| name | String | 礼盒名称 |
+| name | String | 多花礼盒名称 |
 | price | BigDecimal | 价格 |
 | number | Long | 鲜花总数量 |
 | status | Long | 售卖状态 0:下架 1:在售 |
@@ -297,11 +321,11 @@ public Result handleException(Exception e) {
 
 ---
 
-### 2.3 分页查询礼盒列表
+### 2.3 分页查询多花礼盒列表
 
 - **方法**: `GET`
 - **路径**: `/admin/festival/all`
-- **描述**: 分页查询礼盒列表，支持按名称模糊搜索
+- **描述**: 分页查询多花礼盒列表，支持按名称模糊搜索
 - **权限**: 需登录
 
 **请求参数 (FestivalPageDTO, Query 参数)**:
@@ -309,8 +333,8 @@ public Result handleException(Exception e) {
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 |------|------|------|--------|------|
 | page | Long | 否 | 1 | 页码 |
-| pageSize | Long | 否 | 10 | 每页条数（1-20） |
-| name | String | 否 | - | 礼盒名称模糊搜索 |
+| pageSize | Long | 否 | 10 | 每页条数 |
+| name | String | 否 | - | 多花礼盒名称模糊搜索 |
 
 **业务逻辑**:
 1. 构建 LambdaQueryWrapper，支持名称模糊匹配
@@ -321,11 +345,11 @@ public Result handleException(Exception e) {
 
 ---
 
-### 2.4 更新节日礼盒
+### 2.4 更新节日多花礼盒
 
 - **方法**: `PUT`
 - **路径**: `/admin/festival`
-- **描述**: 根据 ID 更新礼盒，并清除缓存
+- **描述**: 根据 ID 更新多花礼盒，并清除缓存
 - **权限**: 需登录
 
 **请求体 (FestivalDTO)**:
@@ -333,7 +357,7 @@ public Result handleException(Exception e) {
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | id | Long | 是 | 主键 ID |
-| name | String | 否 | 礼盒名称 |
+| name | String | 否 | 多花礼盒名称 |
 | categoryId | Long | 否 | 分类 ID |
 | price | BigDecimal | 否 | 价格 |
 | number | Long | 否 | 鲜花数量 |
@@ -351,18 +375,18 @@ public Result handleException(Exception e) {
 
 ---
 
-### 2.5 批量删除节日礼盒
+### 2.5 批量删除节日多花礼盒
 
 - **方法**: `DELETE`
 - **路径**: `/admin/festival`
-- **描述**: 根据 ID 列表批量删除礼盒，并清除缓存
+- **描述**: 根据 ID 列表批量删除多花礼盒，并清除缓存
 - **权限**: 需登录
 
 **请求参数**:
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| ids | List\<Long\> | 是 | 礼盒 ID 列表 |
+| ids | List\<Long\> | 是 | 多花礼盒 ID 列表 |
 
 **业务逻辑**:
 1. 调用 removeByIds 批量删除数据库记录
@@ -372,18 +396,18 @@ public Result handleException(Exception e) {
 
 ---
 
-### 2.6 查询礼盒下的明细列表
+### 2.6 查询多花礼盒下的明细列表
 
 - **方法**: `GET`
 - **路径**: `/admin/festival/of/festivalDetail`
-- **描述**: 根据礼盒 ID 查询其包含的所有礼盒明细（关联鲜花）
+- **描述**: 根据多花礼盒 ID 查询其包含的所有多花礼盒明细（关联鲜花）
 - **权限**: 需登录
 
 **请求参数**:
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| id | Long | 是 | 礼盒主键 ID |
+| id | Long | 是 | 多花礼盒主键 ID |
 
 **业务逻辑**:
 1. 在 festival_detail 表中按 festival_id 查询所有关联记录
@@ -394,18 +418,18 @@ public Result handleException(Exception e) {
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | id | Long | 明细主键 |
-| festivalId | Long | 关联礼盒 ID |
+| festivalId | Long | 关联多花礼盒 ID |
 | flowerId | Long | 关联鲜花 ID |
 | specObject | String | 送人对象（如女友、母亲） |
 | specOption | String | 用途场景（如表白、生日） |
 
 ---
 
-### 2.7 查询某鲜花被哪些礼盒包含
+### 2.7 查询某鲜花被哪些多花礼盒包含
 
 - **方法**: `GET`
 - **路径**: `/admin/festival/of/flower`
-- **描述**: 根据鲜花 ID 查询它被哪些礼盒关联
+- **描述**: 根据鲜花 ID 查询它被哪些多花礼盒关联
 - **权限**: 需登录
 
 **请求参数**:
@@ -422,24 +446,24 @@ public Result handleException(Exception e) {
 
 ---
 
-## 3. 礼盒明细管理 AdminFestivalDetailController
+## 3. 多花明细管理 AdminFestivalDetailController
 
 **基础路径**: `/admin/festivalDetail`
 
-管理礼盒与鲜花的关联明细，支持单条 CRUD。使用 Redis 缓存 + Redisson 分布式锁。
+管理多花礼盒与鲜花的关联明细，支持单条 CRUD。使用 Redis 缓存 + Redisson 分布式锁。
 
-### 3.1 新增礼盒明细
+### 3.1 新增多花礼盒明细
 
 - **方法**: `POST`
 - **路径**: `/admin/festivalDetail`
-- **描述**: 在某个礼盒中添加一条鲜花明细
+- **描述**: 在某个多花礼盒中添加一条鲜花明细
 - **权限**: 需登录
 
 **请求体 (FestivalDetailDTO)**:
 
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| festivalId | Long | 是 | 关联礼盒 ID |
+| festivalId | Long | 是 | 关联多花礼盒 ID |
 | flowerId | Long | 是 | 关联鲜花 ID |
 | specObject | String | 否 | 送人对象（如女友） |
 | specOption | String | 否 | 用途场景（如表白） |
@@ -453,7 +477,7 @@ public Result handleException(Exception e) {
 
 ---
 
-### 3.2 根据 ID 查询礼盒明细
+### 3.2 根据 ID 查询多花礼盒明细
 
 - **方法**: `GET`
 - **路径**: `/admin/festivalDetail`
@@ -476,11 +500,11 @@ public Result handleException(Exception e) {
 
 ---
 
-### 3.3 更新礼盒明细
+### 3.3 更新多花礼盒明细
 
 - **方法**: `PUT`
 - **路径**: `/admin/festivalDetail`
-- **描述**: 更新单条礼盒明细，并清除缓存
+- **描述**: 更新单条多花礼盒明细，并清除缓存
 - **权限**: 需登录
 
 **请求体 (FestivalDetailDTO)**:
@@ -488,7 +512,7 @@ public Result handleException(Exception e) {
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | id | Long | 是 | 主键 ID |
-| festivalId | Long | 否 | 礼盒 ID |
+| festivalId | Long | 否 | 多花礼盒 ID |
 | flowerId | Long | 否 | 鲜花 ID |
 | specObject | String | 否 | 送人对象 |
 | specOption | String | 否 | 用途场景 |
@@ -503,7 +527,7 @@ public Result handleException(Exception e) {
 
 ---
 
-### 3.4 批量删除礼盒明细
+### 3.4 批量删除多花礼盒明细
 
 - **方法**: `DELETE`
 - **路径**: `/admin/festivalDetail`
@@ -602,7 +626,7 @@ public Result handleException(Exception e) {
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 |------|------|------|--------|------|
 | page | Long | 否 | 1 | 页码 |
-| pageSize | Long | 否 | 10 | 每页条数（1-20） |
+| pageSize | Long | 否 | 10 | 每页条数 |
 | type | Long | 否 | - | 分类类型筛选 |
 
 **业务逻辑**:
@@ -684,11 +708,11 @@ public Result handleException(Exception e) {
 
 ---
 
-### 4.7 查询分类下的所有礼盒
+### 4.7 查询分类下的所有多花礼盒
 
 - **方法**: `GET`
 - **路径**: `/admin/category/of/festival`
-- **描述**: 根据分类 ID 查询其下所有节日礼盒
+- **描述**: 根据分类 ID 查询其下所有节日多花礼盒
 - **权限**: 需登录
 
 **请求参数**:
@@ -790,7 +814,7 @@ public Result handleException(Exception e) {
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 |------|------|------|--------|------|
 | page | Long | 否 | 1 | 页码 |
-| pageSize | Long | 否 | 10 | 每页条数（1-20） |
+| pageSize | Long | 否 | 10 | 每页条数 |
 | name | String | 否 | - | 鲜花名称模糊搜索 |
 
 **业务逻辑**:
@@ -1029,9 +1053,8 @@ public Result handleException(Exception e) {
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 |------|------|------|--------|------|
 | page | Long | 否 | 1 | 页码 |
-| pageSize | Long | 否 | 10 | 每页条数（1-20） |
-| startTime | String | 否 | - | 起始时间 |
-| endTime | String | 否 | - | 结束时间 |
+| pageSize | Long | 否 | 10 | 每页条数 |
+| status | Long | 否 | 1 | 订单状态 |
 
 **业务逻辑**: （当前返回空 List，待实现完整查询逻辑）
 

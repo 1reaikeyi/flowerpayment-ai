@@ -62,8 +62,8 @@ create table festival
     id          bigint auto_increment comment '主键'
         primary key,
     category_id bigint           null comment '所属分类',
-    name        varchar(32)      not null comment '节日礼盒名称',
-    price       decimal(10, 2)   not null comment '礼盒价格',
+    name        varchar(32)      not null comment '多花组合名字',
+    price       decimal(10, 2)   not null comment '价格',
     number      bigint           not null comment '鲜花数量',
     status      bigint default 1 null comment '售卖状态 0:下架 1:在售',
     description varchar(255)     null comment '礼盒描述',
@@ -75,18 +75,18 @@ create table festival
     constraint idx_festival_name
         unique (name)
 )
-    comment '节日多花组合' collate = utf8mb4_bin;
+    comment '多花组合' collate = utf8mb4_bin;
 
 create table festival_detail
 (
-    id           bigint auto_increment comment '主键'
+    id          bigint auto_increment comment '主键'
         primary key,
-    festival_id  bigint       null comment '对应节日礼盒id',
-    flower_id    bigint       null comment '关联鲜花id',
-    spec_object  varchar(32)  null comment '送人对象',
-    spec_options varchar(255) null comment '用途'
+    festival_id bigint       null comment '多花组合id',
+    flower_id   bigint       null comment '关联鲜花id',
+    spec_object varchar(32)  null comment '送人对象',
+    spec_option varchar(255) null comment '用途'
 )
-    comment '节日礼盒鲜花关系' collate = utf8mb4_bin;
+    comment '多花详细信息' collate = utf8mb4_bin;
 
 create index idx_festival_id
     on festival_detail (festival_id)
@@ -121,7 +121,7 @@ create table flower_detail
     spec_object varchar(32)  null comment '送人对象',
     spec_option varchar(255) null comment '用途'
 )
-    comment '鲜花规格关系表' collate = utf8mb4_bin;
+    comment '单品鲜花规格表' collate = utf8mb4_bin;
 
 create index idx_flower_id
     on flower_detail (flower_id)
@@ -142,7 +142,6 @@ create table flower_order
     phone                   varchar(11)      null comment '手机号',
     address_id              bigint           not null comment '地址id',
     address                 varchar(255)     null comment '配送地址',
-    pay_status              bigint default 0 not null comment '关联flower_order_pay支付状态',
     remark                  varchar(100)     null comment '备注信息',
     delivery_type           bigint           null comment '配送方式：0预约配送 1立即送出',
     delivery_date           date             null comment '预约配送日期',
@@ -207,7 +206,7 @@ create table flower_shop
     constraint idx_flower_name
         unique (name)
 )
-    comment '鲜花单品' collate = utf8mb4_bin;
+    comment '单品鲜花' collate = utf8mb4_bin;
 
 create table user
 (

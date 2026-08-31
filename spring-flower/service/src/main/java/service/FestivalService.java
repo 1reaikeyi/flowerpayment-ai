@@ -16,18 +16,19 @@ import java.util.List;
  */
 
 public interface FestivalService extends IService<Festival> {
+
     @PreAuthorize("hasAuthority('ROLE_USER')")
     FestivalVO readCache(Long id);
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     void updateCache(FestivalDTO festivalDTO);
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     void deleteCache(List<Long> ids);
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     FestivalDTO create(FestivalDTO festivalDTO);
-
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FestivalVO> readPage(FestivalPageDTO festivalPageDTO);
-
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FestivalDetailVO> readFestivalDetail(Long id);
-
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FestivalDetailVO> readFlower(Long id);
 }

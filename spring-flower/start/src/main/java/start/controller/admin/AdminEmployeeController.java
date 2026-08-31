@@ -12,6 +12,7 @@ import common.enums.OperationEnum;
 import common.constant.ErrorConstant;
 import common.exception.LoginFailedException;
 import model.dto.EmployeePageDTO;
+import model.dto.PasswordDTO;
 import model.vo.EmployeeVO;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -98,6 +99,13 @@ public class AdminEmployeeController {
     public Result updateByObject(@RequestBody EmployeeDTO employeeDTO) {
         employeeService.updateByObject(employeeDTO);
         return Result.success(employeeDTO.getId());
+    }
+    @OperationLogging(operation = OperationEnum.UPDATE)
+    @DeleteMapping("/password")
+    public Result updatePassword(@Validated @RequestBody PasswordDTO passwordDTO) {
+        Long id = SecurityContextParam.getCurrentUserId();
+        employeeService.updatePassword(passwordDTO,id);
+        return Result.success(id);
     }
 
     @OperationLogging(operation = OperationEnum.DELETE)

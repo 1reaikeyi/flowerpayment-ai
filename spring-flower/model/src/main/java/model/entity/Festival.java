@@ -9,8 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 节日多花组合礼盒实体类（对应 festival 表）
- * 节日礼盒/礼品套餐基础信息
+ * 多花组合实体类（对应 festival 表）
  */
 
 @Builder
@@ -37,19 +36,19 @@ public class Festival implements Serializable {
     private Long categoryId;
 
     /**
-     * 礼盒名称
+     * 多花礼盒名称
      */
     @TableField("name")
     private String name;
 
     /**
-     * 礼盒价格
+     * 多花礼盒价格
      */
     @TableField("price")
     private BigDecimal price;
 
     /**
-     * 鲜花总数量，礼盒内花朵总数
+     * 鲜花总数量，多花礼盒内花朵总数
      */
     @TableField("number")
     private Long number;
@@ -61,13 +60,13 @@ public class Festival implements Serializable {
     private Long status;
 
     /**
-     * 礼盒描述
+     * 多花礼盒描述
      */
     @TableField("description")
     private String description;
 
     /**
-     * 礼盒图片
+     * 多花礼盒图片
      */
     @TableField("image")
     private String image;

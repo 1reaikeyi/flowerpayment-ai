@@ -8,8 +8,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 鲜花及节日礼盒分类实体类（对应 flower_category 表）
- * 统一管理鲜花单品、节日礼盒、礼品三级分类
+ * 鲜花及节日多花分类实体类（对应 flower_category 表）
+ * 统一管理鲜花单品、节日多花、礼品三级分类
  */
 
 @Builder

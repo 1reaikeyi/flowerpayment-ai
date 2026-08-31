@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class TopStatisticsVO {
     private Long id;
     private String name;
-    private Long number;
+    private Long count;
 
 }
