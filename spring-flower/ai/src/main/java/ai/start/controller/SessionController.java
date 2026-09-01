@@ -1,7 +1,7 @@
 package ai.start.controller;
 
 import ai.model.vo.SessionVO;
-import ai.service.SessionService;
+import ai.service.session.SessionService;
 import common.constant.ErrorConstant;
 import common.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;

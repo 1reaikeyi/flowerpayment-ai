@@ -1,4 +1,4 @@
-package ai.service;
+package ai.service.visual;
 
 
 import org.springframework.ai.content.Media;

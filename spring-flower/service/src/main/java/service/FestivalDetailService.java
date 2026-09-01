@@ -14,12 +14,17 @@ import java.util.List;
  */
 
 public interface FestivalDetailService extends IService<FestivalDetail> {
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     FestivalDetailDTO create(FestivalDetailDTO festivalDetailDTO);
+
     @PreAuthorize("hasAuthority('ROLE_USER')")
     FestivalDetailVO readCache(Long id);
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     void updateCache(FestivalDetailDTO festivalDetailDTO);
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     void deleteCache(List<Long> ids);
 
 }

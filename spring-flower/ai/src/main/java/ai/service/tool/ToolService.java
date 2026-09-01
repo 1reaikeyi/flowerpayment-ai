@@ -1,4 +1,4 @@
-package ai.service;
+package ai.service.tool;
 
 import reactor.core.publisher.Flux;
 

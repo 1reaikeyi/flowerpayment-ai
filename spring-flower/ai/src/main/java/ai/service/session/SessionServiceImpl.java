@@ -1,4 +1,4 @@
-package ai.service.impl;
+package ai.service.session;
 
 import ai.common.SessionProperties;
 import ai.mapper.SessionMapper;
@@ -6,7 +6,7 @@ import ai.model.entity.Session;
 import ai.model.vo.MessageVO;
 import ai.model.vo.SessionTitleVO;
 import ai.model.vo.SessionVO;
-import ai.service.SessionService;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +66,11 @@ public class SessionServiceImpl extends ServiceImpl<SessionMapper, Session> impl
      */
     @Override
     public List<MessageVO> queryBySessionId(String chatId) {
-        return List.of();
+        List<Session> sessionList = super.lambdaQuery().eq(Session::getSessionId, chatId).list();
+        List<MessageVO> messageVOList = sessionList.stream()
+                .map(message -> BeanUtil.toBean(message,MessageVO.class))
+                .toList();
+        return messageVOList;
     }
 
     /**
@@ -84,7 +88,7 @@ public class SessionServiceImpl extends ServiceImpl<SessionMapper, Session> impl
      * @param title     标题
      */
     @Override
-    public void updateTitle(String sessionId, String title) {
+    public void updateSessionTitle(String sessionId, String title) {
 
     }
 

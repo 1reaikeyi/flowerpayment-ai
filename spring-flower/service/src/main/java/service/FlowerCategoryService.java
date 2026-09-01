@@ -17,18 +17,24 @@ import java.util.List;
 
 public interface FlowerCategoryService extends IService<FlowerCategory> {
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     FlowerCategoryDTO create(FlowerCategoryDTO flowerCategoryDTO);
 
     @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FlowerCategoryVO> readByType(Long type);
+
     @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FlowerCategoryVO> readPage(FlowerCategoryPageDTO flowerCategoryPageDTO);
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     void updateByObject(FlowerCategoryDTO categoryDTO);
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     void deleteById(List<Long> ids);
 
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FlowerVO> readFlower(Long categoryId);
 
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FestivalVO> readFestival(Long categoryId);
 }

@@ -25,6 +25,7 @@ public interface FestivalService extends IService<Festival> {
     void deleteCache(List<Long> ids);
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     FestivalDTO create(FestivalDTO festivalDTO);
+
     @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FestivalVO> readPage(FestivalPageDTO festivalPageDTO);
     @PreAuthorize("hasAuthority('ROLE_USER')")

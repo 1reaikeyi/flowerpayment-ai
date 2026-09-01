@@ -1,6 +1,6 @@
 package ai.start.graph;
 
-import ai.service.VisualService;
+import ai.service.visual.VisualService;
 import com.alibaba.cloud.ai.graph.OverAllState;
 import com.alibaba.cloud.ai.graph.action.NodeAction;
 import lombok.extern.slf4j.Slf4j;

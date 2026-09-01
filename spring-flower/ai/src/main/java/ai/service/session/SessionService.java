@@ -1,4 +1,4 @@
-package ai.service;
+package ai.service.session;
 
 import ai.model.entity.Session;
 import ai.model.vo.MessageVO;
@@ -33,7 +33,7 @@ public interface SessionService extends IService<Session> {
      * @param sessionId 会话id
      * @param title     标题
      */
-    void updateTitle(String sessionId, String title);
+    void updateSessionTitle(String sessionId, String title);
     /**
      * 删除历史会话
      *

@@ -1,11 +1,10 @@
-package ai.service.impl;
+package ai.service.visual;
 
 import jakarta.annotation.Resource;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.content.Media;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import ai.service.VisualService;
 
 @Service
 public class VisualServiceImpl implements VisualService {

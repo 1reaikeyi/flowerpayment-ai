@@ -1,10 +1,9 @@
 package ai.start.graph;
 
-import ai.service.ToolService;
+import ai.service.tool.ToolService;
 import com.alibaba.cloud.ai.graph.OverAllState;
 import com.alibaba.cloud.ai.graph.action.NodeAction;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

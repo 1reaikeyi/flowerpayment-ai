@@ -19,13 +19,18 @@ public interface FlowerService extends IService<Flower> {
     @PreAuthorize("hasAuthority('ROLE_USER')")
     FlowerVO readCache(Long id);
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     void updateCache(FlowerDTO flowerDTO);
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     void deleteCache(List<Long> ids);
 
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FlowerVO> readPage(FlowerPageDTO flowerPageDTO);
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     FlowerDTO create(FlowerDTO flowerDTO);
 
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FlowerDetailVO> readFestivalDetail(Long id);
 }
