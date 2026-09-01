@@ -2,7 +2,7 @@
   <h1>flowerpayment-ai 鲜花商店 + ai</h1>
   <h2>flowerpayment-ai：B2C 经营模式，一个花店卖家，多个买家。鲜花服务由店长、店员和客户组成。</h2>
   <h4>
-    一个由 Spring Boot 3 + Vue 3 的前后端分离架构，中间件使用 Redis + nginx，主业务为鲜花售卖，分支业务Spring AI（使用阿里云的qwen），通过图像识别推荐相似花束，支持LLM生成贺卡文案+tts配音贺语，rag连通购物车数据+ai带货下单。
+    一个由 Spring Boot 3 + Vue 3 的前后端分离架构，中间件使用 Redis + nginx，主业务为鲜花售卖，分支业务Spring AI（使用阿里云的qwen），通过图像识别推荐相似花束，支持LLM生成贺卡文案+tts配音贺语，rag连接购物车数据，知识文化讲解宣传。
   </h4>
 </div>
 
@@ -556,5 +556,5 @@ PromptTemplate promptTemplate = new PromptTemplate("根据信息{input} 进行�
 promptTemplate.add("input", input);
 ```
 
-### rag连通购物车数据,ai带货下单
+### 购物车旁边加入ai文化知识讲解带货（ai不会下单，只讲鲜花文化知识宣传）
 
