@@ -5,7 +5,7 @@ import reactor.core.publisher.Flux;
 
 public interface ChatService {
     /**
-     * 获取对话id，规则：用户id_会话id
+     * 获取对话id，
      *
      * @param sessionId 会话id
      * @return 对话id

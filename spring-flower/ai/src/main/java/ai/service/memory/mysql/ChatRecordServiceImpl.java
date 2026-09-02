@@ -1,4 +1,4 @@
-package ai.service.memory;
+package ai.service.memory.mysql;
 
 import ai.mapper.ChatRecordMapper;
 import ai.model.entity.ChatRecord;

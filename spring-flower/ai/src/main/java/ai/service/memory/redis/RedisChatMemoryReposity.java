@@ -16,7 +16,7 @@
 //
 //@Service
 //@Profile("redis")
-//public class RedisChatMemoryReposity implements ChatMemoryRepository {
+//public class RedisChatMemoryRepository implements ChatMemoryRepository {
 //    private static final String DEFAULT_PREFIX = "chat:";
 //    private final String prefix;
 //    @Autowired

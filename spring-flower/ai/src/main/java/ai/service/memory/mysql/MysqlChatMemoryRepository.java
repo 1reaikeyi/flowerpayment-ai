@@ -1,12 +1,17 @@
-package ai.service.memory;
+package ai.service.memory.mysql;
 
+import ai.model.entity.ChatRecord;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import org.springframework.ai.chat.memory.ChatMemoryRepository;
 import org.springframework.ai.chat.messages.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 @Component
 public class MysqlChatMemoryRepository implements ChatMemoryRepository {
+    @Autowired
+    private ChatRecordService chatRecordService;
 
     @Override
     public List<String> findConversationIds() {
@@ -24,7 +29,8 @@ public class MysqlChatMemoryRepository implements ChatMemoryRepository {
     }
 
     @Override
-    public void deleteByConversationId(String conversationId) {
-
+    public void deleteByConversationId(String sessionId) {
+        chatRecordService.remove(new LambdaUpdateWrapper<ChatRecord>()
+                .eq(ChatRecord::getSessionId, sessionId));
     }
 }

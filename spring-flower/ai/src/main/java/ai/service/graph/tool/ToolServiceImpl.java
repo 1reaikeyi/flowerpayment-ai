@@ -2,7 +2,7 @@ package ai.service.graph.tool;
 
 import ai.model.enums.ChatEventTypeEnum;
 import ai.model.vo.ChatEventVO;
-import ai.service.memory.ChatRecordService;
+import ai.service.memory.mysql.ChatRecordService;
 import ai.service.session.SessionService;
 import jakarta.annotation.Resource;
 import org.springframework.ai.chat.client.ChatClient;
