@@ -1,4 +1,4 @@
-package ai.service.visual;
+package ai.service.graph.visual;
 
 import jakarta.annotation.Resource;
 import org.springframework.ai.chat.client.ChatClient;
@@ -15,10 +15,10 @@ public class VisualServiceImpl implements VisualService {
     @Override
     public Flux<String> chat(Media media) {
         return visualChatClient.prompt()
-                .user(promptUserSpec -> promptUserSpec.text("你是一个花艺信息提取助手。根据用户描述，从中提取以下三个字段：" +
+                .user(promptUserSpec -> promptUserSpec.text("你是一个花艺信息提取助手。根据图片信息, 提取信息: " +
                                 "color（颜色，如：红色、粉色、白色。)"+
                                 "description（花的特征)" +
-                                "总结成数据格式 颜色=color,描述=description")
+                                "内容格式 颜色=color,描述=description")
                         .media(media))
                 .stream()
                 .content();

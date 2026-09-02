@@ -21,10 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import service.UserService;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -37,7 +34,7 @@ public class ExcelReportController {
     @Autowired
     private UserService userService;
 
-    private static final String PATH = "ku/excel";
+    private static final String PATH = "ku/excel/report.xlsx";
 
     /**
      * write
@@ -67,7 +64,7 @@ public class ExcelReportController {
      * 读取
      */
     @PostMapping("/read")
-    public Result doread() {
+    public Result doRead() {
         File file = new File(PATH);
         String filePath = file.getAbsolutePath();
 
@@ -92,25 +89,23 @@ public class ExcelReportController {
        return Result.success(dataList);
     }
     @GetMapping("/download")
-    public void download(HttpServletResponse response) {
+    public Result download(HttpServletResponse response) {
         String fileName = "导出用户数据.xlsx";
         File local = new File(PATH);
         File path = new File(local.getAbsolutePath());
-        try {
-            if (!path.exists()) {
-                throw new IllegalArgumentException(path + "文件不存在");
-            }
-            response.setContentType("application/octet-stream");
-            String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
-            response.setHeader("Content-Disposition", "attachment;filename=" + encodedFileName);
-            try (InputStream fileInputStream = new FileInputStream(path)) {
-                StreamUtils.copy(fileInputStream, response.getOutputStream());
-                response.flushBuffer();
-                log.info("文件下载成功: {}", path);
-            }
+        if (!path.exists()) {
+            log.info("当前path是: "+path);
+            return Result.error(path + "文件不存在");
+        }
+        response.setContentType("application/octet-stream");
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+        response.setHeader("Content-Disposition", "attachment;filename=" + encodedFileName);
+        try (InputStream fileInputStream = new FileInputStream(path)) {
+            StreamUtils.copy(fileInputStream, response.getOutputStream());
+            response.flushBuffer();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        return Result.success("文件下载成功"+path);
     }
 }

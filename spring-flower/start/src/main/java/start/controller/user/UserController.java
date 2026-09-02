@@ -7,10 +7,7 @@
 //import model.dto.LoginDTO;
 //import model.dto.UserDTO;
 //import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RestController;
+//import org.springframework.web.bind.annotation.*;
 //import service.EmployeeService;
 //import service.UserService;
 //import start.aop.OperationLogging;
@@ -24,13 +21,13 @@
 //
 //    @PostMapping("/register")
 //    public Result register(@RequestBody UserDTO userDTO) {
-//
+//        userService.register(userDTO);
 //        return Result.success("register");
 //    }
 //
 //    @PostMapping("/login")
 //    public Result login(@RequestBody LoginDTO loginDTO) {
-//
+//        String token = userService.login(loginDTO);
 //        return Result.success();
 //    }
 //
@@ -42,7 +39,14 @@
 //        if (userId == null) {
 //            return Result.error(ErrorConstant.ACCOUNT_NOT_EXIST);
 //        }
-//
+//        userService.logout(userId);
 //        return Result.success("logout");
+//    }
+//
+//    @OperationLogging(operation = OperationEnum.UPDATE)
+//    @PutMapping
+//    public Result updateByObject(@RequestBody UserDTO userDTO) {
+//        userService.updateByObject(userDTO);
+//        return Result.success(userDTO.getId());
 //    }
 //}

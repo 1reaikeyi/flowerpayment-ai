@@ -1,9 +1,8 @@
-package ai.service.tool;
+package ai.service.graph.tool;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import mapper.FlowerMapper;
 import model.entity.Flower;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.annotation.Tool;

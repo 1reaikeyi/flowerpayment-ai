@@ -1,4 +1,4 @@
-package ai.service.tool;
+package ai.service.graph.tool;
 
 import cn.hutool.core.lang.Assert;
 

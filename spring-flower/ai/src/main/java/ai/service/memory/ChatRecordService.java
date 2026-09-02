@@ -1,4 +1,4 @@
-package ai.service;
+package ai.service.memory;
 
 import ai.model.entity.ChatRecord;
 import com.baomidou.mybatisplus.extension.service.IService;

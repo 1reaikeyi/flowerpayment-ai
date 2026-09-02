@@ -1,4 +1,4 @@
-package ai.service.tool;
+package ai.service.graph.tool;
 
 import lombok.Data;
 import org.springframework.ai.tool.annotation.ToolParam;

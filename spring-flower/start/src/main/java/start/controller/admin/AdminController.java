@@ -60,12 +60,7 @@ public class AdminController {
         return Result.success(employeeVOList);
     }
 
-    @OperationLogging(operation = OperationEnum.UPDATE)
-    @PutMapping
-    public Result updateByObject(@RequestBody EmployeeDTO employeeDTO) {
-        employeeService.updateByObject(employeeDTO);
-        return Result.success(employeeDTO.getId());
-    }
+
     @OperationLogging(operation = OperationEnum.UPDATE)
     @DeleteMapping("/password")
     public Result updatePassword(@Validated @RequestBody PasswordDTO passwordDTO) {

@@ -48,4 +48,11 @@ public class EmployeeController {
         return Result.success("logout");
     }
 
+    @OperationLogging(operation = OperationEnum.UPDATE)
+    @PutMapping
+    public Result updateByObject(@RequestBody EmployeeDTO employeeDTO) {
+        employeeService.updateByObject(employeeDTO);
+        return Result.success(employeeDTO.getId());
+    }
+
 }

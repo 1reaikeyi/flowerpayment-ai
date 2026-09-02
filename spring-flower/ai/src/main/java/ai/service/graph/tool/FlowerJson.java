@@ -1,4 +1,4 @@
-package ai.service.tool;
+package ai.service.graph.tool;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;

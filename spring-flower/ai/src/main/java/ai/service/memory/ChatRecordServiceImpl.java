@@ -1,8 +1,7 @@
-package ai.service.impl;
+package ai.service.memory;
 
 import ai.mapper.ChatRecordMapper;
 import ai.model.entity.ChatRecord;
-import ai.service.ChatRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

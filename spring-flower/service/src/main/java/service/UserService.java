@@ -1,6 +1,8 @@
 package service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import model.dto.LoginDTO;
+import model.dto.UserDTO;
 import model.entity.User;
 import org.springframework.stereotype.Service;
 
@@ -10,4 +12,12 @@ import org.springframework.stereotype.Service;
 
 public interface UserService extends IService<User> {
     User findUsername(String username);
+
+    void register(UserDTO userDTO);
+
+    String login(LoginDTO loginDTO);
+
+    void logout(Long userId);
+
+    void updateByObject(UserDTO userDTO);
 }

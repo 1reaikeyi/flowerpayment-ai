@@ -1,8 +1,8 @@
-package ai.service.tool;
+package ai.service.graph.tool;
 
 import ai.model.enums.ChatEventTypeEnum;
 import ai.model.vo.ChatEventVO;
-import ai.service.ChatRecordService;
+import ai.service.memory.ChatRecordService;
 import ai.service.session.SessionService;
 import jakarta.annotation.Resource;
 import org.springframework.ai.chat.client.ChatClient;
@@ -34,7 +34,7 @@ public class ToolServiceImpl implements ToolService {
     @Override
     public Flux<String> chat(String visualValue, String question) {
         PromptTemplate promptTemplate = new PromptTemplate(
-                "你是一个花店查询家。根据用户描述{input}作为查询条件，并解决用户的问题 {question}。");
+                "你是一个花店查询家。根据用户描述{input}作为查询条件，进行解决用户的问题 {question}。");
         String prompt = promptTemplate.render(
                 Map.of("input", visualValue, "question", question)
         );

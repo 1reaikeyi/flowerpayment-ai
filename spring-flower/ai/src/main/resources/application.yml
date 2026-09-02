@@ -5,7 +5,6 @@ logging:
   charset:
     console: UTF-8
   level:
-    org.springframework.ai: debug
     org.springframework.web.client: info
 
 spring:
