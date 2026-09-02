@@ -11,7 +11,7 @@ spring:
 
 system:
   chat:
-    file: classpath:session.txt
+    file: classpath:system-message.txt
     group: DEFAULT_GROUP
     timeout-ms: 20000
 

@@ -13,12 +13,12 @@ import java.util.Base64;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/see")
 public class SeeController {
     @Autowired
     private NodeLink nodeLink;
 
-    @PostMapping("/see")
+    @PostMapping
     public Object flow(@RequestParam String question,
                        @RequestParam MultipartFile file) throws Exception {
         if(file == null){

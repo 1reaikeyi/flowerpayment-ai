@@ -18,9 +18,10 @@ public class VisualServiceImpl implements VisualService {
                 .user(promptUserSpec -> promptUserSpec.text("你是一个花艺信息提取助手。根据图片信息, 提取信息: " +
                                 "color（颜色，如：红色、粉色、白色。)"+
                                 "description（花的特征)" +
-                                "内容格式 颜色=color,描述=description")
+                                "总结数据，颜色=color，description = color")
                         .media(media))
                 .stream()
-                .content();
+                .content()
+                .concatWith(Flux.just("stop"));
     }
 }

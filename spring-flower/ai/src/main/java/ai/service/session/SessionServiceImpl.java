@@ -8,7 +8,7 @@ import ai.model.enums.MessageTypeEnum;
 import ai.model.vo.MessageVO;
 import ai.model.vo.SessionTitleVO;
 import ai.model.vo.SessionVO;
-import ai.service.chat.ChatService;
+import ai.service.chat.Chat;
 import ai.service.memory.AssistantMessageUtil;
 import ai.service.memory.mysql.ChatRecordService;
 import cn.hutool.core.bean.BeanUtil;
@@ -53,15 +53,16 @@ public class SessionServiceImpl extends ServiceImpl<SessionMapper, Session> impl
      */
     @Override
     public SessionVO createSession() {
-        String id = UUID.randomUUID(true).toString();
+
         LocalDateTime now = LocalDateTime.now();
         String sessionId = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
         Session session = Session.builder()
-                .id(Long.parseLong(id))
                 .sessionId(sessionId)
                 //先独立，后续合并到start,接入spring security
                 .userId(0L)
                 .build();
+        super.save(session);
+
         SessionVO sessionVO = new SessionVO();
         List<SessionVO.Example> examples = sessionProperties.getExamples();
         List<SessionVO.Example> sessionExampleList = new ArrayList<>();
@@ -84,7 +85,7 @@ public class SessionServiceImpl extends ServiceImpl<SessionMapper, Session> impl
     @Override
     public List<MessageVO> queryBySessionId(String sessionId) {
         // 根据session获取对话ID,从chatmemory中获取历史消息
-        String conversationId = ChatService.getConversationId(sessionId);
+        String conversationId = Chat.getConversationId(sessionId);
         /**  Message
          * USER("user"),
          * ASSISTANT("assistant"),

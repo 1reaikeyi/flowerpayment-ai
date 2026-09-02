@@ -34,14 +34,16 @@ public class ToolServiceImpl implements ToolService {
     @Override
     public Flux<String> chat(String visualValue, String question) {
         PromptTemplate promptTemplate = new PromptTemplate(
-                "你是一个花店查询家。根据用户描述{input}作为查询条件，进行解决用户的问题 {question}。");
+                "你是一个花店查询家。根据用户描述{input}，自由选择信息作为查询条件，进行解决用户的问题 {question}。");
         String prompt = promptTemplate.render(
                 Map.of("input", visualValue, "question", question)
         );
         return chatClient.prompt()
                 .user(prompt)
                 .stream()
-                .content();
+                .content()
+                .concatWith(Flux.just("stop"));
+
     }
 
 }

@@ -1,8 +1,6 @@
 package ai.start;
 
 import ai.common.SessionProperties;
-import common.properties.AliOssProperties;
-import common.properties.JwtProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -24,9 +22,9 @@ import service.impl.FlowerServiceImpl;
 @Import({FestivalServiceImpl.class, FlowerServiceImpl.class, FestivalDetailServiceImpl.class, FlowerDetailServiceImpl.class})
 @Slf4j
 @EnableConfigurationProperties({SessionProperties.class})
-public class SeeApplication {
+public class FAIApplication {
     public static void main(String[] args) {
-        SpringApplication.run(SeeApplication.class, args);
+        SpringApplication.run(FAIApplication.class, args);
         log.info(">>>ai");
     }
 

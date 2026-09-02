@@ -3,7 +3,7 @@ package ai.service.chat;
 import ai.model.vo.ChatEventVO;
 import reactor.core.publisher.Flux;
 
-public interface ChatService {
+public interface Chat {
     /**
      * 获取对话id，
      *

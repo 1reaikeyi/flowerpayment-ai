@@ -10,7 +10,7 @@ import ai.service.graph.tool.FlowerTool;
 
 
 @Configuration
-public class ToolConfiguration {
+public class ToolConfig {
     @Bean
     public ChatClient toolClient(OpenAiChatModel model,
                                  @Qualifier("loggerAdvisor") Advisor loggerAdvisor,

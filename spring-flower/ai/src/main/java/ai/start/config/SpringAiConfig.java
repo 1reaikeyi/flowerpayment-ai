@@ -26,4 +26,5 @@ public class SpringAiConfig {
                 .maxMessages(20)
                 .build();
     }
+
 }
