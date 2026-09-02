@@ -19,10 +19,10 @@ public interface SessionService extends IService<Session> {
 
     /**
      * 查询chat
-     * @param chatId
+     * @param sessionId
      * @return
      */
-    List<MessageVO> queryBySessionId(String chatId);
+    List<MessageVO> queryBySessionId(String sessionId);
     /**
      * 查询历史会话列表
      */
