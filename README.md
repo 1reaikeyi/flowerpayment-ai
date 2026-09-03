@@ -561,5 +561,7 @@ PromptTemplate promptTemplate = new PromptTemplate("根据信息{input} 进行�
 promptTemplate.add("input", input);
 ```
 
-### 购物车旁边加入ai文化知识讲解带货（ai不会下单，只讲鲜花文化知识宣传）
+### 购物车旁边加入ai文化知识讲解带货（ai不会下单的一些列功能，花店实际需要的鲜花知识和氛围讲解）
+
+降级处理直接去找人工，ai不充当客服
 
