@@ -27,7 +27,7 @@ import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useEmployeeStore } from '@/stores/index.js'
 import { uploadFile } from '@/api/file/file.js'
-import { updateEmployee } from '@/api/admin/employee.js'
+import { updateEmployee } from '@/api/admin/admin.js'
 import defaultAvatar from '@/assets/login/avatar.png'
 
 const employeeStore = useEmployeeStore()

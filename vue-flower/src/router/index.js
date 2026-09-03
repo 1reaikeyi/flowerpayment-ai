@@ -27,7 +27,7 @@ const router = createRouter({
         {
             path: '/admin',
             component: () => import('@/layout/admin.vue'), // 管理员专用布局
-            redirect: 'employee/profile',
+            redirect: 'flower/index',
             children: [
 
                 { path: 'category', component: () => import('@/views/admin/category/category.vue') },

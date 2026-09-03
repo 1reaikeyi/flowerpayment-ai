@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { loginEmployee, logoutEmployee, registerEmployee, getEmployeeById } from '@/api/admin/employee.js'
+import { loginEmployee, logoutEmployee, registerEmployee, getEmployeeById } from '@/api/admin/admin.js'
 import { getUserIdFromToken } from '@/stores/modules/jwt.js'
 
 export const useEmployeeStore

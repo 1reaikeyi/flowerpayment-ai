@@ -23,7 +23,7 @@ import { ref, reactive, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useEmployeeStore } from '@/stores/index.js'
 // 改用专用修改密码接口：PUT /admin/employee/password (Query 参数)
-import { updateEmployeePassword } from '@/api/admin/employee.js'
+import { updateEmployeePassword } from '@/api/admin/admin.js'
 
 const employeeStore = useEmployeeStore()
 const user = computed(() => employeeStore.user || {})
