@@ -1,4 +1,4 @@
-package ai.service.chat;
+package ai.service.rag;
 
 import ai.model.enums.ChatEventTypeEnum;
 import ai.model.vo.ChatEventVO;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 
 @Service
 public class ChatImpl implements Chat {
-    //src/main/java/start/config/ChatConfiguratioon.java::chatClient
+
     @Resource(name = "chatClient")
     private ChatClient chatClient;
     @Autowired

@@ -36,8 +36,7 @@ public class FlowerController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/all")
     public Result readPage(FlowerPageDTO flowerPageDTO) {
-        List<FlowerVO> flowerVOList = flowerService.readPage(flowerPageDTO);
-        return Result.success(flowerVOList);
+        return Result.success(flowerService.readPage(flowerPageDTO));
     }
 
     @OperationLogging(operation = OperationEnum.READ)

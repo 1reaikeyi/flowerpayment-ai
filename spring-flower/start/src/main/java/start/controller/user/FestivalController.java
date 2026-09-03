@@ -33,8 +33,7 @@ public class FestivalController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/all")
     public Result readPage(FestivalPageDTO festivalPageDTO) {
-        List<FestivalVO> festivalVOList = festivalService.readPage(festivalPageDTO);
-        return Result.success(festivalVOList);
+        return Result.success(festivalService.readPage(festivalPageDTO));
     }
 
     @OperationLogging(operation = OperationEnum.READ)

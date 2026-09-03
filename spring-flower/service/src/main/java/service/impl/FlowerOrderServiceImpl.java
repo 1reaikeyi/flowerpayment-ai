@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import common.result.PageResult;
 import jakarta.servlet.http.HttpServletResponse;
 import mapper.FlowerOrderMapper;
 import model.dto.FlowerOrderPageDTO;
@@ -15,6 +16,7 @@ import model.entity.FlowerOrderDetail;
 import model.entity.FlowerOrderPay;
 import model.enums.OrderStatusEnum;
 import model.enums.PayStatusEnum;
+import model.vo.EmployeeVO;
 import model.vo.FlowerCategoryVO;
 import model.vo.FlowerOrderVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +51,7 @@ public class FlowerOrderServiceImpl extends ServiceImpl<FlowerOrderMapper, Flowe
     }
 
     @Override
-    public List<FlowerOrderVO> readPage(FlowerOrderPageDTO flowerOrderPageDTO) {
+    public PageResult<FlowerOrderVO> readPage(FlowerOrderPageDTO flowerOrderPageDTO) {
         LambdaQueryWrapper<FlowerOrder> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(FlowerOrder::getStatus, flowerOrderPageDTO.getStatus());
         IPage page = new Page(flowerOrderPageDTO.getPage(),flowerOrderPageDTO.getPageSize());
@@ -57,7 +59,12 @@ public class FlowerOrderServiceImpl extends ServiceImpl<FlowerOrderMapper, Flowe
         List<FlowerOrderVO> voList = flowerOrderIPage.getRecords().stream()
                 .map(flowerOrder -> BeanUtil.copyProperties(flowerOrder, FlowerOrderVO.class))
                 .collect(Collectors.toList());
-        return voList;
+        PageResult<FlowerOrderVO> result = new PageResult<>();
+        result.setTotal(flowerOrderIPage.getTotal());
+        result.setList(voList);                         // 当前页数据
+        result.setPageNum(flowerOrderIPage.getCurrent());  // 当前页码
+        result.setPageSize(flowerOrderIPage.getSize());    // 每页条数
+        return result;
     }
 
     @Override

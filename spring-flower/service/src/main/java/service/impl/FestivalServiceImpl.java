@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import common.constant.ErrorConstant;
 import common.constant.RedisPrefixConstant;
 import common.exception.FestivalFailedException;
+import common.result.PageResult;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import model.dto.FestivalPageDTO;
 import model.entity.Festival;
 import model.entity.FestivalDetail;
 import model.entity.Flower;
+import model.vo.EmployeeVO;
 import model.vo.FestivalDetailVO;
 import model.vo.FestivalVO;
 import org.redisson.api.RLock;
@@ -302,7 +304,7 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
     }
 
     @Override
-    public List<FestivalVO> readPage(FestivalPageDTO festivalPageDTO) {
+    public PageResult<FestivalVO> readPage(FestivalPageDTO festivalPageDTO) {
         LambdaQueryWrapper<Festival> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(festivalPageDTO.getName() != null, Festival::getName, festivalPageDTO.getName());
         IPage page = new Page(festivalPageDTO.getPage(), festivalPageDTO.getPageSize());
@@ -310,7 +312,12 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
         List<FestivalVO> voList = festivalIPage.getRecords().stream()
                 .map(festival ->BeanUtil.toBean(festival, FestivalVO.class))
                 .collect(Collectors.toList());
-        return voList;
+        PageResult<FestivalVO> result = new PageResult<>();
+        result.setTotal(festivalIPage.getTotal());
+        result.setList(voList);                         // 当前页数据
+        result.setPageNum(festivalIPage.getCurrent());  // 当前页码
+        result.setPageSize(festivalIPage.getSize());    // 每页条数
+        return result;
     }
 
     @Override

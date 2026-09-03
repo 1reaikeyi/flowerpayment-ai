@@ -20,5 +20,21 @@ public class ChatConfig {
                 .defaultTools(flowerTool)
                 .build();
     }
-
+    @Bean
+    public ChatClient toolClient(OpenAiChatModel model,
+                                 @Qualifier("loggerAdvisor") Advisor loggerAdvisor,
+                                 @Qualifier("memoryAdvisor") Advisor messageMemoryAdvisor,
+                                 FlowerTool flowerTool) {  // 日志记录器)
+        return ChatClient.builder(model)
+                .defaultAdvisors(loggerAdvisor, messageMemoryAdvisor)
+                .defaultTools(flowerTool)
+                .build();
+    }
+    @Bean
+    public ChatClient visualChatClient(OpenAiChatModel model,
+                                       @Qualifier("loggerAdvisor") Advisor loggerAdvisor) {  // 日志记录器
+        return ChatClient.builder(model)
+                .defaultAdvisors(loggerAdvisor)
+                .build();
+    }
 }

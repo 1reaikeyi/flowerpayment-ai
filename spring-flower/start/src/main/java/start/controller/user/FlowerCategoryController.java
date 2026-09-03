@@ -35,8 +35,7 @@ public class FlowerCategoryController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/all")
     public Result readPage( @Validated FlowerCategoryPageDTO flowerCategoryPageDTO) {
-        List<FlowerCategoryVO> flowerCategoryVOList = flowerCategoryService.readPage(flowerCategoryPageDTO);
-        return Result.success(flowerCategoryVOList);
+        return Result.success(flowerCategoryService.readPage(flowerCategoryPageDTO));
     }
 
 

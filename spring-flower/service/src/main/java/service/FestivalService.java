@@ -1,6 +1,7 @@
 package service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import common.result.PageResult;
 import model.dto.FestivalDTO;
 import model.dto.FestivalPageDTO;
 import model.dto.FlowerPageDTO;
@@ -27,7 +28,7 @@ public interface FestivalService extends IService<Festival> {
     FestivalDTO create(FestivalDTO festivalDTO);
 
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    List<FestivalVO> readPage(FestivalPageDTO festivalPageDTO);
+    PageResult<FestivalVO> readPage(FestivalPageDTO festivalPageDTO);
     @PreAuthorize("hasAuthority('ROLE_USER')")
     List<FestivalDetailVO> readFestivalDetail(Long id);
     @PreAuthorize("hasAuthority('ROLE_USER')")

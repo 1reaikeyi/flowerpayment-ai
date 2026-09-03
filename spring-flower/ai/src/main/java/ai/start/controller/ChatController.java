@@ -2,8 +2,7 @@ package ai.start.controller;
 
 import ai.model.dto.ChatDTO;
 import ai.model.vo.ChatEventVO;
-import ai.service.chat.Chat;
-import jakarta.annotation.Resource;
+import ai.service.rag.Chat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

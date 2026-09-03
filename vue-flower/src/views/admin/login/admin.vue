@@ -55,7 +55,7 @@
 import { reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { loginEmployee } from '@/api/admin/employee.js'
+import { loginEmployee } from '@/api/admin/admin.js'
 import { useEmployeeStore } from '@/stores/index.js'
 
 // 加载状态
@@ -114,16 +114,7 @@ const handleLogin = async () => {
 </script>
 
 <style lang="scss" scoped>
-/* 系统色板 - 严格只使用以下 9 种颜色及其透明度变体 */
-$sys-blue: #0A84FF;      // 系统蓝
-$sys-red: #FF453A;       // 系统红
-$sys-orange: #FF9F0A;    // 系统橙
-$sys-yellow: #FFD60A;    // 系统黄
-$sys-green: #30D158;     // 系统绿
-$sys-cyan: #40C8E0;      // 系统青
-$sys-indigo: #5E5CE6;    // 系统靛蓝（色板中最深，用作主文字色）
-$sys-purple: #BF5AF2;    // 系统紫
-$sys-pink: #FF375F;      // 系统粉
+/* 系统色板变量已全局注入，可直接使用 $sys-blue、$primary 等 */
 
 .login {
   display: flex;

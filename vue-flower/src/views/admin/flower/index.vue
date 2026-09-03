@@ -41,7 +41,7 @@
             v-if="row.image"
             :src="resolveImageUrl(row.image)"
             :preview-src-list="[resolveImageUrl(row.image)]"
-            fit="cover"
+            fit="contain"
             class="flower-image"
           >
             <template #error>
@@ -209,12 +209,12 @@ const fetchList = async () => {
     if (searchForm.name) {
       params.name = searchForm.name
     }
-    // 返回 IPage<FlowerVO>：{ records, total, size, current }
+    // 后端返回 Result<PageResult<FlowerVO>>：{ code, data: { total, list, pageNum, pageSize } }
     const res = await pageFlowerList(params)
-    // 后端返回 Result<List<FlowerVO>>，直接取数组；不返回 total
     if (res?.data) {
-      tableData.value = res.data
-      total.value = res.data.length
+      // data 是 PageResult 对象，取 list 当列表、total 当总数
+      tableData.value = res.data.list || []
+      total.value = res.data.total || 0
     } else {
       tableData.value = []
       total.value = 0
@@ -291,21 +291,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-/* 系统色板 - 严格只使用以下 9 种颜色及其透明度变体（参考 admin.vue） */
-$sys-blue: #0A84FF;      // 系统蓝 - 主题主色
-$sys-red: #FF453A;       // 系统红 - 价格
-$sys-orange: #FF9F0A;    // 系统橙
-$sys-yellow: #FFD60A;    // 系统黄
-$sys-green: #30D158;     // 系统绿
-$sys-cyan: #40C8E0;      // 系统青
-$sys-indigo: #5E5CE6;    // 系统靛蓝 - 深色/文字
-$sys-purple: #BF5AF2;    // 系统紫
-$sys-pink: #FF375F;      // 系统粉
-
-/* 主题色变量（基于系统蓝） */
-$primary: $sys-blue;
-$primary-light: rgba(10, 132, 255, 0.1);   // 主色浅背景
-$primary-dark: $sys-indigo;                  // 主色深色
+/* 系统色板变量已全局注入，可直接使用 $sys-blue、$primary 等 */
 
 .flower-container {
   padding: 20px;

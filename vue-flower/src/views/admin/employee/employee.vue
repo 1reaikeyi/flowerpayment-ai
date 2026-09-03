@@ -103,13 +103,13 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Search, Plus, Edit, Switch, Delete } from '@element-plus/icons-vue'
-// API 函数名对齐新的 admin API 层（employee.js）
+// API 函数名对齐新的 admin API 层（admin.js）
 import {
   pageEmployeeList,
   getEmployeeById,
   updateEmployee,
   deleteEmployees
-} from '@/api/admin/employee.js'
+} from '@/api/admin/admin.js'
 
 const router = useRouter()
 
@@ -141,10 +141,10 @@ const fetchEmployeeList = async () => {
       employeename: searchForm.employeename || undefined
     }
     const res = await pageEmployeeList(params)
-    // 后端返回 Result<List<EmployeeVO>>，直接取数组；不返回 total
+    // 后端返回 Result<PageResult<EmployeeVO>>：data = { total, list, pageNum, pageSize }
     if (res?.data) {
-      tableData.value = res.data
-      total.value = res.data.length
+      tableData.value = res.data.list || []
+      total.value = res.data.total || 0
     }
   } catch (error) {
     console.error('获取员工列表失败:', error)
@@ -210,21 +210,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-/* 系统色板 - 严格只使用以下 9 种颜色及其透明度变体 */
-$sys-blue: #0A84FF;      // 系统蓝 - 主题主色
-$sys-red: #FF453A;       // 系统红
-$sys-orange: #FF9F0A;    // 系统橙
-$sys-yellow: #FFD60A;    // 系统黄
-$sys-green: #30D158;     // 系统绿
-$sys-cyan: #40C8E0;      // 系统青
-$sys-indigo: #5E5CE6;    // 系统靛蓝 - 深色/文字
-$sys-purple: #BF5AF2;    // 系统紫
-$sys-pink: #FF375F;      // 系统粉
-
-/* 主题色变量（基于系统蓝） */
-$primary: $sys-blue;
-$primary-light: rgba(10, 132, 255, 0.1);
-$primary-dark: $sys-indigo;
+/* 系统色板变量已全局注入，可直接使用 $sys-blue、$primary 等 */
 
 .employee-container {
   padding: 20px;

@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import common.constant.ErrorConstant;
 import common.constant.RedisPrefixConstant;
 import common.exception.FlowerFailedException;
+import common.result.PageResult;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import model.dto.FlowerPageDTO;
 import model.entity.FestivalDetail;
 import model.entity.Flower;
 import model.entity.FlowerDetail;
+import model.vo.EmployeeVO;
 import model.vo.FlowerDetailVO;
 import model.vo.FlowerVO;
 import org.redisson.api.RLock;
@@ -299,7 +301,7 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
     }
 
     @Override
-    public List<FlowerVO> readPage(FlowerPageDTO flowerPageDTO) {
+    public PageResult<FlowerVO> readPage(FlowerPageDTO flowerPageDTO) {
         LambdaQueryWrapper<Flower> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(flowerPageDTO.getName() != null, Flower::getName, flowerPageDTO.getName());
         IPage page = new Page(flowerPageDTO.getPage(),flowerPageDTO.getPageSize());
@@ -307,7 +309,12 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
         List<FlowerVO> voList = flowerIPage.getRecords().stream()
                 .map(flower -> BeanUtil.copyProperties(flower, FlowerVO.class))
                 .collect(Collectors.toList());
-        return voList;
+        PageResult<FlowerVO> result = new PageResult<>();
+        result.setTotal(flowerIPage.getTotal());
+        result.setList(voList);                         // 当前页数据
+        result.setPageNum(flowerIPage.getCurrent());  // 当前页码
+        result.setPageSize(flowerIPage.getSize());    // 每页条数
+        return result;
     }
 
     @Override

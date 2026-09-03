@@ -3,6 +3,7 @@ package start.controller.admin;
 import common.constant.ErrorConstant;
 import common.constant.RoleConstant;
 import common.enums.OperationEnum;
+import common.result.PageResult;
 import common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import model.dto.EmployeeDTO;
@@ -56,8 +57,8 @@ public class AdminController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/all")
     public Result readPage( @Validated EmployeePageDTO employeePageDTO) {
-        List<EmployeeVO> employeeVOList = employeeService.readPage(employeePageDTO);
-        return Result.success(employeeVOList);
+        PageResult<EmployeeVO> employeeVOPageResult = employeeService.readPage(employeePageDTO);
+        return Result.success(employeeVOPageResult);
     }
 
 

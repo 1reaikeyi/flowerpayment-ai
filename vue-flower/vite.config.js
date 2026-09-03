@@ -15,6 +15,16 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+
+  // 全局注入 SCSS 变量（使用 @use 替代已弃用的 @import）
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "@/assets/styles/_theme" as *;`,
+        quietDeps: true
+      }
+    }
+  },
   server: {
     proxy: {
       '/api': {

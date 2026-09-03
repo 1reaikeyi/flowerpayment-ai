@@ -1,6 +1,7 @@
 package start.controller.admin;
 
 import common.enums.OperationEnum;
+import common.result.PageResult;
 import common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import model.dto.FlowerCategoryPageDTO;
@@ -41,8 +42,8 @@ public class AdminFlowerCategoryController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/all")
     public Result readPage( @Validated FlowerCategoryPageDTO flowerCategoryPageDTO) {
-        List<FlowerCategoryVO> flowerCategoryVOList = flowerCategoryService.readPage(flowerCategoryPageDTO);
-        return Result.success(flowerCategoryVOList);
+        PageResult<FlowerCategoryVO> flowerCategoryVOPageResult = flowerCategoryService.readPage(flowerCategoryPageDTO);
+        return Result.success(flowerCategoryVOPageResult);
     }
 
     @OperationLogging(operation = OperationEnum.UPDATE)

@@ -14,6 +14,7 @@ public class EmployeeVO implements Serializable {
     private String username;
     private String avatar;
     private String work;
+    private String sex;      // 性别：男 / 女
     private String email;
     private String phone;
     private Long status;

@@ -1,6 +1,7 @@
 package service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import common.result.PageResult;
 import model.dto.FlowerCategoryPageDTO;
 import model.dto.FlowerCategoryDTO;
 import model.entity.FlowerCategory;
@@ -24,7 +25,7 @@ public interface FlowerCategoryService extends IService<FlowerCategory> {
     List<FlowerCategoryVO> readByType(Long type);
 
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    List<FlowerCategoryVO> readPage(FlowerCategoryPageDTO flowerCategoryPageDTO);
+    PageResult<FlowerCategoryVO> readPage(FlowerCategoryPageDTO flowerCategoryPageDTO);
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     void updateByObject(FlowerCategoryDTO categoryDTO);

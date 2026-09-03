@@ -1,6 +1,7 @@
 package start.controller.admin;
 
 import common.enums.OperationEnum;
+import common.result.PageResult;
 import common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import model.dto.FestivalDTO;
@@ -46,8 +47,8 @@ public class AdminFestivalController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/all")
     public Result readPage(FestivalPageDTO festivalPageDTO) {
-        List<FestivalVO> festivalVOList = festivalService.readPage(festivalPageDTO);
-        return Result.success(festivalVOList);
+        PageResult<FestivalVO> festivalVOPageResult = festivalService.readPage(festivalPageDTO);
+        return Result.success(festivalVOPageResult);
     }
 
     @OperationLogging(operation = OperationEnum.UPDATE)

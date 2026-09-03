@@ -14,6 +14,7 @@ import common.exception.EmployeeFailedException;
 import common.exception.LoginFailedException;
 import common.exception.PasswordErrorException;
 import common.properties.JwtProperties;
+import common.result.PageResult;
 import common.utils.JwtUtil;
 import mapper.EmployeeMapper;
 import model.dto.EmployeeDTO;
@@ -150,7 +151,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     }
 
     @Override
-    public List<EmployeeVO> readPage(EmployeePageDTO employeePageDTO) {
+    public PageResult<EmployeeVO> readPage(EmployeePageDTO employeePageDTO) {
         LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(employeePageDTO.getEmployeename()!= null,
                 Employee::getUsername,employeePageDTO.getEmployeename());
@@ -159,7 +160,12 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         List<EmployeeVO> voList = employeeIPage.getRecords().stream()
                 .map(emp -> BeanUtil.copyProperties(emp, EmployeeVO.class))
                 .collect(Collectors.toList());
-        return voList;
+        PageResult<EmployeeVO> result = new PageResult<>();
+        result.setTotal(employeeIPage.getTotal());
+        result.setList(voList);                         // 当前页数据
+        result.setPageNum(employeeIPage.getCurrent());  // 当前页码
+        result.setPageSize(employeeIPage.getSize());    // 每页条数
+        return result;
     }
     @Transactional(rollbackFor = Exception.class)
     @Override

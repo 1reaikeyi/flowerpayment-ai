@@ -2,6 +2,7 @@ package service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import common.result.PageResult;
 import model.dto.EmployeeDTO;
 import model.dto.EmployeePageDTO;
 import model.dto.LoginDTO;
@@ -27,7 +28,7 @@ public interface EmployeeService extends IService<Employee> {
 
     EmployeeVO readById(Long id);
 
-    List<EmployeeVO> readPage(EmployeePageDTO employeePageDTO);
+    PageResult<EmployeeVO> readPage(EmployeePageDTO employeePageDTO);
 
     void updateByObject(EmployeeDTO employeeDTO);
 

@@ -1,6 +1,7 @@
 package service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import common.result.PageResult;
 import model.dto.FlowerDTO;
 import model.dto.FlowerPageDTO;
 import model.entity.Flower;
@@ -26,7 +27,7 @@ public interface FlowerService extends IService<Flower> {
     void deleteCache(List<Long> ids);
 
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    List<FlowerVO> readPage(FlowerPageDTO flowerPageDTO);
+    PageResult<FlowerVO> readPage(FlowerPageDTO flowerPageDTO);
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     FlowerDTO create(FlowerDTO flowerDTO);

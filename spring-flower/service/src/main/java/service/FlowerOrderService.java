@@ -1,6 +1,7 @@
 package service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import common.result.PageResult;
 import model.dto.FlowerOrderPageDTO;
 import model.entity.FlowerOrder;
 import model.vo.FlowerOrderVO;
@@ -15,7 +16,7 @@ import java.util.List;
 public interface FlowerOrderService extends IService<FlowerOrder> {
     FlowerOrderVO readById(Long id);
 
-    List<FlowerOrderVO> readPage(FlowerOrderPageDTO flowerOrderPageDTO);
+    PageResult<FlowerOrderVO> readPage(FlowerOrderPageDTO flowerOrderPageDTO);
 
     void update3(Long id);
 
