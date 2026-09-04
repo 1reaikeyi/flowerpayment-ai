@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import common.constant.FillHandleConstant;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
-import start.security.SecurityContextParam;
+import service.security.SecurityContextParam;
 
 import java.time.LocalDateTime;
 

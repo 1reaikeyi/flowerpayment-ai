@@ -24,7 +24,7 @@ public interface EmployeeService extends IService<Employee> {
 
     String login(LoginDTO loginDTO);
 
-    void logout(Long userId);
+    void logout();
 
     EmployeeVO readById(Long id);
 
@@ -38,5 +38,5 @@ public interface EmployeeService extends IService<Employee> {
 
     String admin1(LoginDTO loginDTO);
 
-    void admin2(Long id);
+    void admin2();
 }

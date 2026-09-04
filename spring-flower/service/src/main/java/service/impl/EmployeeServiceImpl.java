@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import model.entity.Employee;
 import org.springframework.transaction.annotation.Transactional;
 import service.EmployeeService;
+import service.security.SecurityContextParam;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -86,9 +87,12 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     }
 
     @Override
-    public void admin2(Long id) {
-        // 修复：使用正确的 Redis key 前缀删除 admin token
-        stringRedisTemplate.delete(RedisPrefixConstant.ADMIN_AUTH_PREFIX + id);
+    public void admin2() {
+        Long userId = SecurityContextParam.getCurrentUserId();
+        if (userId == null) {
+            throw new LoginFailedException(ErrorConstant.ACCOUNT_NOT_EXIST);
+        }
+        stringRedisTemplate.delete(RedisPrefixConstant.ADMIN_AUTH_PREFIX + userId);
         SecurityContextHolder.clearContext();
     }
 
@@ -134,8 +138,11 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     }
 
     @Override
-    public void logout(Long userId) {
-        // 修复：使用正确的 Redis key 前缀删除 emp token
+    public void logout() {
+        Long userId = SecurityContextParam.getCurrentUserId();
+        if (userId == null) {
+            throw new LoginFailedException(ErrorConstant.ACCOUNT_NOT_EXIST);
+        }
         stringRedisTemplate.delete(RedisPrefixConstant.EMP_AUTH_PREFIX + userId);
         SecurityContextHolder.clearContext();
     }

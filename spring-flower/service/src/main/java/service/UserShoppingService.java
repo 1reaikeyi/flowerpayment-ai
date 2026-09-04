@@ -1,8 +1,11 @@
 package service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import model.dto.UserShoppingDTO;
 import model.entity.UserShopping;
-import org.springframework.stereotype.Service;
+import model.vo.UserShoppingVO;
+
+import java.util.List;
 
 
 /**
@@ -10,4 +13,11 @@ import org.springframework.stereotype.Service;
  */
 
 public interface UserShoppingService extends IService<UserShopping> {
+    void deleteAll();
+
+    void delete(Long id);
+
+    List<UserShoppingVO> readAll();
+
+    UserShoppingDTO create(UserShoppingDTO userShoppingDTO);
 }

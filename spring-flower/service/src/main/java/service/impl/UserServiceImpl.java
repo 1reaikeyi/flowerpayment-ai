@@ -6,8 +6,10 @@ import common.constant.ErrorConstant;
 import common.constant.JwtConstant;
 import common.constant.RedisPrefixConstant;
 import common.constant.RoleConstant;
+import common.exception.LoginFailedException;
 import common.exception.UserFailedException;
 import common.properties.JwtProperties;
+import common.result.Result;
 import common.utils.JwtUtil;
 import mapper.UserMapper;
 import model.dto.LoginDTO;
@@ -25,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import service.UserService;
+import service.security.SecurityContextParam;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -89,7 +92,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public void logout(Long userId) {
+    public void logout() {
+        // 获取当前登录用户ID
+        Long userId = SecurityContextParam.getCurrentUserId();
+        if (userId == null) {
+            throw new LoginFailedException(ErrorConstant.ACCOUNT_NOT_EXIST);
+        }
         stringRedisTemplate.delete(RedisPrefixConstant.USER_AUTH_PREFIX + userId);
         SecurityContextHolder.clearContext();
     }

@@ -167,7 +167,7 @@ flowchart LR
 
 技术栈：Vue 3 + Element Plus + Pinia + Vue Router + echarts
 
-## 管理端界面
+## 店长端，员工端界面
 
 | 功能页面  |                             截图                             |
 | :-------: | :----------------------------------------------------------: |
@@ -184,16 +184,16 @@ flowchart LR
 
 ## 用户端界面
 
-|   功能页面   | 截图 |
-| :----------: | ---- |
-|   登录页面   |      |
-|     分类     |      |
-|   单花销售   |      |
-|   多花组合   |      |
-|     店铺     |      |
-|    购物车    |      |
-|     订单     |      |
-| AI（多模态） |      |
+|   功能页面   | 截图                                                         |
+| :----------: | ------------------------------------------------------------ |
+|   登录页面   | <img src="说明/原型功能/user1.png" alt="user登录" style="zoom: 25%;" /> |
+|     分类     |                                                              |
+|   单花销售   |                                                              |
+|   多花组合   |                                                              |
+|     店铺     |                                                              |
+|    购物车    |                                                              |
+|     订单     |                                                              |
+| AI（多模态） |                                                              |
 
 
 
@@ -215,7 +215,7 @@ flowchart LR
 
 flowerpayment-ai\说明\admin接口文档.md
 
-flowerpayment-ai\说明\admin接口文档.md
+flowerpayment-ai\说明\user接口文档.md
 
 ## 一、店长、店员和客户多端端登录认证模块
 
@@ -399,6 +399,8 @@ festival
 
 ## 四、订单状态流转
 
+### model
+
 第三方授权登录流程图和支付流程：支付宝
 
 `沙箱网关固定为：https://openapi-sandbox.dl.alipaydev.com/gateway.do`
@@ -415,6 +417,8 @@ festival
 ```
 
 ## 五、user模块
+
+### model
 
 user-address
 
@@ -561,7 +565,7 @@ PromptTemplate promptTemplate = new PromptTemplate("根据信息{input} 进行�
 promptTemplate.add("input", input);
 ```
 
-### 购物车旁边加入ai文化知识讲解带货（ai不会下单的一些列功能，花店实际需要的鲜花知识和氛围讲解）
+### 购物车旁边加入ai文化知识讲解带货
 
-降级处理直接去找人工，ai不充当客服
+（ai不会下单的一些列功能，花店实际需要的鲜花知识和氛围讲解）
 

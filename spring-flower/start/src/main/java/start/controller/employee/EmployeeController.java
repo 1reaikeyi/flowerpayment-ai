@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import service.EmployeeService;
 
-import start.security.SecurityContextParam;
+import service.security.SecurityContextParam;
 
 @RestController
 @RequestMapping("/employee")
@@ -39,12 +39,7 @@ public class EmployeeController {
     @OperationLogging(operation = OperationEnum.CREATE)
     @PostMapping("/logout")
     public Result logout() {
-        // 获取当前登录用户ID
-        Long userId = SecurityContextParam.getCurrentUserId();
-        if (userId == null) {
-            return Result.error(ErrorConstant.ACCOUNT_NOT_EXIST);
-        }
-        employeeService.logout(userId);
+        employeeService.logout();
         return Result.success("logout");
     }
 

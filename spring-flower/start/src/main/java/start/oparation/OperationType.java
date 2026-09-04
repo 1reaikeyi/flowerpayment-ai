@@ -5,8 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContext;
-import start.security.SecurityContextParam;
+import service.security.SecurityContextParam;
 
 /**
  * 数据库操作类型OperationType

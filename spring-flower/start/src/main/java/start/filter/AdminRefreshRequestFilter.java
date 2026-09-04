@@ -18,7 +18,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import start.security.LoginUserDetails;
+import service.security.LoginUserDetails;
 
 import java.io.IOException;
 import java.util.Collections;

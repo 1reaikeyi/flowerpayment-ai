@@ -1,25 +1,20 @@
 package start.controller.admin;
 
 import common.constant.ErrorConstant;
-import common.constant.RoleConstant;
 import common.enums.OperationEnum;
 import common.result.PageResult;
 import common.result.Result;
 import lombok.extern.slf4j.Slf4j;
-import model.dto.EmployeeDTO;
 import model.dto.EmployeePageDTO;
 import model.dto.LoginDTO;
 import model.dto.PasswordDTO;
-import model.entity.Employee;
 import model.vo.EmployeeVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import service.EmployeeService;
 import start.aop.OperationLogging;
-import start.security.SecurityContextParam;
+import service.security.SecurityContextParam;
 
 import java.util.List;
 
@@ -39,12 +34,7 @@ public class AdminController {
     @OperationLogging(operation = OperationEnum.CREATE)
     @PostMapping("/logout")
     public Result logout() {
-        // 获取当前登录用户ID
-        Long userId = SecurityContextParam.getCurrentUserId();
-        if (userId == null) {
-            return Result.error(ErrorConstant.ACCOUNT_NOT_EXIST);
-        }
-        employeeService.admin2(userId);
+        employeeService.admin2();
         return Result.success("logout");
     }
     @OperationLogging(operation = OperationEnum.READ)

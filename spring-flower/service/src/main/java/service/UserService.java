@@ -17,7 +17,7 @@ public interface UserService extends IService<User> {
 
     String login(LoginDTO loginDTO);
 
-    void logout(Long userId);
+    void logout();
 
     void updateByObject(UserDTO userDTO);
 }
