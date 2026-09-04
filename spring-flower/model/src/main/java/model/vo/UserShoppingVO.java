@@ -1,16 +1,12 @@
-package model.dto;
+package model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.Min;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * 购物车 DTO（对应 user_shopping 表的传输对象）
- */
-public class UserShoppingDTO implements Serializable {
+public class UserShoppingVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,6 +36,11 @@ public class UserShoppingDTO implements Serializable {
     private Long festivalId;
 
     /**
+     * 选购数量
+     */
+    private Long number;
+
+    /**
      * 小计金额
      */
     private BigDecimal amount;
@@ -49,8 +50,5 @@ public class UserShoppingDTO implements Serializable {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
-    @Min(value = 1, message = "选购数量不能小于 1")
-    private Long number;
-
 
 }
