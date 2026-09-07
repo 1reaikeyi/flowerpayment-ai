@@ -48,8 +48,8 @@ public class UserAddressServiceImpl extends ServiceImpl<UserAddressMapper, UserA
     }
 
     @Override
-    public ScrollResult readPage(Long offset, Long current) {
-        ScrollResult scrollResult = new ScrollResult();
+    public ScrollResult<UserAddress> readPage(Long offset, Long current) {
+        ScrollResult<UserAddress> scrollResult = new ScrollResult();
         offset = offset == null ? LIMIT_NUMBER : offset;
         Long userId = SecurityContextParam.getCurrentUserId();
         List<UserAddress> userAddressList = this.lambdaQuery()

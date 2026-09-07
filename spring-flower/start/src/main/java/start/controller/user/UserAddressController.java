@@ -36,7 +36,7 @@ public class UserAddressController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/all")
     public Result readAddress(Long offset, Long current) {
-        ScrollResult scrollResult = userAddressService.readPage(offset,current);
+        ScrollResult<UserAddress> scrollResult = userAddressService.readPage(offset,current);
         return Result.success(scrollResult);
     }
     @OperationLogging(operation = OperationEnum.UPDATE)

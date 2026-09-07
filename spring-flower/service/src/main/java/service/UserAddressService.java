@@ -18,7 +18,7 @@ public interface UserAddressService extends IService<UserAddress> {
 
     UserAddress readDefaultAddress();
 
-    ScrollResult readPage(Long offset, Long current);
+    ScrollResult<UserAddress> readPage(Long offset, Long current);
 
     void updateDefaultAddress(Long id);
 

@@ -12,11 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ScrollResult {
+public class ScrollResult<T> {
     /**
-     * 数据列表（例如：List<Blog>）
+     * 数据列表
      */
-    private List<?> list;
+    private List<T> list;
 
     /**
      * 本次查询最后一条数据的时间戳（也就是下一次查询的 max）
