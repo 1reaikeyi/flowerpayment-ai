@@ -51,7 +51,7 @@ public class AdminFlowerOrderController {
     @PutMapping("delivering/{id}")
     public Result update5(@PathVariable Long id) {
         flowerOrderService.update5(id);
-        return Result.success(OrderStatusEnum.CANCELLED);
+        return Result.success(OrderStatusEnum.DELIVERING);
     }
     @OperationLogging(operation = OperationEnum.UPDATE)
     @PutMapping("arrived/{id}")
