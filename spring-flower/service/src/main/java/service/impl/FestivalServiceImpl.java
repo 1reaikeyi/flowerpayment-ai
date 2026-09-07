@@ -194,7 +194,7 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
 
     private Festival getMysql(Long id) {
         //查询数据库
-        Festival festival = super.getById(id);
+        Festival festival = this.getById(id);
         LogicData logicData = new LogicData();
         //缓存穿透
         if (festival == null) {
@@ -282,13 +282,13 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
         if (festivalDTO.getNumber() != null) {
             updateWrapper.set(Festival::getNumber, festivalDTO.getNumber());
         }
-        super.update(updateWrapper);
+        this.update(updateWrapper);
         stringRedisTemplate.delete(RedisPrefixConstant.FESTIVAL_PREFIX + festivalDTO.getId());
     }
 
     @Override
     public void deleteCache(List<Long> ids) {
-        super.removeByIds(ids);
+        this.removeByIds(ids);
         for (Long id : ids) {
             stringRedisTemplate.delete(RedisPrefixConstant.FESTIVAL_PREFIX + id);
         }
@@ -298,7 +298,7 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
     @Override
     public FestivalDTO create(FestivalDTO festivalDTO) {
         Festival festival = BeanUtil.copyProperties(festivalDTO, Festival.class);
-        super.save(festival);
+        this.save(festival);
         FestivalDTO dto = BeanUtil.copyProperties(festival, FestivalDTO.class);
         return dto;
     }
@@ -308,7 +308,7 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
         LambdaQueryWrapper<Festival> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(festivalPageDTO.getName() != null, Festival::getName, festivalPageDTO.getName());
         IPage page = new Page(festivalPageDTO.getPage(), festivalPageDTO.getPageSize());
-        IPage<Festival> festivalIPage = super.page(page, queryWrapper);
+        IPage<Festival> festivalIPage = this.page(page, queryWrapper);
         List<FestivalVO> voList = festivalIPage.getRecords().stream()
                 .map(festival ->BeanUtil.toBean(festival, FestivalVO.class))
                 .collect(Collectors.toList());

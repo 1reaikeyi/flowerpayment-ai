@@ -12,13 +12,13 @@ import java.util.List;
  */
 
 public interface UserAddressService extends IService<UserAddress> {
-    void aeleteAddress(List<Long> ids);
+    void deleteAddress(List<Long> ids);
 
     UserAddressDTO create(UserAddressDTO userAddressDTO);
 
     UserAddress readDefaultAddress();
 
-    ScrollResult readPage();
+    ScrollResult readPage(Long offset, Long current);
 
     void updateDefaultAddress(Long id);
 

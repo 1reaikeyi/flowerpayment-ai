@@ -194,7 +194,7 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
 
     private Flower getMysql(Long id) {
         //查询数据库
-        Flower flower = super.getById(id);
+        Flower flower = this.getById(id);
         LogicData logicData = new LogicData();
         //缓存穿透
         if (flower == null) {
@@ -280,13 +280,13 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
         if(StrUtil.isNotBlank(flowerDTO.getColor())){
             updateWrapper.set(Flower::getColor, flowerDTO.getColor());
         }
-        super.update(updateWrapper);
+        this.update(updateWrapper);
         stringRedisTemplate.delete(RedisPrefixConstant.FLOWER_PREFIX + flowerDTO.getId());
     }
 
     @Override
     public void deleteCache(List<Long> ids) {
-        super.removeByIds(ids);
+        this.removeByIds(ids);
         for (Long id : ids) {
             stringRedisTemplate.delete(RedisPrefixConstant.FLOWER_PREFIX + id);
         }
@@ -295,7 +295,7 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
     @Override
     public FlowerDTO create(FlowerDTO flowerDTO) {
         Flower flower = BeanUtil.copyProperties(flowerDTO, Flower.class);
-        super.save(flower);
+        this.save(flower);
         FlowerDTO dto = BeanUtil.copyProperties(flower, FlowerDTO.class);
         return dto;
     }
@@ -305,7 +305,7 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
         LambdaQueryWrapper<Flower> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(flowerPageDTO.getName() != null, Flower::getName, flowerPageDTO.getName());
         IPage page = new Page(flowerPageDTO.getPage(),flowerPageDTO.getPageSize());
-        IPage<Flower> flowerIPage = super.page(page,queryWrapper);
+        IPage<Flower> flowerIPage = this.page(page,queryWrapper);
         List<FlowerVO> voList = flowerIPage.getRecords().stream()
                 .map(flower -> BeanUtil.copyProperties(flower, FlowerVO.class))
                 .collect(Collectors.toList());

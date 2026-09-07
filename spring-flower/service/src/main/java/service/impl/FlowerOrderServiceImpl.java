@@ -45,7 +45,7 @@ public class FlowerOrderServiceImpl extends ServiceImpl<FlowerOrderMapper, Flowe
 
     @Override
     public FlowerOrderVO readById(Long id) {
-        FlowerOrder flowerOrder = super.getById(id);
+        FlowerOrder flowerOrder = this.getById(id);
         FlowerOrderVO flowerOrderVO = BeanUtil.toBean(flowerOrder, FlowerOrderVO.class);
         return flowerOrderVO;
     }
@@ -55,7 +55,7 @@ public class FlowerOrderServiceImpl extends ServiceImpl<FlowerOrderMapper, Flowe
         LambdaQueryWrapper<FlowerOrder> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(FlowerOrder::getStatus, flowerOrderPageDTO.getStatus());
         IPage page = new Page(flowerOrderPageDTO.getPage(),flowerOrderPageDTO.getPageSize());
-        IPage<FlowerOrder> flowerOrderIPage= super.page(page,queryWrapper);
+        IPage<FlowerOrder> flowerOrderIPage= this.page(page,queryWrapper);
         List<FlowerOrderVO> voList = flowerOrderIPage.getRecords().stream()
                 .map(flowerOrder -> BeanUtil.copyProperties(flowerOrder, FlowerOrderVO.class))
                 .collect(Collectors.toList());
@@ -69,42 +69,42 @@ public class FlowerOrderServiceImpl extends ServiceImpl<FlowerOrderMapper, Flowe
 
     @Override
     public void update3(Long id) {
-        super.lambdaUpdate()
+        this.lambdaUpdate()
                 .eq(FlowerOrder::getId, id)
                 .set(FlowerOrder::getStatus, OrderStatusEnum.COOKING);
     }
 
     @Override
     public void update4(Long id) {
-        super.lambdaUpdate()
+        this.lambdaUpdate()
                 .eq(FlowerOrder::getId, id)
                 .set(FlowerOrder::getStatus, OrderStatusEnum.GO);
     }
 
     @Override
     public void update5(Long id) {
-        super.lambdaUpdate()
+        this.lambdaUpdate()
                 .eq(FlowerOrder::getId, id)
                 .set(FlowerOrder::getStatus, OrderStatusEnum.DELIVERING);
     }
 
     @Override
     public void update6(Long id) {
-        super.lambdaUpdate()
+        this.lambdaUpdate()
                 .eq(FlowerOrder::getId, id)
                 .set(FlowerOrder::getStatus, OrderStatusEnum.ARRIVED);
     }
 
     @Override
     public void update7(Long id) {
-        super.lambdaUpdate()
+        this.lambdaUpdate()
                 .eq(FlowerOrder::getId, id)
                 .set(FlowerOrder::getStatus, OrderStatusEnum.COMPLETED);
     }
 
     @Override
     public void update8(Long id) {
-        FlowerOrder flowerOrder = super.getById(id);
+        FlowerOrder flowerOrder = this.getById(id);
         FlowerOrderDetail flowerOrderDetail = flowerOrderDetailService.lambdaQuery()
                 .eq(FlowerOrderDetail::getOrderId,flowerOrder.getId())
                 .one();
@@ -121,21 +121,21 @@ public class FlowerOrderServiceImpl extends ServiceImpl<FlowerOrderMapper, Flowe
         flowerOrderPayService.lambdaUpdate()
                 .eq(FlowerOrderPay::getOrderId, flowerOrder.getId())
                 .set(FlowerOrderPay::getPayStatus, PayStatusEnum.REFUNDED);
-        super.lambdaUpdate()
+        this.lambdaUpdate()
                 .eq(FlowerOrder::getId, id)
                 .set(FlowerOrder::getStatus, OrderStatusEnum.CANCELLED);
     }
 
     @Override
     public void update1(Long id) {
-        super.lambdaUpdate()
+        this.lambdaUpdate()
                 .eq(FlowerOrder::getId, id)
                 .set(FlowerOrder::getStatus, OrderStatusEnum.COOKING);
     }
 
     @Override
     public void update2(Long id) {
-        super.lambdaUpdate()
+        this.lambdaUpdate()
                 .eq(FlowerOrder::getId, id)
                 .set(FlowerOrder::getStatus, OrderStatusEnum.COOKING);
     }

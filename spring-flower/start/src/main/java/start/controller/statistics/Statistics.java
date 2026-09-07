@@ -21,7 +21,6 @@ public class Statistics {
     @Autowired
     private FlowerOrderDetailService flowerOrderDetailService;
 
-    private static final Integer TOP_NUMBER = 7;
 
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/flower")

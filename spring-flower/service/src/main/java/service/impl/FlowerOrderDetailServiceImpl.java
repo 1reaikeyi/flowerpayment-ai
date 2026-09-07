@@ -28,10 +28,10 @@ public class FlowerOrderDetailServiceImpl extends ServiceImpl<FlowerOrderDetailM
     @Autowired
     private FestivalService festivalService;
 
-    private static final int TOP_NUMBER = 7;
+    private static final int TOP_NUMBER = 4;
     @Override
     public List<StatisticsVO> flowerSale() {
-        List<FlowerOrderDetail> details = super.lambdaQuery()
+        List<FlowerOrderDetail> details = this.lambdaQuery()
                 .isNotNull(FlowerOrderDetail::getFlowerId)
                 .list();
         List<StatisticsVO> statisticsVOList = new ArrayList<>();
@@ -57,7 +57,7 @@ public class FlowerOrderDetailServiceImpl extends ServiceImpl<FlowerOrderDetailM
 
     @Override
     public List<StatisticsVO> festivalSale() {
-        List<FlowerOrderDetail> details = super.lambdaQuery()
+        List<FlowerOrderDetail> details = this.lambdaQuery()
                 .isNotNull(FlowerOrderDetail::getFestivalId)
                 .list();
         Map<Long, Long> numberMap = new HashMap<>();
@@ -82,8 +82,9 @@ public class FlowerOrderDetailServiceImpl extends ServiceImpl<FlowerOrderDetailM
 
     @Override
     public List<TopStatisticsVO> top1() {
-        List<FlowerOrderDetail> details = super.lambdaQuery()
+        List<FlowerOrderDetail> details = this.lambdaQuery()
                 .isNotNull(FlowerOrderDetail::getFlowerId)
+                .last(" limit " + TOP_NUMBER)
                 .list();
 
         Map<Long, Long> numberMap = new HashMap<>();
@@ -128,7 +129,7 @@ public class FlowerOrderDetailServiceImpl extends ServiceImpl<FlowerOrderDetailM
         LocalDateTime start = LocalDate.now().atStartOfDay();
         LocalDateTime end = start.plusDays(1);
         // 今日订单（按创建时间过滤）
-        List<FlowerOrderDetail> orders = super.lambdaQuery()
+        List<FlowerOrderDetail> orders = this.lambdaQuery()
                 .ge(FlowerOrderDetail::getCreateTime, start)
                 .lt(FlowerOrderDetail::getCreateTime, end)
                 .list();

@@ -62,7 +62,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
     @Override
     public Employee findEmployeename(String username) {
-        return super.lambdaQuery()
+        return this.lambdaQuery()
                 .eq(Employee::getUsername, username)
                 .one();
     }
@@ -113,7 +113,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));
         employee.setCreateUser(0L);
         employee.setUpdateUser(0L);
-        super.save(employee);
+        this.save(employee);
     }
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -149,7 +149,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
     @Override
     public EmployeeVO readById(Long id) {
-        Employee employee = super.getById(id);
+        Employee employee = this.getById(id);
         if (employee == null) {
             throw new EmployeeFailedException(ErrorConstant.ACCOUNT_NOT_EXIST);
         }
@@ -163,7 +163,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         queryWrapper.like(employeePageDTO.getEmployeename()!= null,
                 Employee::getUsername,employeePageDTO.getEmployeename());
         IPage page = new Page(employeePageDTO.getPage(),employeePageDTO.getPageSize());
-        IPage<Employee> employeeIPage = super.page(page,queryWrapper);
+        IPage<Employee> employeeIPage = this.page(page,queryWrapper);
         List<EmployeeVO> voList = employeeIPage.getRecords().stream()
                 .map(emp -> BeanUtil.copyProperties(emp, EmployeeVO.class))
                 .collect(Collectors.toList());
@@ -211,7 +211,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
             updateWrapper.set(Employee::getPassword,
                     passwordEncoder.encode(employeeDTO.getPassword()));
         }
-        super.update(null, updateWrapper);
+        this.update(null, updateWrapper);
     }
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -219,7 +219,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         if (CollectionUtil.isEmpty(ids)) {
             throw new EmployeeFailedException(ErrorConstant.OPERATION_ERROR);
         }
-        super.removeByIds(ids);
+        this.removeByIds(ids);
     }
 
     @Override
@@ -229,13 +229,13 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         if (!newPassword.equals(confirmPassword)) {
             throw new PasswordErrorException(ErrorConstant.PASSWORD_EDIT_FAILED);
         }
-        Employee employee = super.getById(id);
+        Employee employee = this.getById(id);
         employee.setPassword(newPassword);
         // 修复：修改密码后清除该用户所有角色的 token，强制重新登录
         stringRedisTemplate.delete(RedisPrefixConstant.ADMIN_AUTH_PREFIX + id);
         stringRedisTemplate.delete(RedisPrefixConstant.EMP_AUTH_PREFIX + id);
         SecurityContextHolder.clearContext();
-        super.updateById(employee);
+        this.updateById(employee);
     }
 
 

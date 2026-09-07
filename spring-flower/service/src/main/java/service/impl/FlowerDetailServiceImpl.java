@@ -84,7 +84,7 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
     @Override
     public FlowerDetailDTO create(FlowerDetailDTO flowerDetailDTO) {
         FlowerDetail flowerDetail = BeanUtil.copyProperties(flowerDetailDTO, FlowerDetail.class);
-        super.save(flowerDetail);
+        this.save(flowerDetail);
         FlowerDetailDTO dto = BeanUtil.copyProperties(flowerDetail, FlowerDetailDTO.class);
         return dto;
     }
@@ -182,7 +182,7 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
 
     private FlowerDetail getMysql(Long id) {
         LogicData logicData = new LogicData();
-        FlowerDetail flowerDetail = super.getById(id);
+        FlowerDetail flowerDetail = this.getById(id);
         if (flowerDetail == null) {
             logicData.setData(null);
             logicData.setExpireTime(LocalDateTime.now().plusSeconds(FLASH_CACHE_TTL+
@@ -237,13 +237,13 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
         if (StrUtil.isNotBlank(flowerDetailDTO.getSpecOption())){
             updateWrapper.set(FlowerDetail::getSpecOption,flowerDetailDTO.getSpecOption());
         }
-        super.update(updateWrapper);
+        this.update(updateWrapper);
         stringRedisTemplate.delete(RedisPrefixConstant.FLOWERDETAIL_PREFIX + flowerDetailDTO.getId());
     }
 
     @Override
     public void deleteCache(List<Long> ids) {
-        super.removeByIds(ids);
+        this.removeByIds(ids);
         for (Long id : ids) {
             stringRedisTemplate.delete(RedisPrefixConstant.FLOWERDETAIL_PREFIX + id);
         }

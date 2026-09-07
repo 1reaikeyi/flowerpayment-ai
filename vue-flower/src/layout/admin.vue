@@ -3,7 +3,6 @@
     <el-aside width="200px">
       <!-- Logo区域 -->
       <div class="el-aside__logo1"></div>
-      <div class="el-aside__logo2"></div>
       <!-- 侧边栏菜单 -->
       <el-menu
           active-text-color="#ffd04b"
@@ -219,10 +218,6 @@ const handleCommand = async (key) => {
     &__logo1 {
       height: 120px;
       background: url('@/assets/login/layout1.png') no-repeat center / 190px auto;
-    }
-    &__logo2 {
-      height: 120px;
-      background: url('../assets/login/layout2.png') no-repeat center / 190px auto;
     }
     .el-menu {
       border-right: none;

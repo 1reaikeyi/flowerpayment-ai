@@ -48,7 +48,7 @@ public class FlowerCategoryServiceImpl extends ServiceImpl<FlowerCategoryMapper,
     @Override
     public FlowerCategoryDTO create(FlowerCategoryDTO flowerCategoryDTO) {
         FlowerCategory flowerCategory = BeanUtil.copyProperties(flowerCategoryDTO, FlowerCategory.class);
-        super.save(flowerCategory);
+        this.save(flowerCategory);
         // 把带 id、createTime 的 entity 转回 DTO 返回
         FlowerCategoryDTO dto = BeanUtil.copyProperties(flowerCategory, FlowerCategoryDTO.class);
         return dto;
@@ -73,7 +73,7 @@ public class FlowerCategoryServiceImpl extends ServiceImpl<FlowerCategoryMapper,
         LambdaQueryWrapper<FlowerCategory> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(flowerCategoryPageDTO.getType() != null, FlowerCategory::getType, flowerCategoryPageDTO.getType());
         IPage page = new Page(flowerCategoryPageDTO.getPage(), flowerCategoryPageDTO.getPageSize());
-        IPage<FlowerCategory> flowerCategoryIPage = super.page(page,queryWrapper);
+        IPage<FlowerCategory> flowerCategoryIPage = this.page(page,queryWrapper);
         List<FlowerCategoryVO> voList = flowerCategoryIPage.getRecords().stream()
                 .map(flowerCategory -> BeanUtil.copyProperties(flowerCategory, FlowerCategoryVO.class))
                 .collect(Collectors.toList());
@@ -107,7 +107,7 @@ public class FlowerCategoryServiceImpl extends ServiceImpl<FlowerCategoryMapper,
             updateWrapper.set(FlowerCategory::getStatus, categoryDTO.getStatus());
         }
         
-        super.update(updateWrapper);
+        this.update(updateWrapper);
     }
     @CacheEvict(allEntries = true)
     @Override
@@ -115,7 +115,7 @@ public class FlowerCategoryServiceImpl extends ServiceImpl<FlowerCategoryMapper,
         if(CollectionUtil.isEmpty(ids)){
             throw new FlowerCategoryFailedException(ErrorConstant.CATEGORY_NOT_EXIST);
         }
-        super.removeByIds(ids);
+        this.removeByIds(ids);
     }
 
     @Override

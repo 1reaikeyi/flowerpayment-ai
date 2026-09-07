@@ -90,7 +90,7 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
     @Override
     public FestivalDetailDTO create(FestivalDetailDTO festivalDetailDTO) {
         FestivalDetail festivalDetail = BeanUtil.copyProperties(festivalDetailDTO, FestivalDetail.class);
-        super.save(festivalDetail);
+        this.save(festivalDetail);
         FestivalDetailDTO dto = BeanUtil.copyProperties(festivalDetail, FestivalDetailDTO.class);
         return dto;
     }
@@ -185,7 +185,7 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
     }
     private FestivalDetail getMysql(Long id){
         //查询数据库
-        FestivalDetail festivalDetail = super.getById(id);
+        FestivalDetail festivalDetail = this.getById(id);
         LogicData logicData = new LogicData();
         //缓存穿透
         if (festivalDetail == null) {
@@ -245,13 +245,13 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
         if (StrUtil.isNotBlank(festivalDetailDTO.getSpecOption())){
             updateWrapper.set(FestivalDetail::getSpecOption,festivalDetailDTO.getSpecOption());
         }
-        super.update(updateWrapper);
+        this.update(updateWrapper);
         stringRedisTemplate.delete(RedisPrefixConstant.FESTIVALDETAIL_PREFIX + festivalDetailDTO.getId());
     }
 
     @Override
     public void deleteCache(List<Long> ids) {
-        super.removeByIds(ids);
+        this.removeByIds(ids);
         for (Long id : ids) {
             stringRedisTemplate.delete(RedisPrefixConstant.FESTIVALDETAIL_PREFIX + id);
         }

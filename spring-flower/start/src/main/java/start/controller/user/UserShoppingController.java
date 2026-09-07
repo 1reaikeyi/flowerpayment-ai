@@ -10,6 +10,7 @@ import model.vo.UserShoppingVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import service.UserShoppingService;
 import start.aop.OperationLogging;
@@ -26,7 +27,7 @@ public class UserShoppingController {
 
     @OperationLogging(operation = OperationEnum.CREATE)
     @PostMapping
-    public Result create(@RequestBody UserShoppingDTO userShoppingDTO){
+    public Result create(@Validated @RequestBody UserShoppingDTO userShoppingDTO){
         UserShoppingDTO dto = userShoppingService.create(userShoppingDTO);
         return Result.success(dto);
     }
