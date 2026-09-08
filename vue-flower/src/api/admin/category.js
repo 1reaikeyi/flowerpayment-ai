@@ -3,7 +3,6 @@ import request from '@/utils/admin/request.js'
 /**
  * 鲜花分类管理 API（按 admin 接口文档对齐）
  * 后端控制器根路径：/admin/category
- * 使用 Spring Cache（Redis）做全量缓存，增删改后自动清除缓存
  */
 
 // 4.1 新增鲜花分类 - POST /admin/category
@@ -41,7 +40,6 @@ export const pageCategoryList = (params) => {
 
 // 4.4 更新鲜花分类 - PUT /admin/category
 // 请求体 FlowerCategoryDTO: { id(必填), name, type, sort, status }
-// 只更新非空字段，更新后清除 Spring Cache
 // 响应 Result<FlowerCategoryDTO>
 export const updateCategory = (data) => {
   return request({

@@ -21,7 +21,7 @@ public class UserAddressController {
 
     @OperationLogging(operation = OperationEnum.CREATE)
     @PostMapping
-    public Result createAddress(UserAddressDTO userAddressDTO) {
+    public Result createAddress(@RequestBody UserAddressDTO userAddressDTO) {
         UserAddressDTO dto = userAddressService.create(userAddressDTO);
         return Result.success(dto);
     }
@@ -42,14 +42,12 @@ public class UserAddressController {
     @OperationLogging(operation = OperationEnum.UPDATE)
     @PutMapping("/default/{id}")
     public Result updateDefaultAddress(@PathVariable Long id) {
-
         userAddressService.updateDefaultAddress(id);
         return Result.success();
     }
     @OperationLogging(operation = OperationEnum.UPDATE)
     @PutMapping
-    public Result updateAddress(UserAddressDTO userAddressDTO) {
-
+    public Result updateAddress(@RequestBody UserAddressDTO userAddressDTO) {
         userAddressService.updateAddress(userAddressDTO);
         return Result.success();
     }

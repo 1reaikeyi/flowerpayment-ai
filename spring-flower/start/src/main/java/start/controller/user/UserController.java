@@ -26,7 +26,7 @@ public class UserController {
     @PostMapping("/login")
     public Result login(@RequestBody LoginDTO loginDTO) {
         String token = userService.login(loginDTO);
-        return Result.success();
+        return Result.success(token);
     }
 
     @OperationLogging(operation = OperationEnum.CREATE)

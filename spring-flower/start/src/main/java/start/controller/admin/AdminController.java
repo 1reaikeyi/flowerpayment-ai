@@ -9,6 +9,7 @@ import model.dto.EmployeePageDTO;
 import model.dto.LoginDTO;
 import model.dto.PasswordDTO;
 import model.vo.EmployeeVO;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +54,7 @@ public class AdminController {
 
 
     @OperationLogging(operation = OperationEnum.UPDATE)
-    @DeleteMapping("/password")
+    @PutMapping("/password")
     public Result updatePassword(@Validated @RequestBody PasswordDTO passwordDTO) {
         Long id = SecurityContextParam.getCurrentUserId();
         employeeService.updatePassword(passwordDTO,id);

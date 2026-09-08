@@ -3,8 +3,6 @@ import request from '@/utils/admin/request.js'
 /**
  * 鲜花单品管理 API（按 admin 接口文档对齐）
  * 后端控制器根路径：/admin/flower
- * 使用 Redis 缓存 + Redisson 分布式锁 + 逻辑过期策略
- * 缓存 key 前缀: flower:{id}
  */
 
 // 5.1 新增鲜花 - POST /admin/flower
@@ -20,7 +18,7 @@ export const createFlower = (data) => {
 
 // 5.2 根据 ID 查询鲜花 - GET /admin/flower
 // 请求参数: id (Long, 必填)
-// 带 Redis 缓存，逻辑过期时异步重建，响应 Result<FlowerVO>
+// 响应 Result<FlowerVO>
 export const getFlowerById = (id) => {
   return request({
     url: '/admin/flower',
@@ -42,7 +40,6 @@ export const pageFlowerList = (params) => {
 
 // 5.4 更新鲜花 - PUT /admin/flower
 // 请求体 FlowerDTO: { id(必填), name, color, categoryId, price, image, description, status }
-// 只更新非空字段，更新后清除 Redis 缓存
 // 响应 Result<FlowerDTO>
 export const updateFlower = (data) => {
   return request({
@@ -54,7 +51,7 @@ export const updateFlower = (data) => {
 
 // 5.5 批量删除鲜花 - DELETE /admin/flower
 // 请求参数: ids (List<Long>, 必填)
-// 删除后遍历清除 Redis 缓存，响应 Result<List<Long>>
+// 响应 Result<List<Long>>
 export const deleteFlowers = (ids) => {
   return request({
     url: '/admin/flower',

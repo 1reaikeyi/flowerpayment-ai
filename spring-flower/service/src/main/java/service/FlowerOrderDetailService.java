@@ -16,16 +16,16 @@ import java.util.List;
 
 public interface FlowerOrderDetailService extends IService<FlowerOrderDetail> {
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_EMP')")
     List<StatisticsVO> flowerSale();
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_EMP')")
     List<StatisticsVO> festivalSale();
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_EMP')")
     List<TopStatisticsVO> top1();
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_EMP')")
     List<TopStatisticsVO> top2();
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_EMP')")
     List<OrderStatisticsVO> order();
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_EMP')")
     List<OrderStatisticsVO> todayOrder();
 }

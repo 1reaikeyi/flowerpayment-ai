@@ -80,13 +80,13 @@
             <el-icon><TrendCharts /></el-icon>
             <span>鲜花销量</span>
           </el-menu-item>
+          <el-menu-item index="/admin/statistics/fan">
+            <el-icon><TrendCharts /></el-icon>
+            <span>用户数据</span>
+          </el-menu-item>
           <el-menu-item index="/admin/statistics/bar">
             <el-icon><Histogram /></el-icon>
-            <span>多花礼盒销量</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/statistics/treemap">
-            <el-icon><PieChart /></el-icon>
-            <span>订单状态分布</span>
+            <span>order数据</span>
           </el-menu-item>
         </el-sub-menu>
 

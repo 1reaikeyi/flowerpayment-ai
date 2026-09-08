@@ -20,7 +20,7 @@ export const registerEmployee = (data) => {
 // 1.2 员工登录 - POST /admin/login
 // 请求体 LoginDTO: { username, password }
 // 响应 Result<String> → JWT Token 字符串
-export const loginEmployee = (data) => {
+export const loginAdmin = (data) => {
   return request({
     url: '/admin/login',
     method: 'post',
@@ -30,7 +30,7 @@ export const loginEmployee = (data) => {
 
 // 1.3 员工登出 - POST /admin/logout
 // 清除 Redis 中的 token，响应 Result<String> → "logout"
-export const logoutEmployee = () => {
+export const logoutAdmin = () => {
   return request({
     url: '/admin/logout',
     method: 'post'
@@ -83,14 +83,12 @@ export const deleteEmployees = (ids) => {
   })
 }
 
-// 1.8 修改密码 - DELETE /admin/password
-// @RequestBody PasswordDTO: { newPassword, confirmPassword }
-// 后端从 token 取当前用户 id，前端无需传 id
-// 注意：后端 HTTP 方法是 DELETE + RequestBody，虽然不常见但必须严格对齐
+// 1.8 修改密码 - PUT /admin/password
+// RequestBody PasswordDTO {newPassword confirmPassword}
 export const updateEmployeePassword = (data) => {
   return request({
     url: '/admin/password',
-    method: 'delete',
+    method: 'put',
     data
   })
 }

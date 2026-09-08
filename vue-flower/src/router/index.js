@@ -41,9 +41,14 @@ const router = createRouter({
                 { path: 'festival/add', component: () => import('@/views/admin/festival/addFestival.vue') },
                 { path: 'festival/detail', component: () => import('@/views/admin/festival/detail.vue') },
 
+                /**
+                 * 1 line lump   order
+                 * 2 bar    number + top
+                 * 3 fan    user
+                 */
                 { path: 'statistics/line', component: () => import('@/views/admin/statistics/lineChart.vue') },
                 { path: 'statistics/bar', component: () => import('@/views/admin/statistics/barChart.vue') },
-                { path: 'statistics/treemap', component: () => import('@/views/admin/statistics/treemapChart.vue') },
+                { path: 'statistics/fan', component: () => import('@/views/admin/statistics/fanChart.vue') },
 
                 { path: 'shop', component: () => import('@/views/admin/shop/shop.vue') },
                 { path: 'order/pay', component: () => import('@/views/admin/order/pay.vue') },

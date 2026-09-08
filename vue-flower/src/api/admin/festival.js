@@ -3,8 +3,6 @@ import request from '@/utils/admin/request.js'
 /**
  * 节日多花礼盒管理 API（按 admin 接口文档对齐）
  * 后端控制器根路径：/admin/festival
- * 使用 Redis 缓存 + Redisson 分布式锁 + 逻辑过期策略
- * 缓存 key 前缀: festival:{id}
  */
 
 // 2.1 新增节日多花礼盒 - POST /admin/festival
@@ -20,7 +18,7 @@ export const createFestival = (data) => {
 
 // 2.2 根据 ID 查询节日多花礼盒 - GET /admin/festival
 // 请求参数: id (Long, 必填)
-// 带 Redis 缓存 + Redisson 锁 + 逻辑过期，响应 Result<FestivalVO>
+// 响应 Result<FestivalVO>
 export const getFestivalById = (id) => {
   return request({
     url: '/admin/festival',
@@ -42,7 +40,6 @@ export const pageFestivalList = (params) => {
 
 // 2.4 更新节日多花礼盒 - PUT /admin/festival
 // 请求体 FestivalDTO: { id(必填), name, categoryId, price, number, status, description, image }
-// 只更新非空字段，更新后清除 Redis 缓存
 // 响应 Result<FestivalDTO>
 export const updateFestival = (data) => {
   return request({
