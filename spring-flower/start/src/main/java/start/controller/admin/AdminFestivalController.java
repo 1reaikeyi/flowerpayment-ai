@@ -28,7 +28,6 @@ public class AdminFestivalController {
     @Autowired
     private FestivalService festivalService;
 
-
     @OperationLogging(operation = OperationEnum.CREATE)
     @PostMapping
     public Result create(@RequestBody FestivalDTO festivalDTO) {

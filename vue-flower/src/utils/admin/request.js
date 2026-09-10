@@ -10,6 +10,11 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
     (config) => {
+        // 登录、注册端点不带 token，避免后端 AdminRefreshRequestFilter 用 localStorage 残留的旧 token 校验失败直接 401
+        const skipAuthUrls = ['/admin/login', '/admin/register']
+        if (skipAuthUrls.some((url) => config.url === url)) {
+            return config
+        }
         const token = localStorage.getItem('flower:admin') ? JSON.parse(localStorage.getItem('flower:admin')).token : ''
         if (token) {
             // 后端 EmployeeRefreshRequestFilter 要求 Authorization 头以 "Bearer " 前缀开头

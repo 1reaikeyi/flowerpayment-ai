@@ -145,7 +145,7 @@ public Result handleException(Exception e) {
 
 ### 1.5 修改密码
 
-- **方法**: `DELETE`
+- **方法**: `PUT`
 - **路径**: `/admin/password`
 - **描述**: 修改当前登录管理员的密码
 - **权限**: 需登录
@@ -157,7 +157,7 @@ public Result handleException(Exception e) {
 | newPassword | String | 是（@NotBlank） | 新密码 |
 | confirmPassword | String | 是（@NotBlank） | 确认密码 |
 
-**响应**: `Result<Long>` → 当前操作人的 ID
+**响应**: `Result<String>` → `"logout"`
 
 ---
 
@@ -1032,7 +1032,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/statistics/flower`
 - **描述**: 统计所有鲜花单品的累计销售数量与销售金额
-- **权限**: ROLE_ADMIN
+- **权限**: ROLE_EMP
 
 **请求参数**: 无
 
@@ -1052,7 +1052,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/statistics/festival`
 - **描述**: 统计所有节日多花礼盒的累计销售数量与销售金额（按销量降序）
-- **权限**: ROLE_ADMIN
+- **权限**: ROLE_EMP
 
 **请求参数**: 无
 
@@ -1065,7 +1065,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/statistics/top1`
 - **描述**: 鲜花单品销量排行榜（取前 TOP_NUMBER 条）
-- **权限**: ROLE_ADMIN
+- **权限**: ROLE_EMP
 
 **请求参数**: 无
 
@@ -1084,7 +1084,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/statistics/top2`
 - **描述**: 节日多花礼盒销量排行榜
-- **权限**: ROLE_ADMIN
+- **权限**: ROLE_EMP
 
 **请求参数**: 无
 
@@ -1097,7 +1097,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/statistics/order`
 - **描述**: 按订单状态分组统计各状态订单数量
-- **权限**: ROLE_ADMIN
+- **权限**: ROLE_EMP
 
 **请求参数**: 无
 
@@ -1116,7 +1116,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/statistics/today`
 - **描述**: 今日订单数、已支付订单数、今日营业额
-- **权限**: ROLE_ADMIN
+- **权限**: ROLE_EMP
 
 **请求参数**: 无
 

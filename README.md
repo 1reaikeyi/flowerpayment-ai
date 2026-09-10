@@ -24,7 +24,9 @@
 
 ------
 
-# 数据流向图
+# 整体
+
+数据流向图
 
 ```mermaid
 	%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
@@ -215,6 +217,8 @@ flowchart LR
 
 flowerpayment-ai\说明\admin接口文档.md
 
+flowerpayment-ai\说明\emp接口文档.md
+
 flowerpayment-ai\说明\user接口文档.md
 
 ## 一、店长、店员和客户多端端登录认证模块
@@ -304,24 +308,52 @@ index idx_festival_id (festival_id)、index idx_flower_id (flower_id).
 
 ---
 
-缓存设计：因为flower模块 festival模块的价格存在因为节日，花的保质期限制处于动态变化不能直接返回旧数据，异步更新后拿到新数据再返回，返回新数据
+对于这些热点信息使用多级缓存
 
 ```mermaid
 %%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
-flowchart TD
-    S([开始]) --> A[从 Redis 读取缓存]
-    A -->|Redis 宕机 / value 为空| B[加redisson + 查 DB + 写缓存]
-    A -->|命中| C[解析 LogicData]
-    C -->|解析失败 / data 为空| B
-    C -->|成功| D{逻辑时间未过期?}
-    D -->|是 未过期| E[剩余 TTL 不足则延长<br/>返回缓存数据]
-    D -->|否 已过期| F["异步线程池重建缓存加redisson + 查 DB + 写缓存<br>刷新缓存数据，获取新数据返回"]
-    B --> R([返回结果])
-    E --> R
-    F --> R
+flowchart LR
+    direction LR
+    User[用户发起请求]
+
+    subgraph L0 [客户端层]
+        Browser[浏览器缓存]
+    end
+
+    subgraph L1 [网络层]
+        CDN[CDN 网络缓存]
+    end
+
+    subgraph L2 [网关接入层]
+        NginxProxy[Nginx 反向代理集群]
+        NginxCache[业务 Nginx 网关层缓存]
+    end
+
+    subgraph L3 [应用数据层]
+        LocalCache[应用进程缓存]
+        Redis[Redis 分布式缓存集群]
+    end
+
+    subgraph L4 [数据持久层]
+        DB[(数据库)]
+    end
+
+    User --> Browser
+    Browser -- 未命中 --> CDN
+    CDN -- 未命中/回源 --> NginxProxy
+    NginxProxy --> NginxCache
+    NginxCache -- 未命中 --> LocalCache
+    LocalCache -- 未命中 --> Redis
+    Redis -- 未命中 --> DB
+
+    DB -- 返回数据 --> Redis
+    Redis --> LocalCache
+    LocalCache --> NginxCache
+    NginxCache --> NginxProxy
+    NginxProxy --> CDN
+    CDN --> Browser
+    Browser --> User
 ```
-
-
 
 DB查询
 
@@ -336,6 +368,23 @@ flowchart TD
     D --> F[SET Redis 正常缓存 TTL=REDIS_EXIST_TTL]
     E --> G([返回 null])
     F --> H([返回 flower])
+```
+
+因为flower模块 festival模块的价格存在因为节日，花的保质期限制处于动态变化，异步更新后拿到新数据，返回新数据
+
+```mermaid
+%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
+flowchart TD
+    S([开始]) --> A[从 Redis 读取缓存]
+    A -->|Redis 宕机 / value 为空| B[加redisson + 查 DB + 写缓存]
+    A -->|命中| C[解析 LogicData]
+    C -->|解析失败 / data 为空| B
+    C -->|成功| D{逻辑时间未过期?}
+    D -->|是 未过期| E[剩余 TTL 不足则延长<br/>返回缓存数据]
+    D -->|否 已过期| F["异步线程池重建缓存加redisson + 查 DB + 写缓存<br>刷新缓存数据，获取新数据返回"]
+    B --> R([返回结果])
+    E --> R
+    F --> R
 ```
 
 flower-detial，festival-detail使用逻辑过期处理
@@ -431,13 +480,10 @@ Q:MySQL 持久化，还采用 Redis Hash 存储?
 Q:Redis Hash 结构
    外层 key：shopping_cart:{userId}
    内层 field：购物项唯一 id，value：商品完整信息 JSON
-   优势：单用户购物车聚合存储，增删单项无需操作整条数据，性能优于 String 序列化列表。。
-
+   优势：单用户购物车聚合存储，增删单项无需操作整条数据，性能优于 String 序列化列表。
 ```
 
 shop店铺
-
-仅两个状态值，高频读写、无需持久化报表，存入 Redis 读写 O (1)；多实例共享同一缓存，状态实时同步，无需事务、数据表，轻量化实现。
 
 |       业务难点       |                     场景                     |                解决方案                 |                    选型理由                    |
 | :------------------: | :------------------------------------------: | :-------------------------------------: | :--------------------------------------------: |
@@ -469,16 +515,20 @@ sequenceDiagram
 POST /report/excel/read EasyExcel流式逐行读取解析，不加载全表到内存
 GET /report/excel/download 流式写入Response输出流，边写边返回，不占用堆内存
 
-2 折线图，条形图，块图分析
+2 文件管理
 
-3 文件上传
+双存储环境隔离，使用硬盘存储，对于内部的用户数据，敏感数据和重要文档。切换 OSS 加速、多实例共享文件、无限扩容，存储公共数据。
 
-1. 双存储环境隔离
-   使用硬盘存储，对于内部的用户数据，敏感数据和重要文档。切换 OSS 加速、多实例共享文件、无限扩容，存储公共数据。
-2. UUID 重命名策略
-   丢弃原始文件名，UUID + 后缀生成全新文件名，解决重名覆盖、路径遍历攻击、中文乱码三大问题。
+UUID 重命名策略，丢弃原始文件名，UUID + 后缀生成全新文件名，解决重名覆盖、路径遍历攻击、中文乱码三大问题。
 
-4 采用注解 + AOP 切面实现日志统一收集，自定义注解区分增删改查操作类型，切面统一采集上下文登录人、请求参数、耗时。
+3 折线图，条形图，块图，扇形图分析
+
+4 采用注解 + AOP 切面实现日志统一收集，自定义注解统一采集上下文常用的登录人、请求类型，使用参数，状态、耗时。
+
+```
+log.info("role: " + operationType.type+", ID: "+operationType.id+", 执行操作: "+operationType.operation+
+        ", 使用参数: "+ message +", 运行状态: "+operationType.status + ", 记录时间: " + time);
+```
 
 |       业务难点       |                场景                |                      解决方案                      |                          选型理由                           |
 | :------------------: | :--------------------------------: | :------------------------------------------------: | :---------------------------------------------------------: |
@@ -504,32 +554,22 @@ flowchart TD
 
     subgraph CHAIN ["图片识别过程"]
         direction TB
-        S1["1. 文件前置校验<br/>图片最大尺寸 2048×2048<br/>限制文件格式"]
-        S2["2. SensitiveWordInterceptor 拦截检测<br/>提问文本敏感词 → 命中直接返回 400 拦截"]
-        S3["3. 文件统一转 Base64 编码<br/>(上传 byte[] 转换base64)"]
-
+        S1["1. 文件前置校验图片最大尺寸 2048×2048限制文件格式<br/>2. SensitiveWordInterceptor 拦截检测提问文本敏感词 →			命中直接返回 400 拦截<br/>3. 文件统一转 Base64 编码(上传 byte[] 转换base64)"]
+        
         subgraph GRAPH ["StateGraph 工作流 (异步节点)"]
             direction TB
-            
+  
             subgraph VGROUP ["node1 · VisualNode (异步+流式持续输出，最长10s)"]
                 direction TB
-                V1["① 读取 Base64 图像"]
-                V2["② 封装 Image Media 多模态对象"]
-                V3["③ 调用独立 visualChatClient 识别图像内容"]
-                V4["④ 识别文本 → visualResult 写入 state"]
-                V1 --> V2 --> V3 --> V4
+                V1["① 读取 Base64 图像<br/>② 封装 Image Media 多模态对象<br/>③ 调用独立 visualChatClient 识别图像内						容<br/>④ 识别文本 → visualResult 写入 state"]
             end
             
             visualResult["visualResult"]
             
             subgraph TGROUP ["node2 · ToolNode (异步+流式持续输出，最长30s)"]
                 direction TB
-                INPUT1["读取 state.visualResult"]
-                INPUT2["获取 question<br/>prompt 拼接模糊查询"]
-                T1["根据 prompt 模板拼接执行"]
-                T2["调用业务 @Tool 工具查询<br/>检索数据 → toolResult 写入 state"]
-                INPUT1 --> INPUT2 --> T1 --> T2
-            end
+                INPUT1["1.读取 state.visualResult<br/>2.获取 question,prompt 拼接模糊查询<br/>3.根据 prompt 						模板拼接执行<br/>4.调用业务 @Tool 工具查询,检索数据 → toolResult 写入 state"]
+                end
             
             toolResult["toolResult"]
             ST[("全局 State<br/>{visualResult, toolResult}")]
@@ -548,12 +588,12 @@ flowchart TD
     End(("前端接收统一响应"))
 
     %% 主流程串联
-    Start --> C --> S1 --> S2 --> S3
-    S3 --> VGROUP
+    Start --> C --> S1
+    S1 --> VGROUP
     ST --> S5 --> End
 ```
 
-### 支持LLM生成贺卡文案+tts配音贺语
+### LLM生成贺卡文案+tts配音贺语
 
 ```
 思路：使用提示词模板，提前写好提示词使用，匹配个性化贺卡文案，tts连接文字转语音模型，匹配个性化贺语

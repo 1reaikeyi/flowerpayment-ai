@@ -27,7 +27,8 @@ const router = createRouter({
         {
             path: '/admin',
             component: () => import('@/layout/admin.vue'), // 管理员专用布局
-            redirect: 'flower/index',
+            // 必须用绝对路径：redirect 走 URL 相对路径语义，相对 'flower/index' 在根路径基准下会解析成 /flower/index（不存在）导致白屏
+            redirect: '/admin/flower/index',
             children: [
 
                 { path: 'category', component: () => import('@/views/admin/category/category.vue') },

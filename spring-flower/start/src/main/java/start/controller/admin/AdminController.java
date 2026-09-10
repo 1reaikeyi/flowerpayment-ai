@@ -29,8 +29,8 @@ public class AdminController {
 
     @PostMapping("/login")
     public Result login(@RequestBody LoginDTO loginDTO) {
-        String one = employeeService.admin1(loginDTO);
-        return Result.success(one);
+        String token = employeeService.admin1(loginDTO);
+        return Result.success(token);
     }
     @OperationLogging(operation = OperationEnum.CREATE)
     @PostMapping("/logout")
@@ -56,9 +56,8 @@ public class AdminController {
     @OperationLogging(operation = OperationEnum.UPDATE)
     @PutMapping("/password")
     public Result updatePassword(@Validated @RequestBody PasswordDTO passwordDTO) {
-        Long id = SecurityContextParam.getCurrentUserId();
-        employeeService.updatePassword(passwordDTO,id);
-        return Result.success(id);
+        employeeService.updatePassword(passwordDTO);
+        return Result.success("layout");
     }
 
     @OperationLogging(operation = OperationEnum.DELETE)

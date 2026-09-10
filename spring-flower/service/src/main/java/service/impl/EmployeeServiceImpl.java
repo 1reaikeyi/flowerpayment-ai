@@ -223,15 +223,15 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     }
 
     @Override
-    public void updatePassword(PasswordDTO passwordDTO, Long id) {
+    public void updatePassword(PasswordDTO passwordDTO) {
         String newPassword = passwordDTO.getNewPassword();
         String confirmPassword = passwordDTO.getConfirmPassword();
         if (!newPassword.equals(confirmPassword)) {
             throw new PasswordErrorException(ErrorConstant.PASSWORD_EDIT_FAILED);
         }
+        Long id = SecurityContextParam.getCurrentUserId();
         Employee employee = this.getById(id);
         employee.setPassword(newPassword);
-        stringRedisTemplate.delete(RedisPrefixConstant.ADMIN_AUTH_PREFIX + id);
         stringRedisTemplate.delete(RedisPrefixConstant.EMP_AUTH_PREFIX + id);
         SecurityContextHolder.clearContext();
         this.updateById(employee);

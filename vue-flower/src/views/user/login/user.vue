@@ -54,7 +54,7 @@
 import { reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { loginEmployee } from '@/api/admin/admin.js'
+import { loginAdmin } from '@/api/admin/admin.js'
 import { useEmployeeStore } from '@/stores/index.js'
 
 // 加载状态
@@ -97,7 +97,7 @@ const handleLogin = async () => {
     loadLogIn.value = true
 
     // 重点：直接传 loginForm，不要 .value
-    const res = await loginEmployee(loginForm)
+    const res = await loginAdmin(loginForm)
     jwt.setToken(res.data)
     ElMessage.success('登录成功')
     // 登录后进入管理后台首页（会被路由 redirect 到 /admin/statistics）

@@ -8,12 +8,14 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.benmanes.caffeine.cache.Cache;
 import common.constant.ErrorConstant;
 import common.constant.RedisPrefixConstant;
 import common.exception.FestivalFailedException;
 import common.result.PageResult;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import mapper.FestivalMapper;
 import model.dto.FestivalDTO;
@@ -24,6 +26,7 @@ import model.entity.Flower;
 import model.vo.EmployeeVO;
 import model.vo.FestivalDetailVO;
 import model.vo.FestivalVO;
+import model.vo.FlowerVO;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +56,9 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
     private RedissonClient redissonClient;
     @Autowired
     private FestivalDetailService festivalDetailService;
+
+    @Autowired
+    private Cache<String, Object> festivalLocalCache;
 
     // 时间统一使用s结算
     private static final long FLASH_CACHE_TTL = 30L;
@@ -95,24 +101,32 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
         }
     }
 
-
     @Override
     public FestivalVO readCache(Long id) {
         String key = RedisPrefixConstant.FESTIVAL_PREFIX + id;
         String value;
+
+        FestivalVO festivalVO = (FestivalVO) festivalLocalCache.getIfPresent(key);
+        if (festivalVO != null) {
+            return festivalVO;
+        }
 
         try {
 //        1 缓存不存在
             value = stringRedisTemplate.opsForValue().get(key);
             if (value == null) {
                 Festival festival = this.getCache(id);
-                return festival != null ? BeanUtil.toBean(festival, FestivalVO.class) : null;
+                FestivalVO vo = festival != null ? BeanUtil.toBean(festival, FestivalVO.class) : null;
+                festivalLocalCache.put(key, vo);
+                return vo;
             }
         } catch (Exception e) {
             log.info("Redis 宕机:{}", e.getMessage());
             // Redis 不可用：降级直查数据库
             Festival festival = this.getCache(id);
-            return festival != null ? BeanUtil.toBean(festival, FestivalVO.class) : null;
+            FestivalVO vo = festival != null ? BeanUtil.toBean(festival, FestivalVO.class) : null;
+            festivalLocalCache.put(key, vo);
+            return vo;
         }
 //        2 缓存存在
         LogicData logicData = new LogicData();
@@ -121,7 +135,9 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
         } catch (Exception e) {
             log.info("json 解析失败:{}", e.getMessage());
             Festival festival = this.getCache(id);
-            return festival != null ? BeanUtil.toBean(festival, FestivalVO.class) : null;
+            FestivalVO vo = festival != null ? BeanUtil.toBean(festival, FestivalVO.class) : null;
+            festivalLocalCache.put(key, vo);
+            return vo;
         }
 
         FestivalVO old = null;
@@ -129,12 +145,7 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
             //防止穿透
             return old;
         }
-        if (logicData.getData() != null) {
-            //拿到旧数据
-            old = BeanUtil.toBean(logicData.getData(), FestivalVO.class);
-            //旧数据暂时不用，稳定之后再使用
-            old = null;
-        }
+//        if (logicData.getData() != null) {}
 
         if (logicData.getExpireTime().isAfter(LocalDateTime.now())) {
             long remainSec = Duration.between(LocalDateTime.now(), logicData.getExpireTime()).getSeconds();
@@ -144,12 +155,16 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
                         REDIS_EXIST_TTL, TimeUnit.SECONDS);
             }
             log.info("festival缓存没有过期------------");
-            return BeanUtil.toBean(logicData.getData(), FestivalVO.class);
+            FestivalVO vo = BeanUtil.toBean(logicData.getData(), FestivalVO.class);
+            festivalLocalCache.put(key, vo);
+            return vo;
         }
         //        3逻辑过期：重建缓存
         log.info("festival缓存过期-------------");
         Festival festival = getRedis(id);
-        return festival != null ? BeanUtil.toBean(festival, FestivalVO.class) : null;
+        FestivalVO vo = festival != null ? BeanUtil.toBean(festival, FestivalVO.class) : null;
+        festivalLocalCache.put(key, vo);
+        return vo;
     }
 
     private Festival getCache(Long id) {
@@ -191,7 +206,6 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
             }
         }
     }
-
     private Festival getMysql(Long id) {
         //查询数据库
         Festival festival = this.getById(id);
@@ -222,7 +236,6 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
         return festival;
 
     }
-
     private Festival getRedis(Long id) {
         Future<Festival> future = null;
         try {
@@ -283,6 +296,7 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
             updateWrapper.set(Festival::getNumber, festivalDTO.getNumber());
         }
         this.update(updateWrapper);
+        festivalLocalCache.invalidate(RedisPrefixConstant.FESTIVAL_PREFIX + festivalDTO.getId());
         stringRedisTemplate.delete(RedisPrefixConstant.FESTIVAL_PREFIX + festivalDTO.getId());
     }
 
@@ -290,6 +304,7 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
     public void deleteCache(List<Long> ids) {
         this.removeByIds(ids);
         for (Long id : ids) {
+            festivalLocalCache.invalidate(RedisPrefixConstant.FESTIVAL_PREFIX + id);
             stringRedisTemplate.delete(RedisPrefixConstant.FESTIVAL_PREFIX + id);
         }
 

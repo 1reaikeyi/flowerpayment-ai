@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { loginEmployee, logoutEmployee, registerEmployee, getEmployeeById } from '@/api/admin/admin.js'
+import { loginAdmin, logoutAdmin, registerEmployee, getEmployeeById } from '@/api/admin/admin.js'
 import { getUserIdFromToken } from '@/stores/modules/jwt.js'
 
 export const useEmployeeStore
@@ -19,7 +19,7 @@ export const useEmployeeStore
         const user = ref({})
 
         const login = async (data) => {
-            const res = await loginEmployee(data)
+            const res = await loginAdmin(data)
             return res
         }
 
@@ -57,7 +57,7 @@ export const useEmployeeStore
         // 路由跳转由调用方处理（layout 已跳 /admin/login），这里只负责状态
         const logout = async () => {
             try {
-                await logoutEmployee()
+                await logoutAdmin()
             } catch (e) {
                 // 后端登出失败也清本地状态，避免卡住
             }

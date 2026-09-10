@@ -144,7 +144,7 @@ public class SecurityConfig {
                 response.setContentType("application/json;charset=UTF-8");
                 Map<String, Object> result = new HashMap<>();
                 result.put("code", 401);
-                result.put("message", "请先登录");
+                result.put("message", "账户暂时不存在，重新登录");
                 response.getWriter().write(JSONUtil.toJsonStr(result));
             }
         };

@@ -65,7 +65,7 @@
         <div class="export-content">
           <div class="export-tip">
             <el-icon><InfoFilled /></el-icon>
-            <span>导出用户数据为 Excel 文件，先在服务端生成文件，再触发浏览器下载</span>
+            <span>导出用户数据为 Excel 文件</span>
           </div>
           <!-- 导出 Excel：先 writeExcel() 拿文件路径提示，再 downloadExcel() 触发 blob 下载 -->
           <el-button

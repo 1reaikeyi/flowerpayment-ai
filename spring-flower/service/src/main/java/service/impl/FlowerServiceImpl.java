@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import redisdata.LogicData;
 import service.FlowerDetailService;
 import service.FlowerService;
-
+import com.github.benmanes.caffeine.cache.Cache;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,6 +54,8 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
     private RedissonClient redissonClient;
     @Autowired
     private FlowerDetailService flowerDetailService;
+    @Autowired
+    private Cache<String, Object> flowerLocalCache;
 
     // 时间统一使用s结算
     private static final long FLASH_CACHE_TTL = 30L;
@@ -101,18 +103,27 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
         String key = RedisPrefixConstant.FLOWER_PREFIX + id;
         String value;
 
+        FlowerVO localVo = (FlowerVO) flowerLocalCache.getIfPresent(key);
+        if (localVo != null) {
+            return localVo;
+        }
+
         try {
 //        1 缓存不存在
             value = stringRedisTemplate.opsForValue().get(key);
             if (value == null){
                 Flower flower = this.getCache(id);
-                return flower != null ? BeanUtil.toBean(flower, FlowerVO.class) : null;
+                FlowerVO flowerVO = flower != null ? BeanUtil.toBean(flower, FlowerVO.class) : null;
+                flowerLocalCache.put(key, flowerVO);
+                return flowerVO;
             }
         } catch (Exception e) {
             log.info("Redis 宕机:{}", e.getMessage());
             // Redis 不可用：降级直查数据库
             Flower flower = this.getCache(id);
-            return flower != null ? BeanUtil.toBean(flower, FlowerVO.class) : null;
+            FlowerVO flowerVO = flower != null ? BeanUtil.toBean(flower, FlowerVO.class) : null;
+            flowerLocalCache.put(key, flowerVO);
+            return flowerVO;
         }
 //        2 缓存存在
         LogicData logicData = new LogicData();
@@ -121,7 +132,9 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
         } catch (Exception e) {
             log.info("json 解析失败:{}", e.getMessage());
             Flower flower = this.getCache(id);
-            return flower != null ? BeanUtil.toBean(flower, FlowerVO.class) : null;
+            FlowerVO flowerVO = flower != null ? BeanUtil.toBean(flower, FlowerVO.class) : null;
+            flowerLocalCache.put(key, flowerVO);
+            return flowerVO;
         }
 
         FlowerVO old = null;
@@ -129,13 +142,7 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
             //防止穿透
             return old;
         }
-        if (logicData.getData() != null){
-            //拿到旧数据
-            old = BeanUtil.toBean(logicData.getData(), FlowerVO.class);
-            //旧数据暂时不用,稳定之后再使用
-            old = null;
-        }
-
+//        if (logicData.getData() != null){}
         if (logicData.getExpireTime().isAfter(LocalDateTime.now())){
             long remainSec = Duration.between(LocalDateTime.now(), logicData.getExpireTime()).getSeconds();
             if (remainSec < NEED_FLASH_CACHE_TTL) {
@@ -144,14 +151,17 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
                             REDIS_EXIST_TTL, TimeUnit.SECONDS);
             }
             log.info("flower缓存没有过期------------");
-            return BeanUtil.toBean(logicData.getData(), FlowerVO.class);
+            FlowerVO flowerVO = BeanUtil.toBean(logicData.getData(), FlowerVO.class);
+            flowerLocalCache.put(key, flowerVO);
+            return flowerVO;
         }
-        //        3逻辑过期：重建缓存
+        //3逻辑过期：重建缓存
         log.info("flower缓存过期-------------");
         Flower flower = getRedis(id);
-        return flower != null ? BeanUtil.toBean(flower, FlowerVO.class) : null;
+        FlowerVO flowerVO = flower != null ? BeanUtil.toBean(flower, FlowerVO.class) : null;
+        flowerLocalCache.put(key, flowerVO);
+        return flowerVO;
     }
-
     private Flower getCache(Long id){
         String lockKey = "flower:lock:" + id;
         RLock lock = redissonClient.getLock(lockKey);
@@ -191,7 +201,6 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
             }
         }
     }
-
     private Flower getMysql(Long id) {
         //查询数据库
         Flower flower = this.getById(id);
@@ -281,6 +290,7 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
             updateWrapper.set(Flower::getColor, flowerDTO.getColor());
         }
         this.update(updateWrapper);
+        flowerLocalCache.invalidate(RedisPrefixConstant.FLOWER_PREFIX + flowerDTO.getId());
         stringRedisTemplate.delete(RedisPrefixConstant.FLOWER_PREFIX + flowerDTO.getId());
     }
 
@@ -288,10 +298,12 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
     public void deleteCache(List<Long> ids) {
         this.removeByIds(ids);
         for (Long id : ids) {
+            flowerLocalCache.invalidate(RedisPrefixConstant.FLOWER_PREFIX + id);
             stringRedisTemplate.delete(RedisPrefixConstant.FLOWER_PREFIX + id);
         }
 
     }
+
     @Override
     public FlowerDTO create(FlowerDTO flowerDTO) {
         Flower flower = BeanUtil.copyProperties(flowerDTO, Flower.class);
@@ -325,7 +337,6 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
                 .toList();
         return flowerDetailVOList;
     }
-
 
 
 }

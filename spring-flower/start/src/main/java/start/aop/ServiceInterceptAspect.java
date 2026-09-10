@@ -29,22 +29,17 @@ public class ServiceInterceptAspect {
         String className = joinPoint.getTarget().getClass().getName();
         // 目标方法名（比如queryRentInfo）
         String methodName = targetMethod.getName();
-        // 方法入参
-        Object[] methodArgs = joinPoint.getArgs();
-        long startTime = System.currentTimeMillis();
+
         Object result = null;
-        log.info("=>执行：{}", methodDesc);
         try {
             // 3. 执行目标方法（核心业务逻辑）
             result = joinPoint.proceed();
-            long costTime = System.currentTimeMillis() - startTime;
-            log.info("=>目标类：{}, 目标方法：{}", className, methodName);
-            log.info("耗时：{}ms | Rerurn：{}", costTime, result);
+            log.info("=>class执行类: {}, 执行方法: {}, 方法备注: {}", className, methodName, methodDesc);
+            log.info(" Rerurn: {}", result);
         } catch (Exception e) {
             // 5. 方法执行异常：打印异常信息
-            long costTime = System.currentTimeMillis() - startTime;
-            log.error("=>目标类：{}, 目标方法：{}", className, methodName);
-            log.error("耗时：{}ms | 异常信息：{}", costTime, e.getMessage());
+            log.info("=>class执行类: {}, 执行方法: {}, 方法备注: {}", className, methodName, methodDesc);
+            log.error("存在异常信息:{}", e.getMessage());
             throw e;
         }
         return result;
@@ -59,20 +54,20 @@ public class ServiceInterceptAspect {
         OperationLogging annotation = targetMethod.getAnnotation(OperationLogging.class);
         String operation = annotation.operation().name(); // 操作类型（CREATE/GET/UPDATE/DELETE）
         Object result = null;
-        // 方法入参，转成字符串作为日志的 message
-        // 注意：必须在 proceed() 之前计算，否则方法抛异常进入 catch 分支时 methodArgs 仍为 null，
-        // 会导致 OperationType.error 内部 message.toString() 抛 NPE
         String methodArgs = Arrays.toString(joinPoint.getArgs());
         if (methodArgs == null || methodArgs.length() == 0) {
             methodArgs = "没有param,boby";
         }
+        long startTime = System.currentTimeMillis();
         try {
             // 2. 执行目标业务方法，成功后记录操作日志（效果同 OperationType.ok）
             result = joinPoint.proceed();
-            OperationType.ok(operation, methodArgs);
+            long costTime = System.currentTimeMillis() - startTime;
+            OperationType.ok(operation, methodArgs, costTime);
         } catch (Exception e) {
             // 3. 方法执行异常：记录错误操作日志（效果同 OperationType.error）
-            OperationType.error(operation, methodArgs);
+            long costTime = System.currentTimeMillis() - startTime;
+            OperationType.error(operation, methodArgs, costTime);
             throw e; // 异常继续向上抛，保证全局异常处理器能处理
         }
         return result;

@@ -34,7 +34,7 @@ public interface EmployeeService extends IService<Employee> {
 
     void deleteById(List<Long> ids);
 
-    void updatePassword(PasswordDTO passwordDTO, Long id);
+    void updatePassword(PasswordDTO passwordDTO);
 
     String admin1(LoginDTO loginDTO);
 

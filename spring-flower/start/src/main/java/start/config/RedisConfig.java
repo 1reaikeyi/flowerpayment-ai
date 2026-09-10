@@ -35,11 +35,6 @@ public class RedisConfig {
      * 统一构造 GenericJackson2JsonRedisSerializer：
      * RedisTemplate 与 RedisCacheManager 共用同一个序列化器实现，
      * 避免一边用 GenericJackson 一边用 Jackson2Json 导致读写格式不一致。
-     *
-     * GenericJackson2JsonRedisSerializer 内部特点：
-     *   - 自带 LaissezFaireSubTypeValidator（宽松多态校验，不会因为包名不在白名单就不写类型）
-     *   - activateDefaultTyping(NON_FINAL, WRAPPER_ARRAY)：用 ["类名", 实际内容] 格式包裹，
-     *     对 List/Map 等 JSON 数组/对象集合，外层一定能带上类型信息，反序列化时不会丢失集合具体类型。
      */
     private GenericJackson2JsonRedisSerializer buildJsonSerializer(ObjectMapper objectMapper) {
         return new GenericJackson2JsonRedisSerializer(buildRedisObjectMapper(objectMapper));
@@ -66,8 +61,6 @@ public class RedisConfig {
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
-        // Spring Cache 与 RedisTemplate 使用相同的 JSON 序列化器，读写格式 100% 一致，
-        // 避免 A 写的缓存 B 读不出来的情况
         GenericJackson2JsonRedisSerializer jsonSerializer = buildJsonSerializer(objectMapper);
 
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
