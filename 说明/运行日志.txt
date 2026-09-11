@@ -32,7 +32,7 @@ Initialization Sequence datacenterId:0 workerId:11
 2026-08-31T11:10:17.605+08:00  INFO 9004 --- [love-flower-main] [isson-netty-1-4] o.redisson.connection.ConnectionsHolder  : 1 connections initialized for 192.168.80.128/192.168.80.128:6379
 2026-08-31T11:10:18.668+08:00  INFO 9004 --- [love-flower-main] [sson-netty-1-19] o.redisson.connection.ConnectionsHolder  : 24 connections initialized for 192.168.80.128/192.168.80.128:6379
 2026-08-31T11:10:18.855+08:00  INFO 9004 --- [love-flower-main] [           main] service.impl.FestivalDetailServiceImpl   : Festival 缓存重建线程池初始化完成
-2026-08-31T11:10:18.909+08:00  INFO 9004 --- [love-flower-main] [           main] service.impl.FestivalServiceImpl         : Festival 缓存重建线程池初始化完成
+2026-08-31T11:10:18.909+08:00  INFO 9004 --- [love-flower-main] [           main] service.impl.FestivalServiceImpl         : FestivalDetail 缓存重建线程池初始化完成
 2026-08-31T11:10:18.977+08:00  INFO 9004 --- [love-flower-main] [           main] service.impl.FlowerDetailServiceImpl     : flowerDetail缓存重建线程池初始化完成
 2026-08-31T11:10:18.997+08:00  INFO 9004 --- [love-flower-main] [           main] service.impl.FlowerServiceImpl           : Flower 缓存重建线程池初始化完成
 2026-08-31T11:10:19.485+08:00  INFO 9004 --- [love-flower-main] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name roleAuthenticationProvider

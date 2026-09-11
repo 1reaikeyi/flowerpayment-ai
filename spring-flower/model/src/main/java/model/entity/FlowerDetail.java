@@ -2,7 +2,6 @@ package model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.*;
-import model.enums.PayStatusEnum;
 
 import java.io.Serializable;
 
@@ -39,13 +38,6 @@ public class FlowerDetail implements Serializable {
      */
     @TableField("spec_object")
     private String specObject;
-
-    /**
-     * 支付状态：0 未支付，1 已支付，2 退款
-     */
-    @EnumValue
-    @TableField("pay_status")
-    private PayStatusEnum payStatus;
 
     /**
      * 用途/场景，如：表白、生日、道歉

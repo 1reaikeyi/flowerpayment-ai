@@ -2,10 +2,9 @@
   <h1>flowerpayment-ai 鲜花商店 + ai</h1>
   <h2>flowerpayment-ai：B2C 经营模式，一个花店卖家，多个买家。鲜花服务由店长、店员和客户组成。</h2>
   <h5>
-    基于 Spring Boot 3 与 Vue 3 构建的现代化前后端分离系统。后端利用 Spring Boot 3 的高效与安全性提供 RESTful API 服务，前端借助 Vue 3 实现流畅的用户交互体验，通过 Redis 缓存热点数据以提升系统响应速度。主业务为鲜花经营，管理，销售。分支业务org.springframework.ai的openai +com.alibaba.cloud.ai的graph，通过图像识别推荐相似花束，支持LLM生成贺卡文案+tts配音贺语，rag连接购物车数据，知识文化讲解宣传。
+    基于 Spring Boot 3 与 Vue 3 构建的现代化前后端分离系统。后端利用 Spring Boot 3 的高效与安全性提供 RESTful API 服务，前端借助 Vue 3 实现流畅的用户交互体验，通过多级缓存热点数据以提升系统响应速度。主业务为鲜花经营，送人，用途，管理，销售。分支业务org.springframework.ai的openai +com.alibaba.cloud.ai的graph，通过图像识别推荐相似花束，支持LLM生成贺卡文案+tts配音贺语，rag连接购物车数据知识文化讲解宣传。
   </h5>
 </div>
-
 
 配置说明
 
@@ -17,19 +16,38 @@
     <img src="https://img.shields.io/badge/Redis-7.0+ -6DB33F?style=flat-square&logo=redis&logoColor=white" alt="Redis" />
     <img src="https://img.shields.io/badge/Spring%20AI-1.1.+ -6DB33F?style=flat-square&logo=spring&logoColor=white" alt="Spring AI" />
     <img src="https://img.shields.io/badge/Node.js-20.+-6DB33F?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js" />
-    <img src="https://img.shields.io/badge/Vue3-组合式API-6DB33F?style=flat-square&logo=vuedotjs&logoColor=white" alt="Vue3" />
-    <img src="https://img.shields.io/badge/阿里云-千问-6DB33F?style=flat-square&logo=java&logoColor=white" alt="阿里云" />
+    <img src="https://img.shields.io/badge/阿里云-qwen-6DB33F?style=flat-square&logo=java&logoColor=white" alt="阿里云" />
     </h1>
 </div>
 
-------
+---
 
-# 整体
+## 启动步骤 
 
-数据流向图
+ 1创建数据库并导入 `sql/` 目录脚本。
+
+2 修改 `start/src/main/resources/application-dev.yml` 中数据库与 Redis ，ai配置。
+
+3 `npm run dev ` 前端启动服务。
+
+## 接口文档
+
+flowerpayment-ai\说明\admin接口文档.md
+
+flowerpayment-ai\说明\emp接口文档.md
+
+flowerpayment-ai\说明\user接口文档.md
+
+## 升级方向
+
+ 使用nacos+gateway连接主业务+ai业务，灰度更新，分布式部署，故障转移等等。
+
+ 使用nacos切换购物车存储，节假日使用redis，平时使用MySQL。
+
+## 数据流向图
 
 ```mermaid
-	%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
+%%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
 	flowchart TB
 	%% ============ 基建层 ============
     subgraph INFRA["基建层"]
@@ -89,7 +107,7 @@
     end
 ```
 
-业务
+## 业务
 
 ```mermaid
 %%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
@@ -159,12 +177,6 @@ flowchart LR
     S --> U4
 ```
 
-
-
-| 启动步骤     | 1创建数据库并导入 `sql/` 目录脚本。 <br/>2 修改 `start/src/main/resources/application-dev.yml` 中数据库与 Redis 配置。<br/>3 `npm run dev ` 前端启动服务。 |
-| ------------ | ------------------------------------------------------------ |
-| **升级方向** | 使用nacos+gateway连接主业务+ai业务，灰度更新，分布式部署，故障转移等等。<br/> 使用nacos切换购物车存储，节假日使用redis，平时使用MySQL。 |
-
 # 前端说明
 
 技术栈：Vue 3 + Element Plus + Pinia + Vue Router + echarts
@@ -221,14 +233,6 @@ flowchart LR
 
 └── ai/                          # [branch服务] AI扩展服务启动模块
 
-接口文档
-
-flowerpayment-ai\说明\admin接口文档.md
-
-flowerpayment-ai\说明\emp接口文档.md
-
-flowerpayment-ai\说明\user接口文档.md
-
 ## 一、店长、店员和客户多端端登录认证模块
 
 ### 迭代过程
@@ -273,7 +277,7 @@ Q: 如何role权限隔离, 不越级？
 | 有spring-cache缓存，再并发1000次                             | ![](说明/并发测试/flower-category-运行日志-缓存2.png)        |
 | 有spring-cache缓存，再并发1000次                             | ![](说明/并发测试/flower-category-运行日志-缓存3.png)        |
 | 有缓存的情况是全程有 redis 的稳定情况                        | flowerpayment-ai/说明/并发测试/flower-category-运行日志-缓存日志.txt |
-| 计算说明：性能提升百分比 =(无缓存值‑有缓存值)/ 无缓存值 ×100%；吞吐量提升百分比 =(有缓存‑无缓存)/ 无缓存 ×100%。 | **响应时间**：开启缓存后接口全量响应指标得到极大优化。无缓存场景平均响应时间 600ms，开启缓存后平均响应仅 10ms，平均响应性能提升**98.3%**。90%、95%、99% 分位耗时下降尤为明显；无缓存场景高百分位接近 1800ms，开启缓存 99 分位仅 98ms。无缓存时需要完整执行业务逻辑、访问数据库；命中缓存直接读取缓存数据，极大降低接口处理时延。 **吞吐量**：无缓存吞吐量 21.8 请求 / 秒；开启缓存吞吐量提升至 29.7 请求 / 秒，吞吐量提升**36.2%**，系统整体并发处理能力增强。 **网络流量**：接收速率从 43.46KB/sec 提升至 59.09KB/sec，发送速率从 7.93KB/sec 提升至 10.78KB/sec，单位时间网络数据处理能力随吞吐量同步上涨。 |
+| 计算说明：性能提升百分比 =(无缓存值‑有缓存值)/ 无缓存值 ×100%；吞吐量提升百分比 =(有缓存‑无缓存)/ 无缓存 ×100%。 | **吞吐量**：无缓存吞吐量 21.8 请求 / 秒；开启缓存吞吐量提升至 29.7 请求 / 秒，吞吐量提升**36.2%**，系统整体并发处理能力增强。 **网络流量**：接收速率从 43.46KB/sec 提升至 59.09KB/sec，发送速率从 7.93KB/sec 提升至 10.78KB/sec，单位时间网络数据处理能力随吞吐量同步上涨。 |
 
 ## 三、flower，festival，flower-detial，festival-detail模块
 
@@ -435,8 +439,6 @@ flowchart TD
 
 ## 四、订单状态流转
 
-### model
-
 第三方授权登录流程图和支付流程：支付宝
 
 `沙箱网关固定为：https://openapi-sandbox.dl.alipaydev.com/gateway.do`
@@ -450,11 +452,22 @@ flowchart TD
 ```
 1 用户下单 → 2 用户确认支付 → 3 商家制作 → 4 工作人员取货 → 5 工作人员开始配送 → 6 工作人员已到达 → 7 用户确认
         → 8 已取消（未接单退款、商家拒单、超时取消、退款）
+
+```
+
+```
+enum:
+ ORDER(1L, "用户下单"),
+ PAYMENT(2L, "用户确认支付"),
+ COOKING(3L, "商家制作"),
+ GO(4L, "工作人员取货"),
+ DELIVERING(5L, "工作人员开始配送"),
+ ARRIVED(6L, "工作人员已到达"),
+ COMPLETED(7L, "系统自动确认"),
+ CANCELLED(8L, "用户确认");
 ```
 
 ## 五、user模块
-
-### model
 
 user-address
 
@@ -529,13 +542,13 @@ log.info("role: " + operationType.type+", ID: "+operationType.id+", 执行操作
 
 ### 拍照识别鲜花，帮助消费者识别专业的鲜花名,  帮助购买。
 
-> 对面买的那多花？不知这个，就是那朵红色花？
->
-> 改成 ai 识别出周围人花 ，用户告诉服务员，想买红色的玫瑰花
-
 spring alibaba graph 编排流程图：
 
-节点上下文不加入memory： 鲜花识别本身是难题：月季/玫瑰、迎春/连翘、不同玫瑰切花品种之间差异很小，光线、角度、花期都会影响。 偏向“就图论图”，结果更中立。
+1 节点上下文不加入memory： 鲜花识别本身是难题：月季/玫瑰、迎春/连翘、不同玫瑰切花品种之间差异很小，光线、角度、花期都会影响。 偏向“就图论图”，结果更中立。
+
+2 对面买的那多花？不知这个，就是那朵红色花？
+
+改成 ai 识别出周围人花 ，用户告诉服务员，想买红色的玫瑰花
 
 ```mermaid
 %%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
@@ -594,7 +607,7 @@ promptTemplate.add("input", input);
 
 ### 购物车旁边加入ai文化知识讲解带货
 
-（ai不会下单的一些列功能，花店实际需要的鲜花知识和氛围讲解）
+1 ai不会下单的一些列功能，花店实际需要的鲜花知识和氛围讲解，
 
-rag+上下文memory：记得前文买过什么、对百合过敏、偏好低饱和度色系
+2 rag+上下文memory：记得前文买过什么、对百合过敏、偏好低饱和度色系
 

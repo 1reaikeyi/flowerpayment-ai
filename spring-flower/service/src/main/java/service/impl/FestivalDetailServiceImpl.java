@@ -70,7 +70,7 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
                 },
                 new ThreadPoolExecutor.AbortPolicy()
         );
-        log.info("Festival 缓存重建线程池初始化完成");
+        log.info("FestivalDetail 缓存重建线程池初始化完成");
     }
     @PreDestroy
     public void destroy() {
