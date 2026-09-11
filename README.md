@@ -171,33 +171,41 @@ flowchart LR
 
 ## 店长端，员工端界面
 
-| 功能页面  |                             截图                             |
-| :-------: | :----------------------------------------------------------: |
-| 登录页面  | <img src="说明/原型功能/admin1.png" alt="管理端登录" style="zoom: 25%;" /> |
-|   分类    | <img src="说明/原型功能/admin2.png" alt="管理端登录" style="zoom: 25%;" /> |
-| 单花销售  | <img src="说明/原型功能/admin3.png" alt="管理端登录" style="zoom: 25%;" /> |
-| 多花组合  |                                                              |
-| 订单管理  |                                                              |
-|   店铺    | <img src="说明/原型功能/admin6.png" alt="管理端登录" style="zoom: 25%;" /> |
-|   员工    | <img src="说明/原型功能/admin7.png" alt="管理端登录" style="zoom: 25%;" /> |
-| 业务大屏1 |                                                              |
-| 业务大屏2 |                                                              |
-| 业务大屏3 |                                                              |
+|    功能页面    |                             截图                             |
+| :------------: | :----------------------------------------------------------: |
+|    登录页面    | <img src="说明/原型功能/admin1.png" alt="管理端登录" style="zoom: 25%;" /> |
+|      分类      | <img src="说明/原型功能/admin2.png" alt="管理端登录" style="zoom: 25%;" /> |
+| 单花+送人+用途 | <img src="说明/原型功能/admin3.png" alt="管理端登录" style="zoom: 25%;" /> |
+| 多花+用途+送人 | <img src="说明/原型功能/admin4.png" alt="管理端登录" style="zoom: 25%;" /> |
+|    订单管理    | <img src="说明/原型功能/admin5.png" alt="管理端登录" style="zoom: 25%;" /><img src="说明/原型功能/admin55.png" alt="管理端登录" style="zoom: 25%;" /> |
+|      店铺      | <img src="说明/原型功能/admin6.png" alt="管理端登录" style="zoom: 25%;" /> |
+|      员工      | <img src="说明/原型功能/admin7.png" alt="管理端登录" style="zoom: 25%;" /> |
+
+## 业务大屏
+
+| top + count | user   | order       |
+| ----------- | ------ | ----------- |
+| 柱状图      | 扇形图 | 折现图+饼图 |
+|             |        |             |
 
 ## 用户端界面
 
-|   功能页面   | 截图                                                         |
-| :----------: | ------------------------------------------------------------ |
-|   登录页面   | <img src="说明/原型功能/user1.png" alt="user登录" style="zoom: 25%;" /> |
-|     分类     |                                                              |
-|   单花销售   |                                                              |
-|   多花组合   |                                                              |
-|     店铺     |                                                              |
-|    购物车    |                                                              |
-|     订单     |                                                              |
-| AI（多模态） |                                                              |
+|    功能页面    | 截图                                                         |
+| :------------: | ------------------------------------------------------------ |
+|    登录页面    | <img src="说明/原型功能/user1.png" alt="user登录" style="zoom: 25%;" /> |
+|      分类      |                                                              |
+| 单花+送人+用途 |                                                              |
+| 多花+用途+送人 |                                                              |
+|      店铺      |                                                              |
+|     购物车     |                                                              |
+|      订单      |                                                              |
 
+## AI（多模态）
 
+|      |      |
+| ---- | ---- |
+|      |      |
+|      |      |
 
 # 后端说明
 
@@ -527,7 +535,7 @@ log.info("role: " + operationType.type+", ID: "+operationType.id+", 执行操作
 
 spring alibaba graph 编排流程图：
 
-保留了图片识别结果的返回，下一个节点ai查询信息可能存在不准情况，识别的结果也可以帮助consumer判断和使用
+节点上下文不加入memory, 鲜花识别本身是难题：月季/玫瑰、迎春/连翘、不同玫瑰切花品种之间差异很小，光线、角度、花期都会影响。 偏向“就图论图”，结果更中立。
 
 ```mermaid
 %%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
@@ -587,4 +595,6 @@ promptTemplate.add("input", input);
 ### 购物车旁边加入ai文化知识讲解带货
 
 （ai不会下单的一些列功能，花店实际需要的鲜花知识和氛围讲解）
+
+rag+上下文memory记得“买过什么、对百合过敏、偏好低饱和度色系”
 

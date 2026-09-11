@@ -323,7 +323,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 /* 系统色板变量已全局注入，可直接使用 $sys-blue、$primary 等 */
 
-.add-setmeal-container {
+.add-festival-container {
   padding: 20px;
   /* 容器背景使用系统蓝极浅透明度 */
   background: rgba(10, 132, 255, 0.04);
@@ -349,7 +349,7 @@ onMounted(() => {
   padding: 20px 0;
 }
 
-.setmeal-form {
+.festival-form {
   .el-select {
     width: 300px;
   }
@@ -357,27 +357,6 @@ onMounted(() => {
   .el-input {
     width: 300px;
   }
-}
-
-.flower-box {
-  width: 100%;
-}
-
-.flower-content {
-  /* 边框使用系统蓝半透明 */
-  border: 1px solid rgba(10, 132, 255, 0.2);
-  border-radius: 4px;
-  padding: 15px;
-  /* 背景使用系统蓝浅透明度 */
-  background: rgba(10, 132, 255, 0.05);
-}
-
-.add-flower-btn {
-  margin-bottom: 15px;
-}
-
-.flower-table {
-  width: 100%;
 }
 
 /* 图片上传样式 */
@@ -397,7 +376,7 @@ onMounted(() => {
     }
   }
 
-  .setmeal-image {
+  .festival-image {
     width: 200px;
     height: 160px;
     display: block;
@@ -447,152 +426,6 @@ onMounted(() => {
       &:hover {
         background-color: $primary;
         color: $sys-yellow;
-      }
-    }
-  }
-}
-
-.add-flower-dialog {
-  .search-box {
-    margin-bottom: 15px;
-
-    .el-input {
-      width: 250px;
-    }
-
-    .el-icon {
-      cursor: pointer;
-    }
-  }
-
-  .flower-select-content {
-    display: flex;
-    /* 边框使用系统蓝半透明 */
-    border: 1px solid rgba(10, 132, 255, 0.2);
-    border-radius: 4px;
-    min-height: 400px;
-  }
-
-  .left-panel {
-    flex: 1;
-    /* 右分隔线使用系统蓝半透明 */
-    border-right: 1px solid rgba(10, 132, 255, 0.2);
-    display: flex;
-    flex-direction: column;
-  }
-
-  .category-tabs {
-    width: 120px;
-    border-right: 1px solid rgba(10, 132, 255, 0.2);
-    padding: 10px 0;
-
-    .category-tab {
-      padding: 10px 15px;
-      cursor: pointer;
-      transition: all 0.3s;
-
-      &:hover {
-        /* hover 背景使用系统蓝浅透明度 */
-        background: rgba(10, 132, 255, 0.08);
-      }
-
-      &.active {
-        /* 激活文字使用系统蓝 */
-        color: $primary;
-        /* 激活背景使用主色浅背景 */
-        background: $primary-light;
-        /* 右侧装饰条使用系统蓝 */
-        border-right: 2px solid $primary;
-      }
-    }
-  }
-
-  .flower-list {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-    max-height: 400px;
-
-    .flower-item {
-      padding: 10px;
-      /* 底部分隔线使用系统蓝半透明 */
-      border-bottom: 1px solid rgba(10, 132, 255, 0.1);
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      .flower-info {
-        display: flex;
-        align-items: center;
-        width: 100%;
-
-        .flower-name {
-          flex: 1;
-        }
-
-        .flower-status {
-          width: 60px;
-          text-align: center;
-          /* 状态文字使用系统靛蓝半透明 */
-          color: rgba(94, 92, 230, 0.55);
-        }
-
-        .flower-price {
-          width: 80px;
-          text-align: right;
-          /* 价格使用系统红 */
-          color: $sys-red;
-        }
-      }
-    }
-  }
-
-  .right-panel {
-    width: 250px;
-    padding: 15px;
-
-    .selected-header {
-      font-weight: 500;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
-      /* 底部分隔线使用系统蓝半透明 */
-      border-bottom: 1px solid rgba(10, 132, 255, 0.2);
-    }
-
-    .selected-list {
-      max-height: 350px;
-      overflow-y: auto;
-
-      .selected-item {
-        display: flex;
-        align-items: center;
-        padding: 8px 10px;
-        margin-bottom: 8px;
-        /* 选中项背景使用系统蓝浅透明度 */
-        background: rgba(10, 132, 255, 0.08);
-        border-radius: 4px;
-
-        .selected-name {
-          flex: 1;
-        }
-
-        .selected-price {
-          /* 选中价格使用系统红 */
-          color: $sys-red;
-          margin-right: 10px;
-        }
-
-        .remove-icon {
-          cursor: pointer;
-          /* 移除图标使用系统靛蓝半透明 */
-          color: rgba(94, 92, 230, 0.55);
-
-          &:hover {
-            /* hover 移除图标使用系统红 */
-            color: $sys-red;
-          }
-        }
       }
     }
   }

@@ -79,9 +79,13 @@
         </template>
       </el-table-column>
       <el-table-column prop="updateTime" label="更新时间" min-width="170" />
-      <!-- 操作列：编辑 / 启停切换 / 删除 -->
-      <el-table-column label="操作" width="280" fixed="right" align="center">
+      <!-- 操作列：详情 / 编辑 / 启停切换 / 删除 -->
+      <el-table-column label="操作" width="360" fixed="right" align="center">
         <template #default="{ row }">
+          <el-button type="primary" link size="small" @click="handleViewDetail(row)">
+            <el-icon><View /></el-icon>
+            详情
+          </el-button>
           <el-button type="primary" link size="small" @click="handleEdit(row)">
             <el-icon><Edit /></el-icon>
             编辑
@@ -129,7 +133,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Search, Plus, Edit, Delete, Switch, Picture } from '@element-plus/icons-vue'
+import { Search, Plus, Edit, Delete, Switch, Picture, View } from '@element-plus/icons-vue'
 // API 函数名对齐新的 admin API 层（flower.js）
 import {
   pageFlowerList,
@@ -244,6 +248,11 @@ const handleAdd = () => {
 
 const handleEdit = (row) => {
   router.push({ path: '/admin/flower/add', query: { id: row.id } })
+}
+
+// 查看鲜花详情（含规格明细管理）
+const handleViewDetail = (row) => {
+  router.push({ path: '/admin/flower/detail', query: { id: row.id } })
 }
 
 // 启停切换：列表行已含完整 Flower 数据，直接复制行数据改 status 后调 updateFlower

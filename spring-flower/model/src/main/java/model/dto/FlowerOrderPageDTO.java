@@ -22,5 +22,5 @@ public class FlowerOrderPageDTO {
 
     @Min(value = 1, message = "不能小于1")
     @Max(value = 8, message = "不能超过8")
-    private Long status = 3L;
+    private Long status;
 }

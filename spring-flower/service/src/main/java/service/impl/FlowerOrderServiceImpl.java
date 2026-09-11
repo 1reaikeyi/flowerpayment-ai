@@ -9,7 +9,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import common.result.PageResult;
 import jakarta.servlet.http.HttpServletResponse;
 import mapper.FlowerOrderMapper;
+import model.dto.FlowerOrderDTO;
 import model.dto.FlowerOrderPageDTO;
+import model.dto.FlowerPageDTO;
 import model.entity.FlowerCategory;
 import model.entity.FlowerOrder;
 import model.entity.FlowerOrderDetail;
@@ -53,12 +55,14 @@ public class FlowerOrderServiceImpl extends ServiceImpl<FlowerOrderMapper, Flowe
     @Override
     public PageResult<FlowerOrderVO> readPage(FlowerOrderPageDTO flowerOrderPageDTO) {
         LambdaQueryWrapper<FlowerOrder> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(FlowerOrder::getStatus, flowerOrderPageDTO.getStatus());
+        queryWrapper.eq(flowerOrderPageDTO.getStatus() != null,
+                FlowerOrder::getStatus, flowerOrderPageDTO.getStatus());
         IPage page = new Page(flowerOrderPageDTO.getPage(),flowerOrderPageDTO.getPageSize());
         IPage<FlowerOrder> flowerOrderIPage= this.page(page,queryWrapper);
         List<FlowerOrderVO> voList = flowerOrderIPage.getRecords().stream()
                 .map(flowerOrder -> BeanUtil.copyProperties(flowerOrder, FlowerOrderVO.class))
                 .collect(Collectors.toList());
+
         PageResult<FlowerOrderVO> result = new PageResult<>();
         result.setTotal(flowerOrderIPage.getTotal());
         result.setList(voList);                         // 当前页数据

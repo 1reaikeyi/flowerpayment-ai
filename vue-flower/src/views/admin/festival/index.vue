@@ -3,7 +3,7 @@
     <!-- 顶部搜索栏 + 新增按钮 -->
     <div class="toolbar">
       <el-form :inline="true" :model="searchForm" @submit.prevent>
-        <el-form-item label="多花多花礼盒名称">
+        <el-form-item label="多花礼盒名称">
           <el-input
             v-model="searchForm.name"
             placeholder="请输入多花礼盒名称"
@@ -78,8 +78,12 @@
       </el-table-column>
       <el-table-column prop="updateTime" label="更新时间" min-width="170" />
       <!-- 操作列 -->
-      <el-table-column label="操作" width="280" fixed="right" align="center">
+      <el-table-column label="操作" width="360" fixed="right" align="center">
         <template #default="{ row }">
+          <el-button type="primary" link size="small" @click="handleViewDetail(row)">
+            <el-icon><View /></el-icon>
+            详情
+          </el-button>
           <el-button type="primary" link size="small" @click="handleEdit(row)">
             <el-icon><Edit /></el-icon>
             编辑
@@ -127,10 +131,9 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Search, Plus, Edit, Delete, Switch, Picture } from '@element-plus/icons-vue'
+import { Search, Plus, Edit, Delete, Switch, Picture, View } from '@element-plus/icons-vue'
 import {
   pageFestivalList,
-  getFestivalById,
   updateFestival,
   deleteFestivals
 } from '@/api/admin/festival.js'
@@ -237,6 +240,11 @@ const handleAdd = () => {
 
 const handleEdit = (row) => {
   router.push({ path: '/admin/festival/add', query: { id: row.id } })
+}
+
+// 查看礼盒详情（含明细管理）
+const handleViewDetail = (row) => {
+  router.push({ path: '/admin/festival/detail', query: { id: row.id } })
 }
 
 // 启停切换：直接复制列表行数据改 status 后 updateFestival

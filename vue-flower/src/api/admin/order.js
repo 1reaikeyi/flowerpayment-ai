@@ -18,8 +18,9 @@ export const getOrderById = (id) => {
 }
 
 // 7.2 分页查询订单列表 - GET /admin/flowerOrder/all
-// 请求参数 FlowerOrderPageDTO (Query): { page, pageSize, startTime, endTime }
-// 支持按时间范围筛选，响应 Result<List<FlowerOrderVO>>
+// 请求参数 FlowerOrderPageDTO (Query): { page, pageSize, status }
+// page 默认 1（最小 1），pageSize 默认 10（1~20），status 默认 3（订单状态 1~8）
+// 按订单状态筛选，响应 Result<PageResult<FlowerOrderVO>>
 export const pageOrderList = (params) => {
   return request({
     url: '/admin/flowerOrder/all',
