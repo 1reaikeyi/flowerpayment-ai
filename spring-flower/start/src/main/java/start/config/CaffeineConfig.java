@@ -33,6 +33,7 @@ public class CaffeineConfig {
                 .recordStats()
                 .build();
     }
+
     @Bean
     public Cache<String, FestivalDetailVO> festivalDetailCache(){
         return Caffeine.newBuilder()

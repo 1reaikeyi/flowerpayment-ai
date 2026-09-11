@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.benmanes.caffeine.cache.Cache;
 import common.constant.ErrorConstant;
 import common.constant.RedisPrefixConstant;
 import common.exception.FlowerDetailFailedException;
@@ -46,6 +47,8 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private RedissonClient redissonClient;
+    @Autowired
+    private Cache<String, FestivalDetailVO> festivalDetailLocalCache;
     
 //    时间统一使用s结算
     private static final long FLASH_CACHE_TTL = 30L;
@@ -69,7 +72,6 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
         );
         log.info("Festival 缓存重建线程池初始化完成");
     }
-
     @PreDestroy
     public void destroy() {
         if (festivalDetailExecutor != null && !festivalDetailExecutor.isShutdown()) {
@@ -87,6 +89,7 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
             log.info("FestivalDetail 缓存重建线程池已关闭");
         }
     }
+
     @Override
     public FestivalDetailDTO create(FestivalDetailDTO festivalDetailDTO) {
         FestivalDetail festivalDetail = BeanUtil.copyProperties(festivalDetailDTO, FestivalDetail.class);
@@ -99,17 +102,27 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
     public FestivalDetailVO readCache(Long id) {
         String key = RedisPrefixConstant.FESTIVALDETAIL_PREFIX + id;
         String value;
+
+        FestivalDetailVO festivalDetailVO = festivalDetailLocalCache.getIfPresent(key);
+        if (festivalDetailVO != null) {
+            return festivalDetailVO;
+        }
+
         try {
             value = stringRedisTemplate.opsForValue().get(key);
             if (value == null) {
                 FestivalDetail festivalDetail = this.getCache(id);
-                return festivalDetail != null ? BeanUtil.toBean(festivalDetail, FestivalDetailVO.class) : null;
+                FestivalDetailVO vo = festivalDetail != null ? BeanUtil.toBean(festivalDetail, FestivalDetailVO.class) : null;
+                festivalDetailLocalCache.put(key, vo);
+                return vo;
             }
         } catch (Exception e) {
             log.info("Redis 宕机:{}", e.getMessage());
             // Redis 不可用：降级直查数据库
             FestivalDetail festivalDetail = this.getCache(id);
-            return festivalDetail != null ? BeanUtil.toBean(festivalDetail, FestivalDetailVO.class) : null;
+            FestivalDetailVO vo = festivalDetail != null ? BeanUtil.toBean(festivalDetail, FestivalDetailVO.class) : null;
+            festivalDetailLocalCache.put(key, vo);
+            return vo;
         }
         LogicData logicData = new LogicData();
         try {
@@ -118,7 +131,9 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
             log.info("json解析失败:{}", e.getMessage());
             // Redis 不可用：降级直查数据库
             FestivalDetail festivalDetail = this.getCache(id);
-            return festivalDetail != null ? BeanUtil.toBean(festivalDetail, FestivalDetailVO.class) : null;
+            FestivalDetailVO vo = festivalDetail != null ? BeanUtil.toBean(festivalDetail, FestivalDetailVO.class) : null;
+            festivalDetailLocalCache.put(key, vo);
+            return vo;
         }
         if(logicData.getData() == null){
             return null;
@@ -127,9 +142,8 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
         if (logicData.getData() == null){
             return old;
         }
-        if (logicData.getData() != null){
+//        if (logicData.getData() != null){}
             old = BeanUtil.toBean(logicData.getData(), FestivalDetailVO.class);
-        }
         if (logicData.getExpireTime().isAfter(LocalDateTime.now())){
             long remainSec = Duration.between(LocalDateTime.now(), logicData.getExpireTime()).getSeconds();
             if (remainSec < NEED_FLASH_CACHE_TTL) {
@@ -138,10 +152,13 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
                         REDIS_EXIST_TTL, TimeUnit.SECONDS);
             }
             log.info("festivalDetail缓存没有过期------------");
-            return BeanUtil.toBean(logicData.getData(), FestivalDetailVO.class);
+            FestivalDetailVO vo = BeanUtil.toBean(logicData.getData(), FestivalDetailVO.class);
+            festivalDetailLocalCache.put(key, vo);
+            return vo;
         }
         log.info("festivalDetail缓存过期------------");
         getRedis(id);
+        festivalDetailLocalCache.put(key,old);
         return old;
     }
     private FestivalDetail getCache(Long id) {
@@ -226,6 +243,7 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
             }
         });
     }
+
     @Override
     public void updateCache(FestivalDetailDTO festivalDetailDTO) {
         if(festivalDetailDTO.getId() == null){
@@ -246,6 +264,7 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
             updateWrapper.set(FestivalDetail::getSpecOption,festivalDetailDTO.getSpecOption());
         }
         this.update(updateWrapper);
+        festivalDetailLocalCache.invalidate(RedisPrefixConstant.FLOWER_PREFIX + festivalDetailDTO.getId());
         stringRedisTemplate.delete(RedisPrefixConstant.FESTIVALDETAIL_PREFIX + festivalDetailDTO.getId());
     }
 
@@ -253,6 +272,7 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
     public void deleteCache(List<Long> ids) {
         this.removeByIds(ids);
         for (Long id : ids) {
+            festivalDetailLocalCache.invalidate(RedisPrefixConstant.FLOWER_PREFIX + id);
             stringRedisTemplate.delete(RedisPrefixConstant.FESTIVALDETAIL_PREFIX + id);
         }
     }

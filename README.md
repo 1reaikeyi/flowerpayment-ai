@@ -244,15 +244,7 @@ Q: 如何role权限隔离, 不越级？
 
 ### model
 
-1. 数据表 
-
-   ```
-   flower_category
-   ```
-
-   字段：id、分类名称、type 、排序、状态、删除标记；
-
-   索引：type 普通索引，按类型快速筛选分类。
+1. 索引：type 普通索引，按类型快速筛选分类。
 
 3. Redis 缓存结构，springcache成本低
 
@@ -284,9 +276,6 @@ Q: 如何role权限隔离, 不越级？
 - 分类：鲜花单品 = 1 : N（`flower.category_id`关联分类表）
 - 鲜花单品：鲜花规格`flower_detail` = 1 : N
 
-> - spec_object：送人对象（恋人 / 朋友 / 长辈）
-> - spec_option：用途（表白、生日、道歉）
-
 2. 多花组合模块
 
 - `festival`多花组合主表，代表一个成品礼盒商品（比如 “520 热恋礼盒”）
@@ -295,16 +284,10 @@ Q: 如何role权限隔离, 不越级？
 
 - 关系：`festival` : `festival_detail` = 1 : N
 
-  >- spec_object：送人对象（恋人 / 朋友 / 长辈）
-  >- spec_option：用途（表白、生日、道歉）
 
 3. 索引
 
-index idx_festival_id (festival_id)、index idx_flower_id (flower_id).
-
- 1 大幅提升数据检索速度（避免全表扫描） 
-
- 2 优化 ORDER BY 和 GROUP BY 操作
+​	index idx_festival_id (festival_id)、index idx_flower_id (flower_id). 大幅提升数据检索速度（避免全表扫描） ，优化 ORDER BY 和 GROUP BY 操作
 
 ---
 
@@ -568,11 +551,11 @@ flowchart TD
             
             subgraph TGROUP ["node2 · ToolNode (异步+流式持续输出，最长30s)"]
                 direction TB
-                INPUT1["1.读取 state.visualResult<br/>2.获取 question,prompt 拼接模糊查询<br/>3.根据 prompt 						模板拼接执行<br/>4.调用业务 @Tool 工具查询,检索数据 → toolResult 写入 state"]
+                INPUT1["1.读取 state.visualResult<br/>2.获取 question,prompt 拼接模糊查询<br/>3.根据 prompt 						模板拼接执行<br/>4.调用业务@Tool工具查询,检索数据 → toolResult 写入 state"]
                 end
             
             toolResult["toolResult"]
-            ST[("全局 State<br/>{visualResult, toolResult}")]
+            ST[("全局 State{visualResult, toolResult}")]
             
             %% 节点间数据流连接
             VGROUP --> visualResult

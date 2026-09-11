@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.benmanes.caffeine.cache.Cache;
 import common.constant.ErrorConstant;
 import common.constant.RedisPrefixConstant;
 import common.exception.FlowerDetailFailedException;
@@ -41,6 +42,8 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private RedissonClient redissonClient;
+    @Autowired
+    private Cache<String, FlowerDetailVO> flowerDetailCache;
 
     // 时间统一使用s结算
     private static final long FLASH_CACHE_TTL = 30L;
@@ -94,18 +97,28 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
         String key = RedisPrefixConstant.FLOWERDETAIL_PREFIX + id;
         LogicData logicData = new LogicData();
         String value;
+
+        FlowerDetailVO vo= flowerDetailCache.getIfPresent(key);
+        if (vo != null) {
+            return vo;
+        }
+
         try {
 //        1 缓存不存在
             value = stringRedisTemplate.opsForValue().get(key);
             if (value == null){
                 FlowerDetail flowerDetail = this.getCache(id);
-                return flowerDetail != null ? BeanUtil.toBean(flowerDetail, FlowerDetailVO.class) : null;
+                FlowerDetailVO flowerDetailVO = flowerDetail != null ? BeanUtil.toBean(flowerDetail, FlowerDetailVO.class) : null;
+                flowerDetailCache.put(key, flowerDetailVO);
+                return flowerDetailVO;
             }
         } catch (Exception e) {
             log.info("Redis 宕机:{}", e.getMessage());
             // Redis 不可用：降级直查数据库
             FlowerDetail flowerDetail = this.getCache(id);
-            return flowerDetail != null ? BeanUtil.toBean(flowerDetail, FlowerDetailVO.class) : null;
+            FlowerDetailVO flowerDetailVO = flowerDetail != null ? BeanUtil.toBean(flowerDetail, FlowerDetailVO.class) : null;
+            flowerDetailCache.put(key, flowerDetailVO);
+            return flowerDetailVO;
         }
         //2 缓存存在
         try {
@@ -113,16 +126,17 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
         } catch (Exception e) {
             log.info("json 解析失败:{}", e.getMessage());
             FlowerDetail flowerDetail = this.getCache(id);
-            return flowerDetail != null ? BeanUtil.toBean(flowerDetail, FlowerDetailVO.class) : null;
+            FlowerDetailVO flowerDetailVO = flowerDetail != null ? BeanUtil.toBean(flowerDetail, FlowerDetailVO.class) : null;
+            flowerDetailCache.put(key, flowerDetailVO);
+            return flowerDetailVO;
         }
         FlowerDetailVO old = null;
         if (logicData.getData() == null){
             //防止穿透
             return old;
         }
-        if (logicData.getData() != null){
+//        if (logicData.getData() != null){}
             old = BeanUtil.toBean(logicData.getData(), FlowerDetailVO.class);
-        }
 
         if (logicData.getExpireTime().isAfter(LocalDateTime.now())){
             long remainSec = Duration.between(LocalDateTime.now(), logicData.getExpireTime()).getSeconds();
@@ -132,11 +146,14 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
                         REDIS_EXIST_TTL, TimeUnit.SECONDS);
             }
             log.info("flowerDetail缓存没有过期------------");
-            return BeanUtil.toBean(logicData.getData(), FlowerDetailVO.class);
+            FlowerDetailVO flowerDetailVO = BeanUtil.toBean(logicData.getData(), FlowerDetailVO.class);
+            flowerDetailCache.put(key, flowerDetailVO);
+            return flowerDetailVO;
         }
         //        3逻辑过期：重建缓存
         log.info("flowerDetail缓存过期-------------");
         getRedis(id);
+        flowerDetailCache.put(key,old);
         return old;
     }
 
@@ -179,7 +196,6 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
             }
         }
     }
-
     private FlowerDetail getMysql(Long id) {
         LogicData logicData = new LogicData();
         FlowerDetail flowerDetail = this.getById(id);
@@ -206,7 +222,6 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
         }
         return flowerDetail;
     }
-
     private void getRedis(Long id) {
         flowerDetailExecutor.submit(() -> {
             try {
@@ -221,6 +236,7 @@ public class FlowerDetailServiceImpl extends ServiceImpl<FlowerDetailMapper, Flo
             }
         });
     }
+
     @Override
     public void updateCache(FlowerDetailDTO flowerDetailDTO) {
         if(flowerDetailDTO.getId() == null){
