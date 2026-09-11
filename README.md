@@ -535,7 +535,7 @@ log.info("role: " + operationType.type+", ID: "+operationType.id+", 执行操作
 
 spring alibaba graph 编排流程图：
 
-节点上下文不加入memory, 鲜花识别本身是难题：月季/玫瑰、迎春/连翘、不同玫瑰切花品种之间差异很小，光线、角度、花期都会影响。 偏向“就图论图”，结果更中立。
+节点上下文不加入memory： 鲜花识别本身是难题：月季/玫瑰、迎春/连翘、不同玫瑰切花品种之间差异很小，光线、角度、花期都会影响。 偏向“就图论图”，结果更中立。
 
 ```mermaid
 %%{init: {'theme':'neutral','themeVariables':{'fontSize':'8px','nodeBorder':'2px'},'flowchart':{'nodeSpacing':8,'rankSpacing':32,'useMaxWidth':false,'curve':'basis'}}}%%
@@ -596,5 +596,5 @@ promptTemplate.add("input", input);
 
 （ai不会下单的一些列功能，花店实际需要的鲜花知识和氛围讲解）
 
-rag+上下文memory记得“买过什么、对百合过敏、偏好低饱和度色系”
+rag+上下文memory：记得前文买过什么、对百合过敏、偏好低饱和度色系
 

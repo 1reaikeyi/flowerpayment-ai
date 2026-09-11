@@ -37,10 +37,12 @@ const router = createRouter({
                 { path: 'flower/index', component: () => import('@/views/admin/flower/index.vue') },
                 { path: 'flower/add', component: () => import('@/views/admin/flower/addFlower.vue') },
                 { path: 'flower/detail', component: () => import('@/views/admin/flower/detail.vue') },
+                { path: 'flower/give', component: () => import('@/views/admin/flower/giveFlower.vue') },
 
                 { path: 'festival/index', component: () => import('@/views/admin/festival/index.vue') },
                 { path: 'festival/add', component: () => import('@/views/admin/festival/addFestival.vue') },
                 { path: 'festival/detail', component: () => import('@/views/admin/festival/detail.vue') },
+                { path: 'festival/give', component: () => import('@/views/admin/festival/giveFestival.vue') },
 
                 /**
                  * 1 line lump   order

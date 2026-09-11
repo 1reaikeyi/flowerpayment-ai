@@ -25,7 +25,7 @@
             <el-icon><Goods /></el-icon>
             <span>单只鲜花</span>
           </el-menu-item>
-          <el-menu-item index="/admin/flower/detail">
+          <el-menu-item index="/admin/flower/give">
             <el-icon><Goods /></el-icon>
             <span>送人</span>
           </el-menu-item>
@@ -40,7 +40,7 @@
             <el-icon><Present /></el-icon>
             <span>多花</span>
           </el-menu-item>
-          <el-menu-item index="/admin/festival/detail">
+          <el-menu-item index="/admin/festival/give">
             <el-icon><Present /></el-icon>
             <span>用途</span>
           </el-menu-item>
