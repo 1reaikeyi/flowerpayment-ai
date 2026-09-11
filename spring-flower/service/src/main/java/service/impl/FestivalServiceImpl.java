@@ -15,18 +15,14 @@ import common.exception.FestivalFailedException;
 import common.result.PageResult;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import mapper.FestivalMapper;
 import model.dto.FestivalDTO;
 import model.dto.FestivalPageDTO;
 import model.entity.Festival;
 import model.entity.FestivalDetail;
-import model.entity.Flower;
-import model.vo.EmployeeVO;
 import model.vo.FestivalDetailVO;
 import model.vo.FestivalVO;
-import model.vo.FlowerVO;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +35,6 @@ import service.FestivalService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
@@ -345,8 +340,26 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
     }
 
     @Override
-    public List<FestivalDetailVO> readFlower(Long id) {
+    public List<FestivalDetailVO> readOfFlower(Long id) {
         List<FestivalDetail> festivalList = festivalDetailService.lambdaQuery().eq(FestivalDetail::getFlowerId, id).list();
+        List<FestivalDetailVO> festivalDetailVOList = festivalList.stream()
+                .map(festivalDetailVO -> BeanUtil.toBean(festivalDetailVO, FestivalDetailVO.class) )
+                .toList();
+        return festivalDetailVOList;
+    }
+
+    @Override
+    public List<FestivalDetailVO> readOfObject(String object) {
+        List<FestivalDetail> festivalList = festivalDetailService.lambdaQuery().like(FestivalDetail::getSpecObject, object).list();
+        List<FestivalDetailVO> festivalDetailVOList = festivalList.stream()
+                .map(festivalDetailVO -> BeanUtil.toBean(festivalDetailVO, FestivalDetailVO.class) )
+                .toList();
+        return festivalDetailVOList;
+    }
+
+    @Override
+    public List<FestivalDetailVO> readOfFOption(String option) {
+        List<FestivalDetail> festivalList = festivalDetailService.lambdaQuery().like(FestivalDetail::getSpecOption,option).list();
         List<FestivalDetailVO> festivalDetailVOList = festivalList.stream()
                 .map(festivalDetailVO -> BeanUtil.toBean(festivalDetailVO, FestivalDetailVO.class) )
                 .toList();

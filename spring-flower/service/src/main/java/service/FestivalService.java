@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import common.result.PageResult;
 import model.dto.FestivalDTO;
 import model.dto.FestivalPageDTO;
-import model.dto.FlowerPageDTO;
 import model.entity.Festival;
 import model.vo.FestivalDetailVO;
 import model.vo.FestivalVO;
@@ -18,19 +17,22 @@ import java.util.List;
 
 public interface FestivalService extends IService<Festival> {
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    FestivalDTO create(FestivalDTO festivalDTO);
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     FestivalVO readCache(Long id);
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     void updateCache(FestivalDTO festivalDTO);
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     void deleteCache(List<Long> ids);
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    FestivalDTO create(FestivalDTO festivalDTO);
-
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     PageResult<FestivalVO> readPage(FestivalPageDTO festivalPageDTO);
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     List<FestivalDetailVO> readFestivalDetail(Long id);
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-    List<FestivalDetailVO> readFlower(Long id);
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
+    List<FestivalDetailVO> readOfFlower(Long id);
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
+    List<FestivalDetailVO> readOfObject(String object);
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
+    List<FestivalDetailVO> readOfFOption(String option);
 }

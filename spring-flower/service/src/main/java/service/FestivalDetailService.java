@@ -18,7 +18,7 @@ public interface FestivalDetailService extends IService<FestivalDetail> {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     FestivalDetailDTO create(FestivalDetailDTO festivalDetailDTO);
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     FestivalDetailVO readCache(Long id);
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
@@ -26,5 +26,4 @@ public interface FestivalDetailService extends IService<FestivalDetail> {
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     void deleteCache(List<Long> ids);
-
 }

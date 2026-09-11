@@ -116,22 +116,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public RoleHierarchy roleHierarchy() {
-        return RoleHierarchyImpl.withDefaultRolePrefix()
-                .role("ADMIN").implies("EMP")
-                .role("ADMIN").implies("USER")
-                .role("EMP").implies("USER")
-                .build();
-    }
-
-    @Bean
-    static MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
-        DefaultMethodSecurityExpressionHandler handler = new DefaultMethodSecurityExpressionHandler();
-        handler.setRoleHierarchy(roleHierarchy);
-        return handler;
-    }
-    //401未认证异常处理
-    @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return new AuthenticationEntryPoint() {
             @Override

@@ -6,16 +6,11 @@ import common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import model.dto.FestivalDTO;
 import model.dto.FestivalPageDTO;
-import model.dto.FlowerDTO;
-import model.dto.FlowerPageDTO;
 import model.vo.FestivalDetailVO;
 import model.vo.FestivalVO;
-import model.vo.FlowerVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import service.FestivalDetailService;
 import service.FestivalService;
-import service.FlowerService;
 import start.aop.OperationLogging;
 
 import java.util.List;
@@ -73,7 +68,20 @@ public class AdminFestivalController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/of/flower")
     public Result readFlower(@RequestParam Long id) {
-        List<FestivalDetailVO> festivalDetailVOList = festivalService.readFlower(id);
+        List<FestivalDetailVO> festivalDetailVOList = festivalService.readOfFlower(id);
+        return Result.success(festivalDetailVOList);
+    }
+
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("/of/object")
+    public Result readOfObject(@RequestParam String object) {
+        List<FestivalDetailVO> festivalDetailVOList = festivalService.readOfObject(object);
+        return Result.success(festivalDetailVOList);
+    }
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("/of/option")
+    public Result readOfOption(@RequestParam String option) {
+        List<FestivalDetailVO> festivalDetailVOList = festivalService.readOfFOption(option);
         return Result.success(festivalDetailVOList);
     }
 }

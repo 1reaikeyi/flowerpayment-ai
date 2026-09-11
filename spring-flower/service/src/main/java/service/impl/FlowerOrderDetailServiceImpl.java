@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import common.result.Result;
 import mapper.FlowerOrderDetailMapper;
 import model.entity.FlowerOrderDetail;
+import model.entity.User;
 import model.vo.FestivalVO;
 import model.vo.FlowerVO;
 import model.vo.statistics.StatisticsVO;
@@ -99,6 +100,17 @@ public class FlowerOrderDetailServiceImpl extends ServiceImpl<FlowerOrderDetailM
 
     @Override
     public List<TopStatisticsVO> top2() {
+        List<FlowerOrderDetail> details = this.lambdaQuery()
+                .isNotNull(FlowerOrderDetail::getFestivalId)
+                .last(" limit " + TOP_NUMBER)
+                .list();
+
+        Map<Long, Long> numberMap = new HashMap<>();
+        for (FlowerOrderDetail d : details) {
+            numberMap.merge(d.getFlowerId(), d.getNumber(), Long::sum);
+        }
+        // 降序排序取前
+        List<TopStatisticsVO> topStatisticsVOList = new ArrayList<>();
         return List.of();
     }
 
@@ -136,5 +148,10 @@ public class FlowerOrderDetailServiceImpl extends ServiceImpl<FlowerOrderDetailM
         // 通过今日订单的 id 关联查询已支付的支付记录，统计实收金额
 
         return null;
+    }
+
+    @Override
+    public List<User> userData() {
+        return List.of();
     }
 }

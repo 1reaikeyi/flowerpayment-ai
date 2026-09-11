@@ -36,7 +36,7 @@ public class OperationType {
             message = "不许偷看";
         }
         log.info("role: " + operationType.type+", ID: "+operationType.id+", 执行操作: "+operationType.operation+
-                ", 使用参数: "+ message +", 运行状态: "+operationType.status + ", 记录时间: " + time);
+                ", 使用参数: "+ message +", 运行状态: "+operationType.status + ", 记录时间: " + time + "ms(毫秒)");
         return operationType;
     }
 

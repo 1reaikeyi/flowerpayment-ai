@@ -20,7 +20,7 @@ public interface FlowerDetailService extends IService<FlowerDetail> {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     FlowerDetailDTO create(FlowerDetailDTO flowerDetailDTO);
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     FlowerDetailVO readCache(Long id);
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")

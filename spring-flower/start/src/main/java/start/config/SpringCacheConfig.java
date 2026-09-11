@@ -17,8 +17,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import java.time.Duration;
 
 @Configuration
-@EnableCaching
-public class RedisConfig {
+
+public class SpringCacheConfig {
 
     /**
      * 构建 Redis 专用的 ObjectMapper：
@@ -33,8 +33,6 @@ public class RedisConfig {
 
     /**
      * 统一构造 GenericJackson2JsonRedisSerializer：
-     * RedisTemplate 与 RedisCacheManager 共用同一个序列化器实现，
-     * 避免一边用 GenericJackson 一边用 Jackson2Json 导致读写格式不一致。
      */
     private GenericJackson2JsonRedisSerializer buildJsonSerializer(ObjectMapper objectMapper) {
         return new GenericJackson2JsonRedisSerializer(buildRedisObjectMapper(objectMapper));
@@ -74,4 +72,5 @@ public class RedisConfig {
                 .cacheDefaults(defaultConfig)
                 .build();
     }
+
 }

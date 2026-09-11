@@ -45,7 +45,7 @@ public class FestivalController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/of/flower")
     public Result readFlower(@RequestParam Long id) {
-        List<FestivalDetailVO> festivalDetailVOList = festivalService.readFlower(id);
+        List<FestivalDetailVO> festivalDetailVOList = festivalService.readOfFlower(id);
         return Result.success(festivalDetailVOList);
     }
 }

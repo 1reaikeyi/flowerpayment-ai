@@ -21,10 +21,10 @@ public interface FlowerCategoryService extends IService<FlowerCategory> {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     FlowerCategoryDTO create(FlowerCategoryDTO flowerCategoryDTO);
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     List<FlowerCategoryVO> readByType(Long type);
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     PageResult<FlowerCategoryVO> readPage(FlowerCategoryPageDTO flowerCategoryPageDTO);
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -33,9 +33,9 @@ public interface FlowerCategoryService extends IService<FlowerCategory> {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     void deleteById(List<Long> ids);
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     List<FlowerVO> readFlower(Long categoryId);
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     List<FestivalVO> readFestival(Long categoryId);
 }

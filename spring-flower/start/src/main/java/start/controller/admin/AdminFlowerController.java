@@ -6,11 +6,9 @@ import common.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import model.dto.FlowerDTO;
 import model.dto.FlowerPageDTO;
-import model.vo.FestivalDetailVO;
 import model.vo.FlowerDetailVO;
 import model.vo.FlowerVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import service.FlowerDetailService;
 import service.FlowerService;
@@ -68,7 +66,19 @@ public class AdminFlowerController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/of/flowerDetail")
     public Result readFlowerDetail(@RequestParam Long id) {
-        List<FlowerDetailVO> flowerDetailVOList = flowerService.readFestivalDetail(id);
+        List<FlowerDetailVO> flowerDetailVOList = flowerService.readFlowerDetail(id);
+        return Result.success(flowerDetailVOList);
+    }
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("/of/object")
+    public Result readOfObject(@RequestParam String object) {
+        List<FlowerDetailVO> flowerDetailVOList = flowerService.readOfObject(object);
+        return Result.success(flowerDetailVOList);
+    }
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("/of/option")
+    public Result readOfOption(@RequestParam String option) {
+        List<FlowerDetailVO> flowerDetailVOList = flowerService.readOfOption(option);
         return Result.success(flowerDetailVOList);
     }
 

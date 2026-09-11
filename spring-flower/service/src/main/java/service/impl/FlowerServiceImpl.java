@@ -37,9 +37,7 @@ import service.FlowerService;
 import com.github.benmanes.caffeine.cache.Cache;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -330,8 +328,32 @@ public class FlowerServiceImpl extends ServiceImpl<FlowerMapper, Flower> impleme
     }
 
     @Override
-    public List<FlowerDetailVO> readFestivalDetail(Long id) {
+    public List<FlowerDetailVO> readFlowerDetail(Long id) {
         List<FlowerDetail> flowerDetailList = flowerDetailService.lambdaQuery().eq(FlowerDetail::getFlowerId, id).list();
+        List<FlowerDetailVO> flowerDetailVOList = flowerDetailList.stream()
+                .map(flowerDetail -> BeanUtil.copyProperties(flowerDetail, FlowerDetailVO.class))
+                .toList();
+        return flowerDetailVOList;
+    }
+
+    @Override
+    public List<FlowerDetailVO> readOfObject(String object) {
+        List<FlowerDetail> flowerDetailList = flowerDetailService
+                .lambdaQuery()
+                .like(FlowerDetail::getSpecObject,object)
+                .list();
+        List<FlowerDetailVO> flowerDetailVOList = flowerDetailList.stream()
+                .map(flowerDetail -> BeanUtil.copyProperties(flowerDetail, FlowerDetailVO.class))
+                .toList();
+        return flowerDetailVOList;
+    }
+
+    @Override
+    public List<FlowerDetailVO> readOfOption(String option) {
+        List<FlowerDetail> flowerDetailList = flowerDetailService
+                .lambdaQuery()
+                .like(FlowerDetail::getSpecOption,option)
+                .list();
         List<FlowerDetailVO> flowerDetailVOList = flowerDetailList.stream()
                 .map(flowerDetail -> BeanUtil.copyProperties(flowerDetail, FlowerDetailVO.class))
                 .toList();

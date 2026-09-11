@@ -17,7 +17,7 @@ import java.util.List;
 
 public interface FlowerService extends IService<Flower> {
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     FlowerVO readCache(Long id);
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -26,12 +26,16 @@ public interface FlowerService extends IService<Flower> {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     void deleteCache(List<Long> ids);
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     PageResult<FlowerVO> readPage(FlowerPageDTO flowerPageDTO);
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     FlowerDTO create(FlowerDTO flowerDTO);
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-    List<FlowerDetailVO> readFestivalDetail(Long id);
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
+    List<FlowerDetailVO> readFlowerDetail(Long id);
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
+    List<FlowerDetailVO> readOfObject(String object);
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
+    List<FlowerDetailVO> readOfOption(String option);
 }

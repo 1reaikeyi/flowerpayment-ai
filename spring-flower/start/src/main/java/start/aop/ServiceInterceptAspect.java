@@ -1,5 +1,6 @@
 package start.aop;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -55,7 +56,7 @@ public class ServiceInterceptAspect {
         String operation = annotation.operation().name(); // 操作类型（CREATE/GET/UPDATE/DELETE）
         Object result = null;
         String methodArgs = Arrays.toString(joinPoint.getArgs());
-        if (methodArgs == null || methodArgs.length() == 0) {
+        if (StrUtil.isBlank(operation)) {
             methodArgs = "没有param,boby";
         }
         long startTime = System.currentTimeMillis();

@@ -42,7 +42,7 @@ public class FlowerController {
     @OperationLogging(operation = OperationEnum.READ)
     @GetMapping("/of/flowerDetail")
     public Result readFlowerDetail(@RequestParam Long id) {
-        List<FlowerDetailVO> flowerDetailVOList = flowerService.readFestivalDetail(id);
+        List<FlowerDetailVO> flowerDetailVOList = flowerService.readFlowerDetail(id);
         return Result.success(flowerDetailVOList);
     }
 }

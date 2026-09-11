@@ -244,7 +244,7 @@ Q: 放弃 MD5，使用BCrypt 密码加密存储优点？
 不使用 MD5/SHA256 不可逆哈希，BCrypt 自带随机盐值，抗彩虹表暴力破解，数据库永不存储明文密码。
 Q: 如何role权限隔离, 不越级？
  1.	service的方法层拦截
- interface使用@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+ interface使用@PreAuthorize("hasAuthority('ROLE_ADMIN')orhasAuthority('ROLE_EMP')")
  2. controller的url拦截
 .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_EMP")
 .requestMatchers("/user/**").hasAuthority("ROLE_USER")
