@@ -22,7 +22,7 @@
 import { ref, reactive, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useEmployeeStore } from '@/stores/index.js'
-// 改用专用修改密码接口：PUT /admin/employee/password (Query 参数)
+// 修改密码接口：PUT /admin/password（RequestBody PasswordDTO）
 import { updateEmployeePassword } from '@/api/admin/admin.js'
 
 const employeeStore = useEmployeeStore()
@@ -60,7 +60,7 @@ const handleSubmit = async () => {
   }
   saving.value = true
   try {
-    // DELETE /admin/employee/password + RequestBody PasswordDTO
+    // PUT /admin/password + RequestBody PasswordDTO
     // 后端从 token 取当前员工 id，前端只需传 { newPassword, confirmPassword }
     await updateEmployeePassword({
       newPassword: form.password,

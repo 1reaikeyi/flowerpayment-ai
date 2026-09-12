@@ -11,7 +11,6 @@
             @change="handleSearch"
             style="width: 180px"
           >
-            <el-option label="全部" value="" />
             <el-option
               v-for="item in statusOptions"
               :key="item.value"
@@ -69,7 +68,17 @@
       <el-table-column label="操作" width="240" fixed="right" align="center">
         <template #default="{ row }">
           <!-- 状态流转按钮：仅对当前状态显示对应的下一步流转操作 -->
-          <!-- row.status 可能是枚举名字符串/数字/对象，统一用 normalizeStatus 归一化后再比较 -->
+          <!-- row.status 后端默认序列化为枚举名字符串，统一用 normalizeStatus 归一化后再比较 -->
+          <el-button
+            v-if="normalizeStatus(row.status) === 2"
+            type="primary"
+            link
+            size="small"
+            :loading="actionLoadingId === row.id"
+            @click="handleWorkflow(row, 'cooking')"
+          >
+            开始制作
+          </el-button>
           <el-button
             v-if="normalizeStatus(row.status) === 3"
             type="primary"
@@ -114,9 +123,9 @@
           <el-button type="primary" link size="small" @click="handleDetail(row)">
             详情
           </el-button>
-          <!-- 取消订单：仅未完成（status<7）且未取消（status!=8）的订单可取消，会触发支付宝退款 -->
+          <!-- 取消订单：进行中状态（1~6）可取消，会触发支付宝退款；7 已完成、8 已取消不显示 -->
           <el-popconfirm
-            v-if="normalizeStatus(row.status) < 7 && normalizeStatus(row.status) !== 8"
+            v-if="normalizeStatus(row.status) < 7"
             title="确认取消该订单吗？将触发支付宝退款"
             width="240"
             @confirm="handleCancel(row)"
@@ -141,7 +150,7 @@
       class="pagination"
       v-model:current-page="pagination.page"
       v-model:page-size="pagination.pageSize"
-      :page-sizes="[10, 20, 30, 40]"
+      :page-sizes="[10, 20]"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
       @size-change="handleSizeChange"
@@ -157,6 +166,7 @@ import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
 import {
   pageOrderList,
+  updateOrderToCooking,
   updateOrderToGo,
   updateOrderToDelivering,
   updateOrderToArrived,
@@ -264,10 +274,10 @@ const normalizeDeliveryType = (val) => {
   return null
 }
 
-// 搜索表单 - 后端 FlowerOrderPageDTO 支持 status 筛选
-// status 为空时不传该参数，查看所有状态的订单（主要情况）
+// 搜索表单 - 后端 FlowerOrderPageDTO 支持 status（Long，1~8）筛选
+// null 时不传，service 层不加 status 条件，即查询全部状态 1~8 的订单
 const searchForm = reactive({
-  status: ''
+  status: null
 })
 
 // 分页参数
@@ -293,8 +303,8 @@ const fetchList = async () => {
       page: pagination.page,
       pageSize: pagination.pageSize
     }
-    // status 为空时不传，走后端默认值（3 商家制作）
-    if (searchForm.status != null && searchForm.status !== '') {
+    // status 为 null 时不传：后端 service 不加 status 过滤条件，返回全部状态订单
+    if (searchForm.status != null) {
       params.status = searchForm.status
     }
     const res = await pageOrderList(params)
@@ -328,10 +338,11 @@ const handleDetail = (row) => {
 }
 
 // 状态流转：根据 action 调用对应接口
-// action: 'go' | 'delivering' | 'arrived' | 'complete'
+// action: 'cooking' | 'go' | 'delivering' | 'arrived' | 'complete'
 const handleWorkflow = async (row, action) => {
   actionLoadingId.value = row.id
   const actionTextMap = {
+    cooking: '开始制作',
     go: '取货',
     delivering: '开始配送',
     arrived: '确认到达',
@@ -339,6 +350,7 @@ const handleWorkflow = async (row, action) => {
   }
   try {
     const actionFn = {
+      cooking: updateOrderToCooking,
       go: updateOrderToGo,
       delivering: updateOrderToDelivering,
       arrived: updateOrderToArrived,

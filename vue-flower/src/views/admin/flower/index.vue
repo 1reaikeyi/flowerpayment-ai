@@ -120,7 +120,7 @@
       class="pagination"
       v-model:current-page="pagination.page"
       v-model:page-size="pagination.pageSize"
-      :page-sizes="[10, 20, 30, 40]"
+      :page-sizes="[10, 20]"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
       @size-change="handleSizeChange"

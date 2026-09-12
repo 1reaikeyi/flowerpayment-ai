@@ -1,10 +1,10 @@
 <template>
   <div class="add-category-container">
-    <!-- 页面标题与返回 -->
+    <!-- 页面标题 -->
     <div class="page-header">
       <el-page-header @back="goBack">
         <template #content>
-          <span class="page-title">{{ isEdit ? '修改分类' : '新增分类' }}</span>
+          <span class="page-title">{{ isEdit ? '修改分类' : '添加分类' }}</span>
         </template>
       </el-page-header>
     </div>
@@ -15,14 +15,14 @@
         ref="formRef"
         :model="formData"
         :rules="rules"
-        label-width="100px"
+        label-width="120px"
         class="category-form"
       >
         <!-- 分类名称 -->
         <el-form-item label="分类名称" prop="name">
           <el-input
             v-model="formData.name"
-            placeholder="请输入分类名称"
+            placeholder="请填写分类名称"
             maxlength="20"
           />
         </el-form-item>
@@ -45,13 +45,13 @@
             v-model="formData.sort"
             :min="0"
             :max="9999"
+            controls-position="right"
             placeholder="数字越小越靠前"
-            style="width: 100%"
           />
         </el-form-item>
 
         <!-- 状态：启用 1 / 禁用 0 -->
-        <el-form-item label="状态" prop="status">
+        <el-form-item label="状态">
           <el-switch
             v-model="formData.status"
             :active-value="1"
@@ -64,8 +64,9 @@
         <!-- 操作按钮 -->
         <el-form-item class="form-buttons">
           <el-button @click="goBack">取消</el-button>
-          <el-button type="warning" :loading="submitting" @click="handleSubmit">
-            保存
+          <el-button type="primary" :loading="submitting" @click="handleSubmit(false)">保存</el-button>
+          <el-button v-if="!isEdit" type="primary" plain :loading="submitting" @click="handleSubmit(true)">
+            保存并继续添加
           </el-button>
         </el-form-item>
       </el-form>
@@ -77,7 +78,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-// API 函数名对齐新的 admin API 层（category.js）
+// API 函数名对齐 admin 接口文档第 4 节（category.js）
 import { createCategory, updateCategory, pageCategoryList } from '@/api/admin/category.js'
 
 const router = useRouter()
@@ -97,10 +98,11 @@ const typeOptions = [
 // 是否为编辑模式：query.id 存在即编辑
 const isEdit = computed(() => !!route.query.id)
 
+// 表单数据 - 对齐后端 FlowerCategoryDTO 字段
 const formData = reactive({
   id: null,
-  type: 1,
   name: '',
+  type: 1,
   sort: 0,
   status: 1
 })
@@ -119,14 +121,14 @@ const rules = {
   ]
 }
 
-// 返回上一页
+// 返回分类列表页
 const goBack = () => {
-  router.back()
+  router.push('/admin/category')
 }
 
 // 编辑模式回显：
 // 优先从 query.row 还原整行（列表页跳转时携带）；
-// 缺失时拉全量分页后按 id 过滤兜底（后端无「按 id 查分类」接口）
+// 缺失时走分页查询按 id 过滤兜底（后端无「按 id 查分类」接口）
 const loadEditData = async () => {
   const id = route.query.id
   let record = null
@@ -140,22 +142,23 @@ const loadEditData = async () => {
     }
   }
 
-  // 2) 兜底：全量分页查询后按 id 过滤
+  // 2) 兜底：分页查询后按 id 过滤（pageSize 后端限制 1~20）
   if (!record) {
     try {
-      const res = await pageCategoryList({ page: 1, pageSize: 9999 })
-      const records = res?.data?.records || []
+      const res = await pageCategoryList({ page: 1, pageSize: 20 })
+      // PageResult 字段为 list（非 records）
+      const records = res?.data?.list || []
       record = records.find(r => String(r.id) === String(id)) || null
     } catch (e) {
-      console.error('获取分类列表失败:', e)
+      console.error('获取分类信息失败:', e)
     }
   }
 
   // 3) 回填表单
   if (record) {
     formData.id = record.id
-    formData.type = record.type ?? 1
     formData.name = record.name ?? ''
+    formData.type = record.type ?? 1
     formData.sort = record.sort ?? 0
     formData.status = record.status ?? 1
   } else {
@@ -164,17 +167,17 @@ const loadEditData = async () => {
   }
 }
 
-// 提交表单：按 isEdit 决定 addCategory 或 updateCategory
-const handleSubmit = async () => {
+// 提交表单：按 isEdit 决定 createCategory 或 updateCategory
+const handleSubmit = async (continueAdd) => {
   if (!formRef.value) return
   try {
     await formRef.value.validate()
     submitting.value = true
 
-    // 组装与后端 DTO 完全对齐的载荷（type/name/sort/status）
+    // 组装与后端 FlowerCategoryDTO 完全对齐的载荷（name/type/sort/status）
     const payload = {
-      type: formData.type,
       name: formData.name,
+      type: formData.type,
       sort: formData.sort,
       status: formData.status
     }
@@ -184,12 +187,21 @@ const handleSubmit = async () => {
       payload.id = formData.id
       await updateCategory(payload)
       ElMessage.success('分类修改成功')
+      goBack()
     } else {
       // 新增
       await createCategory(payload)
       ElMessage.success('分类添加成功')
+
+      if (continueAdd) {
+        formRef.value.resetFields()
+        formData.type = 1
+        formData.sort = 0
+        formData.status = 1
+      } else {
+        goBack()
+      }
     }
-    router.back()
   } catch (error) {
     if (error !== false) {
       console.error('提交失败:', error)
@@ -215,7 +227,6 @@ onMounted(() => {
   /* 容器背景使用系统蓝极浅透明度 */
   background: rgba(10, 132, 255, 0.04);
   border-radius: 4px;
-  min-height: calc(100vh - 120px);
 }
 
 .page-header {
@@ -233,25 +244,15 @@ onMounted(() => {
 }
 
 .form-container {
-  max-width: 700px;
+  max-width: 800px;
   padding: 20px 0;
 }
 
 .category-form {
-  .el-select {
+  .el-select,
+  .el-input,
+  .el-input-number {
     width: 300px;
-  }
-
-  .el-input {
-    width: 300px;
-  }
-
-  .el-switch {
-    /* 开关激活态使用系统绿 */
-    :deep(.el-switch.is-checked .el-switch__core) {
-      background-color: $sys-green;
-      border-color: $sys-green;
-    }
   }
 }
 
@@ -260,17 +261,5 @@ onMounted(() => {
   padding-top: 20px;
   /* 顶部分隔线使用系统蓝半透明 */
   border-top: 1px solid rgba(10, 132, 255, 0.2);
-
-  :deep(.el-button--warning) {
-    /* 主按钮使用系统蓝，文字使用系统黄 */
-    background-color: $primary;
-    border-color: $primary;
-    color: $sys-yellow;
-
-    &:hover {
-      background-color: $primary-dark;
-      border-color: $primary-dark;
-    }
-  }
 }
 </style>

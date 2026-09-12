@@ -55,6 +55,7 @@ public Result handleException(Exception e) {
 - **权限控制**（Spring Security 配置）：
   - `/admin/login` 放行（permitAll）
   - `/admin/**` 需 `ROLE_ADMIN` 或 `ROLE_EMP` 角色
+- **方法级权限**：由 Service 接口方法上的 `@PreAuthorize` 注解控制（`spring-flower/service` 模块），如 `hasAuthority('ROLE_ADMIN')`，未标注注解的接口仅受 URL 级配置约束。
 - 所有写操作接口均有 `@OperationLogging` 操作日志切面记录。
 
 ---
@@ -148,7 +149,7 @@ public Result handleException(Exception e) {
 - **方法**: `PUT`
 - **路径**: `/admin/password`
 - **描述**: 修改当前登录管理员的密码
-- **权限**: 需登录
+- **权限**: ROLE_ADMIN / ROLE_EMP
 
 **请求体 (PasswordDTO, JSON)**:
 
@@ -212,7 +213,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/festival`
 - **描述**: 查询单个多花礼盒详情（带缓存）
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (Query)**:
 
@@ -243,7 +244,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/festival/all`
 - **描述**: 分页查询多花礼盒列表，支持按名称模糊搜索
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (FestivalPageDTO, Query 参数)**:
 
@@ -303,7 +304,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/festival/of/festivalDetail`
 - **描述**: 根据多花礼盒 ID 查询其包含的所有多花礼盒明细（关联鲜花）
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (Query)**:
 
@@ -328,13 +329,47 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/festival/of/flower`
 - **描述**: 根据鲜花 ID 查询它被哪些多花礼盒关联
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (Query)**:
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | id | Long | 是 | 鲜花主键 ID |
+
+**响应**: `Result<List<FestivalDetailVO>>`（字段见 2.6 节）
+
+---
+
+### 2.8 按送人对象查询多花礼盒明细
+
+- **方法**: `GET`
+- **路径**: `/admin/festival/of/object`
+- **描述**: 按送人对象（specObject）模糊查询多花礼盒明细（`spec_object LIKE %object%`）
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
+
+**请求参数 (Query)**:
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| object | String | 是 | 送人对象关键词，如 `女友` |
+
+**响应**: `Result<List<FestivalDetailVO>>`（字段见 2.6 节）
+
+---
+
+### 2.9 按用途场景查询多花礼盒明细
+
+- **方法**: `GET`
+- **路径**: `/admin/festival/of/option`
+- **描述**: 按用途场景（specOption）模糊查询多花礼盒明细（`spec_option LIKE %option%`）
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
+
+**请求参数 (Query)**:
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| option | String | 是 | 用途场景关键词，如 `生日` |
 
 **响应**: `Result<List<FestivalDetailVO>>`（字段见 2.6 节）
 
@@ -371,7 +406,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/festivalDetail`
 - **描述**: 查询单条明细详情（带缓存）
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (Query)**:
 
@@ -452,7 +487,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/category`
 - **描述**: 按分类类型查询所有分类
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (Query)**:
 
@@ -481,7 +516,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/category/all`
 - **描述**: 分页查询所有分类，支持按类型筛选
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (FlowerCategoryPageDTO, Query 参数)**:
 
@@ -538,7 +573,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/category/of/flower`
 - **描述**: 根据分类 ID 查询其下所有鲜花
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (Query)**:
 
@@ -555,7 +590,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/category/of/festival`
 - **描述**: 根据分类 ID 查询其下所有节日多花礼盒
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (Query)**:
 
@@ -601,7 +636,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/flower`
 - **描述**: 查询单个鲜花详情（带缓存）
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (Query)**:
 
@@ -633,7 +668,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/flower/all`
 - **描述**: 分页查询鲜花列表，支持按名称模糊搜索
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (FlowerPageDTO, Query 参数)**:
 
@@ -693,7 +728,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/flower/of/flowerDetail`
 - **描述**: 根据鲜花 ID 查询其所有规格明细（送人对象/用途场景）
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (Query)**:
 
@@ -709,6 +744,40 @@ public Result handleException(Exception e) {
 | flowerId | Long | 关联鲜花 ID |
 | specObject | String | 送人对象（如女友、母亲） |
 | specOption | String | 用途/场景（如表白、生日） |
+
+---
+
+### 5.7 按送人对象查询鲜花明细
+
+- **方法**: `GET`
+- **路径**: `/admin/flower/of/object`
+- **描述**: 按送人对象（specObject）模糊查询鲜花规格明细（`spec_object LIKE %object%`）
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
+
+**请求参数 (Query)**:
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| object | String | 是 | 送人对象关键词，如 `女友` |
+
+**响应**: `Result<List<FlowerDetailVO>>`（字段见 5.6 节）
+
+---
+
+### 5.8 按用途场景查询鲜花明细
+
+- **方法**: `GET`
+- **路径**: `/admin/flower/of/option`
+- **描述**: 按用途场景（specOption）模糊查询鲜花规格明细（`spec_option LIKE %option%`）
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
+
+**请求参数 (Query)**:
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| option | String | 是 | 用途场景关键词，如 `生日` |
+
+**响应**: `Result<List<FlowerDetailVO>>`（字段见 5.6 节）
 
 ---
 
@@ -742,7 +811,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/flowerDetail`
 - **描述**: 查询单条鲜花明细详情（带缓存）
-- **权限**: ROLE_USER
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
 
 **请求参数 (Query)**:
 
@@ -813,7 +882,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/flowerOrder`
 - **描述**: 查询单个订单详情
-- **权限**: ROLE_USER
+- **权限**: 需登录（ROLE_ADMIN / ROLE_EMP，Service 无方法级注解）
 
 **请求参数 (Query)**:
 
@@ -862,7 +931,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/flowerOrder/all`
 - **描述**: 分页查询订单列表，按订单状态筛选
-- **权限**: ROLE_ADMIN
+- **权限**: 需登录（ROLE_ADMIN / ROLE_EMP，Service 无方法级注解）
 
 **请求参数 (FlowerOrderPageDTO, Query 参数)**:
 
@@ -870,7 +939,7 @@ public Result handleException(Exception e) {
 |------|------|------|--------|------|
 | page | Long | 否 | 1 | 页码（最小 1） |
 | pageSize | Long | 否 | 10 | 每页条数（1~20） |
-| status | Long | 否 | 3 | 订单状态（1~8） |
+| status | Long | 否 | 无（null） | 订单状态（1~8）；不传时不加状态过滤，返回全部状态订单 |
 
 **响应**: `Result<PageResult<FlowerOrderVO>>`（字段见 7.1 节）
 
@@ -881,7 +950,7 @@ public Result handleException(Exception e) {
 - **方法**: `PUT`
 - **路径**: `/admin/flowerOrder/cooking/{id}`
 - **描述**: 将订单状态更新为"商家制作"（状态码 3）
-- **权限**: 需登录
+- **权限**: 需登录（ROLE_ADMIN / ROLE_EMP）
 
 **路径参数**:
 
@@ -898,7 +967,7 @@ public Result handleException(Exception e) {
 - **方法**: `PUT`
 - **路径**: `/admin/flowerOrder/go/{id}`
 - **描述**: 将订单状态更新为"工作人员取货"（状态码 4）
-- **权限**: 需登录
+- **权限**: 需登录（ROLE_ADMIN / ROLE_EMP）
 
 **路径参数**:
 
@@ -915,6 +984,7 @@ public Result handleException(Exception e) {
 - **方法**: `PUT`
 - **路径**: `/admin/flowerOrder/delivering/{id}`
 - **描述**: 将订单状态更新为"配送中"（状态码 5）
+- **权限**: 需登录（ROLE_ADMIN / ROLE_EMP）
 
 **路径参数**:
 
@@ -922,7 +992,7 @@ public Result handleException(Exception e) {
 |------|------|------|------|
 | id | Long | 是 | 订单主键 ID |
 
-**响应**: `Result<OrderStatusEnum>` →（代码返回 CANCELLED，疑似 Bug）
+**响应**: `Result<OrderStatusEnum>` → 返回 DELIVERING 枚举
 
 ---
 
@@ -931,7 +1001,7 @@ public Result handleException(Exception e) {
 - **方法**: `PUT`
 - **路径**: `/admin/flowerOrder/arrived/{id}`
 - **描述**: 将订单状态更新为"工作人员已到达"（状态码 6）
-- **权限**: 需登录
+- **权限**: 需登录（ROLE_ADMIN / ROLE_EMP）
 
 **路径参数**:
 
@@ -948,7 +1018,7 @@ public Result handleException(Exception e) {
 - **方法**: `PUT`
 - **路径**: `/admin/flowerOrder/complete/{id}`
 - **描述**: 将订单状态更新为"已完成"（状态码 7）
-- **权限**: 需登录
+- **权限**: 需登录（ROLE_ADMIN / ROLE_EMP）
 
 **路径参数**:
 
@@ -965,7 +1035,7 @@ public Result handleException(Exception e) {
 - **方法**: `PUT`
 - **路径**: `/admin/flowerOrder/canceled/{id}`
 - **描述**: 取消订单，同时触发支付宝退款
-- **权限**: 需登录
+- **权限**: 需登录（ROLE_ADMIN / ROLE_EMP）
 
 **路径参数**:
 
@@ -988,7 +1058,7 @@ public Result handleException(Exception e) {
 - **方法**: `POST`
 - **路径**: `/admin/shop/{status}`
 - **描述**: 设置店铺营业/打烊状态
-- **权限**: ROLE_ADMIN
+- **权限**: 需登录（ROLE_ADMIN / ROLE_EMP，无 Service 层权限注解）
 
 **路径参数**:
 
@@ -1009,7 +1079,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/shop`
 - **描述**: 获取当前店铺的营业状态
-- **权限**: ROLE_USER
+- **权限**: 需登录（ROLE_ADMIN / ROLE_EMP，无 Service 层权限注解）
 
 **请求参数**: 无
 
@@ -1032,7 +1102,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/statistics/flower`
 - **描述**: 统计所有鲜花单品的累计销售数量与销售金额
-- **权限**: ROLE_EMP
+- **权限**: ROLE_ADMIN / ROLE_EMP
 
 **请求参数**: 无
 
@@ -1052,7 +1122,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/statistics/festival`
 - **描述**: 统计所有节日多花礼盒的累计销售数量与销售金额（按销量降序）
-- **权限**: ROLE_EMP
+- **权限**: ROLE_ADMIN / ROLE_EMP
 
 **请求参数**: 无
 
@@ -1065,7 +1135,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/statistics/top1`
 - **描述**: 鲜花单品销量排行榜（取前 TOP_NUMBER 条）
-- **权限**: ROLE_EMP
+- **权限**: ROLE_ADMIN / ROLE_EMP
 
 **请求参数**: 无
 
@@ -1084,7 +1154,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/statistics/top2`
 - **描述**: 节日多花礼盒销量排行榜
-- **权限**: ROLE_EMP
+- **权限**: ROLE_ADMIN / ROLE_EMP
 
 **请求参数**: 无
 
@@ -1097,7 +1167,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/statistics/order`
 - **描述**: 按订单状态分组统计各状态订单数量
-- **权限**: ROLE_EMP
+- **权限**: ROLE_ADMIN / ROLE_EMP
 
 **请求参数**: 无
 
@@ -1116,7 +1186,7 @@ public Result handleException(Exception e) {
 - **方法**: `GET`
 - **路径**: `/admin/statistics/today`
 - **描述**: 今日订单数、已支付订单数、今日营业额
-- **权限**: ROLE_EMP
+- **权限**: ROLE_ADMIN / ROLE_EMP
 
 **请求参数**: 无
 

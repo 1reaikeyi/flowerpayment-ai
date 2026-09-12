@@ -2,8 +2,7 @@
   <div class="employee-container">
     <!-- 搜索栏 + 新增按钮 -->
     <div class="toolbar">
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <!-- 后端 EmployeePageDTO.name：按部门/用户名模糊查询 -->
+      <el-form :inline="true" :model="searchForm" @submit.prevent>
         <!-- 后端 EmployeePageDTO.employeename：按用户名模糊搜索 -->
         <el-form-item label="用户名">
           <el-input
@@ -57,17 +56,18 @@
             <el-icon><Edit /></el-icon>
             编辑
           </el-button>
-          <!-- 启停切换：getEmployeeDetail 取详情 → 改 status → updateEmployee -->
+          <!-- 启停切换：getEmployeeById 取详情 → 改 status → updateEmployee -->
           <el-button
             :type="row.status === 1 ? 'danger' : 'success'"
             link
             size="small"
+            :loading="statusLoadingId === row.id"
             @click="handleStatusToggle(row)"
           >
             <el-icon><Switch /></el-icon>
             {{ row.status === 1 ? '禁用' : '启用' }}
           </el-button>
-          <!-- 删除：el-popconfirm 二次确认 + deleteEmployee([id]) -->
+          <!-- 删除：el-popconfirm 二次确认 + deleteEmployees([id]) -->
           <el-popconfirm
             title="确认删除该员工吗？"
             @confirm="handleDelete(row)"
@@ -92,7 +92,7 @@
       :page-sizes="[10, 20, 30, 40]"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
-      @size-change="fetchEmployeeList"
+      @size-change="handleSizeChange"
       @current-change="fetchEmployeeList"
     />
   </div>
@@ -107,9 +107,10 @@ import { Search, Plus, Edit, Switch, Delete } from '@element-plus/icons-vue'
 import {
   pageEmployeeList,
   getEmployeeById,
-  updateEmployee,
   deleteEmployees
 } from '@/api/admin/admin.js'
+// 员工资料修改走员工端 /employee（admin 接口文档第 1 节）
+import { updateEmployee } from '@/api/employee/employee.js'
 
 const router = useRouter()
 
@@ -129,8 +130,11 @@ const tableData = ref([])
 const total = ref(0)
 const loading = ref(false)
 
-// 获取员工列表 - GET /admin/all，参数 { page, pageSize, name? }
-// 后端返回 IPage<Employee>：{ records, total, size, current }
+// 启停切换中按钮 loading 的行 id
+const statusLoadingId = ref(null)
+
+// 获取员工列表 - GET /admin/all，参数 { page, pageSize, employeename? }
+// 后端返回 Result<PageResult<EmployeeVO>>：data = { total, list, pageNum, pageSize }
 const fetchEmployeeList = async () => {
   loading.value = true
   try {
@@ -145,6 +149,9 @@ const fetchEmployeeList = async () => {
     if (res?.data) {
       tableData.value = res.data.list || []
       total.value = res.data.total || 0
+    } else {
+      tableData.value = []
+      total.value = 0
     }
   } catch (error) {
     console.error('获取员工列表失败:', error)
@@ -159,6 +166,12 @@ const handleSearch = () => {
   fetchEmployeeList()
 }
 
+// 每页条数变化：重置到第一页
+const handleSizeChange = () => {
+  pagination.page = 1
+  fetchEmployeeList()
+}
+
 // 跳转新增员工页
 const handleAdd = () => {
   router.push('/admin/employee/add')
@@ -169,8 +182,9 @@ const handleEdit = (row) => {
   router.push(`/admin/employee/add?id=${row.id}`)
 }
 
-// 启停切换：先获取详情避免遗漏字段，再修改 status 后 PUT /admin/employee
+// 启停切换：先获取详情避免遗漏字段，再修改 status 后 PUT /employee
 const handleStatusToggle = async (row) => {
+  statusLoadingId.value = row.id
   try {
     const detailRes = await getEmployeeById(row.id)
     const detail = detailRes?.data
@@ -185,10 +199,12 @@ const handleStatusToggle = async (row) => {
     fetchEmployeeList()
   } catch (error) {
     console.error('状态切换失败:', error)
+  } finally {
+    statusLoadingId.value = null
   }
 }
 
-// 删除员工 - DELETE /admin?ids=1,2,3，传数组由 api 内部拼接
+// 删除员工 - DELETE /admin，params.ids 数组由 axios 序列化为 ids=1&ids=2
 const handleDelete = async (row) => {
   try {
     await deleteEmployees([row.id])
@@ -220,55 +236,25 @@ onMounted(() => {
   min-height: calc(100vh - 120px);
 }
 
+/* 顶部工具栏：搜索 + 新增 */
 .toolbar {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 20px;
-  padding: 16px 20px;
+  padding: 20px;
+  /* 工具栏背景使用主色浅背景 */
   background: $primary-light;
   border-radius: 4px;
-  flex-wrap: wrap;
-  gap: 12px;
-
-  .search-form {
-    flex: 1;
-  }
 
   .el-form-item {
     margin-bottom: 0;
-  }
-
-  :deep(.el-button--primary) {
-    background-color: $primary;
-    border-color: $primary;
-
-    &:hover {
-      background-color: $primary-dark;
-      border-color: $primary-dark;
-    }
   }
 }
 
 .employee-table {
   width: 100%;
   margin-bottom: 20px;
-
-  :deep(.el-table__header-wrapper) {
-    th {
-      background-color: $primary-light !important;
-      color: $primary-dark !important;
-      font-weight: bold;
-    }
-  }
-
-  :deep(.el-button--primary) {
-    color: $primary;
-
-    &:hover {
-      color: $primary-dark;
-    }
-  }
 }
 
 .pagination {

@@ -358,7 +358,7 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
     }
 
     @Override
-    public List<FestivalDetailVO> readOfFOption(String option) {
+    public List<FestivalDetailVO> readOfOption(String option) {
         List<FestivalDetail> festivalList = festivalDetailService.lambdaQuery().like(FestivalDetail::getSpecOption,option).list();
         List<FestivalDetailVO> festivalDetailVOList = festivalList.stream()
                 .map(festivalDetailVO -> BeanUtil.toBean(festivalDetailVO, FestivalDetailVO.class) )

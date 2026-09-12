@@ -123,10 +123,11 @@
               </template>
             </el-table-column>
           </el-table>
-          <!-- 订单总金额 -->
+          <!-- 订单总金额：有明细时累加展示，无明细（后端未返回）时展示 - 避免误导 -->
           <div class="total-amount">
             <span class="label">订单总金额：</span>
-            <span class="amount">￥{{ computeOrderAmount() }}</span>
+            <span v-if="totalAmount != null" class="amount">￥{{ totalAmount }}</span>
+            <span v-else class="amount empty">-</span>
           </div>
         </el-card>
       </template>
@@ -138,7 +139,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Picture } from '@element-plus/icons-vue'
@@ -248,11 +249,17 @@ const resolveImageUrl = (image) => {
   return `/api/local?fileName=${encodeURIComponent(image)}`
 }
 
-// 计算订单总金额：累加 flowerOrderDetailList 各明细的 amount
+// 订单总金额：累加 flowerOrderDetailList 各明细的 amount
+// 注意：当前后端 readById 未填充明细列表，无明细时为 null（模板展示 "-"）
+const totalAmount = ref(null)
 const computeOrderAmount = () => {
-  const list = order.value.flowerOrderDetailList || []
+  const list = order.value.flowerOrderDetailList
+  if (!list || list.length === 0) {
+    totalAmount.value = null
+    return
+  }
   const sum = list.reduce((acc, item) => acc + Number(item.amount || 0), 0)
-  return sum.toFixed(2)
+  totalAmount.value = sum.toFixed(2)
 }
 
 // 获取订单详情 - GET /admin/flowerOrder?id=xxx
@@ -267,6 +274,7 @@ const fetchOrderDetail = async () => {
     const res = await getOrderById(id)
     if (res?.data) {
       order.value = res.data
+      computeOrderAmount()
     } else {
       order.value = {}
     }
@@ -371,6 +379,12 @@ onMounted(() => {
     font-size: 18px;
     font-weight: 600;
     color: $sys-red;
+
+    /* 无明细数据时的占位金额：弱化展示，避免误认为真实 0 元 */
+    &.empty {
+      color: rgba(94, 92, 230, 0.55);
+      font-weight: 400;
+    }
   }
 }
 </style>

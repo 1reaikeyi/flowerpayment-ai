@@ -8,7 +8,7 @@ import request from '@/utils/admin/request.js'
 
 // 7.1 根据 ID 查询订单 - GET /admin/flowerOrder
 // 请求参数: id (Long, 必填) 订单主键 ID
-// 响应 Result<FlowerOrderVO>（当前后端实现待完善）
+// 响应 Result<FlowerOrderVO>（含 flowerOrderDetailList 订单明细列表）
 export const getOrderById = (id) => {
   return request({
     url: '/admin/flowerOrder',

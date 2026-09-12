@@ -5,8 +5,7 @@
     基于 Spring Boot 3 与 Vue 3 构建的现代化前后端分离系统。后端利用 Spring Boot 3 的高效与安全性提供 RESTful API 服务，前端借助 Vue 3 实现流畅的用户交互体验，通过多级缓存热点数据以提升系统响应速度。主业务为鲜花经营，送人，用途，管理，销售。分支业务org.springframework.ai的openai +com.alibaba.cloud.ai的graph，通过图像识别推荐相似花束，支持LLM生成贺卡文案+tts配音贺语，rag连接购物车数据知识文化讲解宣传。
   </h5>
 </div>
-
-配置说明
+## 配置说明
 
 <div align="center">
     <h1>
@@ -187,8 +186,8 @@ flowchart LR
 | :------------: | :----------------------------------------------------------: |
 |    登录页面    | <img src="说明/原型功能/admin1.png" alt="管理端登录" style="zoom: 25%;" /> |
 |      分类      | <img src="说明/原型功能/admin2.png" alt="管理端登录" style="zoom: 25%;" /> |
-| 单花+送人+用途 | <img src="说明/原型功能/admin3.png" alt="管理端登录" style="zoom: 25%;" /> |
-| 多花+用途+送人 | <img src="说明/原型功能/admin4.png" alt="管理端登录" style="zoom: 25%;" /> |
+| 单花+送人+用途 | <img src="说明/原型功能/admin3.png" alt="管理端登录" style="zoom: 25%;" /><img src="说明/原型功能/admin33.png" alt="管理端登录" style="zoom: 25%;" /><img src="说明/原型功能/admin333.png" alt="管理端登录" style="zoom: 25%;" /> |
+| 多花+用途+送人 | <img src="说明/原型功能/admin4.png" alt="管理端登录" style="zoom: 25%;" /><img src="说明/原型功能/admin444.png" alt="管理端登录" style="zoom: 25%;" /> |
 |    订单管理    | <img src="说明/原型功能/admin5.png" alt="管理端登录" style="zoom: 25%;" /><img src="说明/原型功能/admin55.png" alt="管理端登录" style="zoom: 25%;" /> |
 |      店铺      | <img src="说明/原型功能/admin6.png" alt="管理端登录" style="zoom: 25%;" /> |
 |      员工      | <img src="说明/原型功能/admin7.png" alt="管理端登录" style="zoom: 25%;" /> |
@@ -244,7 +243,8 @@ Q: 放弃 MD5，使用BCrypt 密码加密存储优点？
 不使用 MD5/SHA256 不可逆哈希，BCrypt 自带随机盐值，抗彩虹表暴力破解，数据库永不存储明文密码。
 Q: 如何role权限隔离, 不越级？
  1.	service的方法层拦截
- interface使用@PreAuthorize("hasAuthority('ROLE_ADMIN')orhasAuthority('ROLE_EMP')")
+ interface使用@PreAuthorize("hasAuthority('ROLE_ADMIN')or hasAuthority('ROLE_EMP')")
+ @PreAuthorize("hasAuthority('ROLE_USER')")
  2. controller的url拦截
 .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_EMP")
 .requestMatchers("/user/**").hasAuthority("ROLE_USER")
@@ -256,9 +256,11 @@ Q: 如何role权限隔离, 不越级？
 
 ### model
 
-1. 索引：type 普通索引，按类型快速筛选分类。
+1. 索引：type 普通索引
 
-3. Redis 缓存结构，springcache成本低
+   按类型快速筛选分类，优化 type查询速度
+
+2. Redis 缓存结构，springcache成本低
 
    ```
    @CacheConfig(cacheNames = RedisPrefixConstant.CATEGORY_TYPE_PREFIX)
@@ -445,36 +447,27 @@ flowchart TD
 
 `生产网关一般为：https://openapi.alipay.com/gateway.do`
 
-|                          支付宝授权                          |                           授权成功                           | 集成到订单                                                   | 支付过程                                                     |                           同步支付                           |                           异步回调                           |
-| :----------------------------------------------------------: | :----------------------------------------------------------: | ------------------------------------------------------------ | ------------------------------------------------------------ | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="说明/支付宝+qq/ali1.png" alt="支付宝" style="zoom:25%;" /> | <img src="说明/支付宝+qq/ali2.png" alt="支付宝" style="zoom:50%;" /> | <img src="说明/支付宝+qq/1.png" alt="支付" style="zoom:25%;" /> | <img src="说明/支付宝+qq/2.png" alt="支付" style="zoom: 25%;" /> | <img src="说明/支付宝+qq/3.png" alt="支付" style="zoom: 25%;" /> | <img src="说明/支付宝+qq/4.png" alt="支付" style="zoom: 25%;" /> |
+| 支付宝授权     | <img src="说明/支付宝+qq/ali1.png" alt="支付宝" style="zoom:10%;" /> |
+| -------------- | ------------------------------------------------------------ |
+| 第三方授权成功 | <img src="说明/支付宝+qq/ali2.png" alt="支付宝" style="zoom:50%;" /> |
+| 支付集成到订单 | <img src="说明/支付宝+qq/1.png" alt="支付" style="zoom:25%;" /> |
+| 支付过程       | <img src="说明/支付宝+qq/2.png" alt="支付" style="zoom: 25%;" /> |
+| 同步支付结果   | <img src="说明/支付宝+qq/3.png" alt="支付" style="zoom: 25%;" /> |
+| 异步验签结果   | <img src="说明/支付宝+qq/4.png" alt="支付" style="zoom: 25%;" /> |
 
 ```
 1 用户下单 → 2 用户确认支付 → 3 商家制作 → 4 工作人员取货 → 5 工作人员开始配送 → 6 工作人员已到达 → 7 用户确认
         → 8 已取消（未接单退款、商家拒单、超时取消、退款）
-
-```
-
-```
-enum:
- ORDER(1L, "用户下单"),
- PAYMENT(2L, "用户确认支付"),
- COOKING(3L, "商家制作"),
- GO(4L, "工作人员取货"),
- DELIVERING(5L, "工作人员开始配送"),
- ARRIVED(6L, "工作人员已到达"),
- COMPLETED(7L, "系统自动确认"),
- CANCELLED(8L, "用户确认");
 ```
 
 ## 五、user模块
 
 user-address
 
-|        业务难点        |                         场景                          |                           解决方案                           |                           选型理由                           |
-| :--------------------: | :---------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-|   多默认地址数据违规   |       新增 / 修改地址勾选默认，旧默认地址未取消       | 设为默认前先批量更新该用户所有地址 isDefault=0，两步操作绑定业务逻辑 | 数据库无法直接约束单用户唯一默认，代码层前置清理旧默认，保证业务数据合规 |
-| 传统分页深分页性能衰减 | 用户地址数量较多时，pageNum=100 需要扫描前 100 页数据 |  游标滚动分页，以上一页最后一条 id 作为游标，直接走主键索引  | 游标分页性能稳定不随页码增长衰减，统一项目分页返回结构 ScrollResult |
+|      业务难点      |                         场景                          |                           解决方案                           |                           选型理由                           |
+| :----------------: | :---------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+| 多默认地址数据违规 |       新增 / 修改地址勾选默认，旧默认地址未取消       | 设为默认前先批量更新该用户所有地址 isDefault=0，两步操作绑定业务逻辑 | 数据库无法直接约束单用户唯一默认，代码层前置清理旧默认，保证业务数据合规 |
+|      传统分页      | 用户地址数量较多时，pageNum=100 需要扫描前 100 页数据 |  游标滚动分页，以上一页最后一条 id 作为游标，直接走主键索引  | 游标分页性能稳定不随页码增长衰减，统一项目分页返回结构 ScrollResult |
 
 user-shopping
 

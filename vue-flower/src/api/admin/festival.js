@@ -81,3 +81,25 @@ export const getFestivalsByFlowerId = (id) => {
     params: { id }
   })
 }
+
+// 2.8 按送人对象查询多花礼盒明细 - GET /admin/festival/of/object
+// 请求参数: object (String, 必填) 送人对象关键词，如 "女友"（spec_object LIKE %object%）
+// 响应 Result<List<FestivalDetailVO>>
+export const getFestivalDetailsByObject = (object) => {
+  return request({
+    url: '/admin/festival/of/object',
+    method: 'get',
+    params: { object }
+  })
+}
+
+// 2.9 按用途场景查询多花礼盒明细 - GET /admin/festival/of/option
+// 请求参数: option (String, 必填) 用途场景关键词，如 "生日"（spec_option LIKE %option%）
+// 响应 Result<List<FestivalDetailVO>>
+export const getFestivalDetailsByOption = (option) => {
+  return request({
+    url: '/admin/festival/of/option',
+    method: 'get',
+    params: { option }
+  })
+}

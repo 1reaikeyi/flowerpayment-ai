@@ -13,7 +13,7 @@ export const getShopStatus = () => {
   })
 }
 
-// 设置营业状态 - POST /admin/shop/{status}，1=营业中，其它=已打烊，响应 data = ShopVO
+// 设置营业状态 - POST /admin/shop/{status}，路径参数 status 仅取 0 或 1：1=营业中，0=已打烊，响应 data = ShopVO
 export const setShopStatus = (status) => {
   return request({
     url: `/admin/shop/${status}`,

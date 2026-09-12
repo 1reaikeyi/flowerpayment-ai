@@ -27,7 +27,7 @@ import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useEmployeeStore } from '@/stores/index.js'
 import { uploadFile } from '@/api/file/file.js'
-import { updateEmployee } from '@/api/admin/admin.js'
+import { updateEmployee } from '@/api/employee/employee.js'
 import defaultAvatar from '@/assets/login/avatar.png'
 
 const employeeStore = useEmployeeStore()
@@ -102,7 +102,8 @@ const handleSave = async () => {
     align-items: center;
     gap: 16px;
     .tip {
-      color: #999;
+      /* 提示文字使用系统靛蓝半透明（与上传提示样式统一） */
+      color: rgba(94, 92, 230, 0.55);
       font-size: 12px;
     }
     .actions {

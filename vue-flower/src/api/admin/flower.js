@@ -70,3 +70,25 @@ export const getFlowerDetailsByFlowerId = (id) => {
     params: { id }
   })
 }
+
+// 5.7 按送人对象查询鲜花明细 - GET /admin/flower/of/object
+// 请求参数: object (String, 必填) 送人对象关键词，如 "女友"（spec_object LIKE %object%）
+// 响应 Result<List<FlowerDetailVO>>
+export const getFlowerDetailsByObject = (object) => {
+  return request({
+    url: '/admin/flower/of/object',
+    method: 'get',
+    params: { object }
+  })
+}
+
+// 5.8 按用途场景查询鲜花明细 - GET /admin/flower/of/option
+// 请求参数: option (String, 必填) 用途场景关键词，如 "生日"（spec_option LIKE %option%）
+// 响应 Result<List<FlowerDetailVO>>
+export const getFlowerDetailsByOption = (option) => {
+  return request({
+    url: '/admin/flower/of/option',
+    method: 'get',
+    params: { option }
+  })
+}

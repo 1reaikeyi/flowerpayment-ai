@@ -26,15 +26,17 @@
           {{ row.address || '-' }}
         </template>
       </el-table-column>
+      <el-table-column label="配送方式" min-width="100">
+        <template #default="{ row }">
+          <!-- deliveryType 后端序列化为枚举名（NOW/BOOK_TIME），归一化后展示 -->
+          <el-tag :type="normalizeDeliveryType(row.deliveryType) === 1 ? 'warning' : 'info'" effect="plain">
+            {{ normalizeDeliveryType(row.deliveryType) === 1 ? '立即送出' : '预约配送' }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="备注/贺卡文案" min-width="180" show-overflow-tooltip>
         <template #default="{ row }">
           {{ row.remark || '-' }}
-        </template>
-      </el-table-column>
-      <!-- 订单金额：累加 flowerOrderDetailList.amount -->
-      <el-table-column label="订单金额" min-width="110">
-        <template #default="{ row }">
-          <span class="price">￥{{ computeOrderAmount(row) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="退款状态" min-width="100">
@@ -56,7 +58,7 @@
       class="pagination"
       v-model:current-page="pagination.page"
       v-model:page-size="pagination.pageSize"
-      :page-sizes="[10, 20, 30, 40]"
+      :page-sizes="[10, 20]"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
       @size-change="handleSizeChange"
@@ -83,14 +85,29 @@ const tableData = ref([])
 const total = ref(0)
 const loading = ref(false)
 
-// 计算订单金额：累加 flowerOrderDetailList 各明细的 amount
-const computeOrderAmount = (row) => {
-  const list = row.flowerOrderDetailList || []
-  const sum = list.reduce((acc, item) => acc + Number(item.amount || 0), 0)
-  return sum.toFixed(2)
+// 后端 deliveryType 字段是 DeliveryStatusEnum 枚举（NOW=1 立即送出, BOOK_TIME=0 预约配送），
+// Jackson 默认序列化为枚举名，需归一化为数字 code
+const deliveryTypeEnumNameToCode = {
+  NOW: 1,
+  BOOK_TIME: 0
+}
+const normalizeDeliveryType = (val) => {
+  if (val == null) return null
+  if (typeof val === 'number') return val
+  if (typeof val === 'string') {
+    if (deliveryTypeEnumNameToCode[val] != null) return deliveryTypeEnumNameToCode[val]
+    const num = Number(val)
+    return Number.isNaN(num) ? null : num
+  }
+  if (typeof val === 'object') {
+    // DeliveryStatusEnum 的 @EnumValue 字段名是 value
+    return val.value != null ? Number(val.value) : (val.code != null ? Number(val.code) : null)
+  }
+  return null
 }
 
 // 分页查询已取消订单（status=8）
+// 注意：分页接口仅返回订单主表字段，不含 flowerOrderDetailList，金额请进入详情查看
 const fetchList = async () => {
   loading.value = true
   try {
@@ -158,11 +175,6 @@ onMounted(() => {
 .refund-table {
   width: 100%;
   margin-bottom: 20px;
-
-  .price {
-    color: $sys-red;
-    font-weight: 500;
-  }
 }
 
 .pagination {

@@ -22,7 +22,7 @@
     <div class="actions">
       <el-button @click="refresh">刷新</el-button>
       <el-button type="primary" @click="$router.push('/admin/employee/avatar')">更换头像</el-button>
-      <el-button type="warning" @click="$router.push('/admin/employee/password')">重置密码</el-button>
+      <el-button type="primary" plain @click="$router.push('/admin/employee/password')">重置密码</el-button>
     </div>
   </el-card>
 </template>

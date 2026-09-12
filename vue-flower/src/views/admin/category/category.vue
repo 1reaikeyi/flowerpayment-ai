@@ -1,17 +1,8 @@
 <template>
   <div class="category-container">
-    <!-- 顶部搜索栏：按名称搜索 + 按分类类型筛选 + 新增按钮 -->
-    <div class="search-bar">
-      <el-form :inline="true" :model="searchForm">
-        <el-form-item label="分类名称">
-          <el-input
-            v-model="searchForm.name"
-            placeholder="请输入分类名称"
-            clearable
-            @clear="handleSearch"
-            @keyup.enter="handleSearch"
-          />
-        </el-form-item>
+    <!-- 顶部工具栏：分类类型筛选 + 查询，右侧新增按钮 -->
+    <div class="toolbar">
+      <el-form :inline="true" :model="searchForm" @submit.prevent>
         <el-form-item label="分类类型">
           <el-select
             v-model="searchForm.type"
@@ -27,17 +18,20 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item class="add-btn-item">
-          <!-- 新增分类：跳转到新增页 /admin/category/add -->
-          <el-button type="warning" @click="handleAdd">
-            <el-icon><Plus /></el-icon>
-            新增分类
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">
+            <el-icon><Search /></el-icon>
+            查询
           </el-button>
         </el-form-item>
       </el-form>
+      <el-button type="primary" @click="handleAdd">
+        <el-icon><Plus /></el-icon>
+        新增分类
+      </el-button>
     </div>
 
-    <!-- 分类列表：id / 类型 / 名称 / 排序 / 状态 / 操作 -->
+    <!-- 分类列表：id / 类型 / 名称 / 排序 / 状态 / 更新时间 / 操作 -->
     <el-table
       :data="tableData"
       stripe
@@ -46,7 +40,7 @@
       :header-cell-style="{ background: 'rgba(10, 132, 255, 0.1)', color: '#0A84FF', fontWeight: 'bold' }"
     >
       <el-table-column prop="id" label="ID" width="100" align="center" />
-      <el-table-column label="分类类型" width="140" align="center">
+      <el-table-column label="分类类型" width="160" align="center">
         <template #default="{ row }">
           <el-tag :type="getTypeTag(row.type).type">
             {{ getTypeTag(row.type).text }}
@@ -67,7 +61,7 @@
       <!-- 操作：编辑 / 启停切换 / 删除 -->
       <el-table-column label="操作" width="260" align="center" fixed="right">
         <template #default="{ row }">
-          <el-button type="warning" link size="small" @click="handleEdit(row)">
+          <el-button type="primary" link size="small" @click="handleEdit(row)">
             <el-icon><Edit /></el-icon>
             编辑
           </el-button>
@@ -75,6 +69,7 @@
             :type="row.status === 1 ? 'danger' : 'success'"
             link
             size="small"
+            :loading="statusLoadingId === row.id"
             @click="handleStatusChange(row)"
           >
             <el-icon><Switch /></el-icon>
@@ -98,11 +93,6 @@
       </el-table-column>
     </el-table>
 
-    <!-- 空状态 -->
-    <el-empty v-if="!loading && tableData.length === 0" description="暂无分类数据">
-      <el-button type="warning" @click="handleAdd">添加第一个分类</el-button>
-    </el-empty>
-
     <!-- 分页 -->
     <el-pagination
       v-if="total > 0"
@@ -123,8 +113,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Search, Plus, Edit, Delete, Switch } from '@element-plus/icons-vue'
-// 仅引入列表页需要的接口：add 由 addCategory 页面负责
-// API 函数名对齐新的 admin API 层（category.js）
+// API 函数名对齐 admin 接口文档第 4 节（category.js）
 import { pageCategoryList, updateCategory, deleteCategories } from '@/api/admin/category.js'
 
 const router = useRouter()
@@ -151,9 +140,8 @@ const getTypeTag = (type) => {
   }
 }
 
-// 搜索表单：后端 FlowerCategoryPageDTO 支持 type 筛选；name 在前端暂不支持（后端无此字段）
+// 筛选表单：后端 FlowerCategoryPageDTO 仅支持 type 筛选（无 name 字段，见文档 4.3）
 const searchForm = reactive({
-  name: '',
   type: null
 })
 
@@ -168,20 +156,29 @@ const tableData = ref([])
 const total = ref(0)
 const loading = ref(false)
 
-// 获取分类列表（后端仅返回 status=1 的启用分类）
+// 启停切换中按钮 loading 的行 id
+const statusLoadingId = ref(null)
+
+// 获取分类列表
 const fetchCategoryList = async () => {
   loading.value = true
   try {
     const params = {
       page: pagination.page,
-      pageSize: pagination.pageSize,
-      type: searchForm.type ?? undefined
+      pageSize: pagination.pageSize
     }
-    const res = await pageCategoryList(params)
+    // type 为空时不传，避免后端按空值过滤
+    if (searchForm.type) {
+      params.type = searchForm.type
+    }
     // 后端返回 Result<PageResult<FlowerCategoryVO>>：data = { total, list, pageNum, pageSize }
+    const res = await pageCategoryList(params)
     if (res?.data) {
       tableData.value = res.data.list || []
       total.value = res.data.total || 0
+    } else {
+      tableData.value = []
+      total.value = 0
     }
   } catch (error) {
     console.error('获取分类列表失败:', error)
@@ -190,15 +187,14 @@ const fetchCategoryList = async () => {
   }
 }
 
-// 每页条数变化：重置到第一页
-const handleSizeChange = (size) => {
-  pagination.pageSize = size
+// 搜索：重置页码到第一页
+const handleSearch = () => {
   pagination.page = 1
   fetchCategoryList()
 }
 
-// 搜索：重置到第一页后查询
-const handleSearch = () => {
+// 每页条数变化：重置到第一页
+const handleSizeChange = () => {
   pagination.page = 1
   fetchCategoryList()
 }
@@ -220,30 +216,39 @@ const handleEdit = (row) => {
   })
 }
 
-// 注意：后端分页仅返回 status=1，禁用后刷新列表该行将不再显示
+// 启停切换：复制列表行数据改 status 后 updateCategory
+// 注意：后端分页可能仅返回启用分类，禁用后刷新该行将不再显示
 const handleStatusChange = async (row) => {
+  statusLoadingId.value = row.id
   const newStatus = row.status === 1 ? 0 : 1
   const actionText = newStatus === 1 ? '启用' : '禁用'
   try {
     await updateCategory({
-      id: row.id,
-      type: row.type,
-      name: row.name,
-      sort: row.sort,
+      ...row,
       status: newStatus
     })
     ElMessage.success(`分类${actionText}成功`)
+    // 禁用后若当前页只剩这一条且不是第一页，回退一页
+    if (newStatus === 0 && tableData.value.length === 1 && pagination.page > 1) {
+      pagination.page -= 1
+    }
     fetchCategoryList()
   } catch (error) {
     console.error('修改状态失败:', error)
+  } finally {
+    statusLoadingId.value = null
   }
 }
 
-// 删除分类：deleteCategory 接收 id 数组，后端按 ids 逗号拼接删除
+// 删除分类：deleteCategories 接收 id 数组
 const handleDelete = async (row) => {
   try {
     await deleteCategories([row.id])
     ElMessage.success('删除成功')
+    // 删除后若当前页只剩这一条且不是第一页，回退一页
+    if (tableData.value.length === 1 && pagination.page > 1) {
+      pagination.page -= 1
+    }
     fetchCategoryList()
   } catch (error) {
     console.error('删除失败:', error)
@@ -267,62 +272,28 @@ onMounted(() => {
   min-height: calc(100vh - 120px);
 }
 
-.search-bar {
+/* 顶部工具栏：筛选 + 新增 */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
   padding: 20px;
-  /* 搜索栏背景使用主色浅背景 */
+  /* 工具栏背景使用主色浅背景 */
   background: $primary-light;
   border-radius: 4px;
 
   .el-form-item {
     margin-bottom: 0;
   }
-
-  /* 新增按钮靠右 */
-  .add-btn-item {
-    margin-left: auto;
-  }
-
-  :deep(.el-button--warning) {
-    /* 主按钮使用系统蓝，文字使用系统黄 */
-    background-color: $primary;
-    border-color: $primary;
-    color: $sys-yellow;
-
-    &:hover {
-      background-color: $primary-dark;
-      border-color: $primary-dark;
-    }
-  }
 }
 
 .category-table {
   width: 100%;
   margin-bottom: 20px;
-
-  :deep(.el-table__header-wrapper) {
-    th {
-      background-color: $primary-light !important;
-      color: $primary-dark !important;
-      font-weight: bold;
-    }
-  }
-
-  :deep(.el-tag--warning) {
-    background-color: $primary-light;
-    color: $primary-dark;
-    border-color: $primary;
-  }
-
-  :deep(.el-button--warning) {
-    color: $primary;
-
-    &:hover {
-      color: $primary-dark;
-    }
-  }
 }
 
+/* 分页 */
 .pagination {
   display: flex;
   justify-content: flex-end;

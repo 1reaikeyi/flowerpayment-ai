@@ -53,6 +53,7 @@
           <el-upload
             class="avatar-uploader"
             :show-file-list="false"
+            :before-upload="beforeAvatarUpload"
             :http-request="handleAvatarUpload"
             accept="image/*"
           >
@@ -109,8 +110,9 @@
         <!-- 操作按钮 -->
         <el-form-item class="form-buttons">
           <el-button @click="goBack">取消</el-button>
-          <el-button type="primary" :loading="submitting" @click="handleSubmit">
-            保存
+          <el-button type="primary" :loading="submitting" @click="handleSubmit(false)">保存</el-button>
+          <el-button v-if="!isEdit" type="primary" plain :loading="submitting" @click="handleSubmit(true)">
+            保存并继续添加
           </el-button>
         </el-form-item>
       </el-form>
@@ -123,11 +125,8 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
-import {
-  registerEmployee,
-  getEmployeeById,
-  updateEmployee
-} from '@/api/admin/admin.js'
+import { getEmployeeById } from '@/api/admin/admin.js'
+import { registerEmployee, updateEmployee } from '@/api/employee/employee.js'
 import { uploadFile } from '@/api/file/file.js'
 import { baseURL } from '@/utils/admin/request.js'
 
@@ -215,6 +214,21 @@ const rules = {
   ]
 }
 
+// 头像上传前校验：仅图片且不超过 2MB
+const beforeAvatarUpload = (file) => {
+  const isImage = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'].includes(file.type)
+  const isLt2M = file.size / 1024 / 1024 < 2
+  if (!isImage) {
+    ElMessage.error('只能上传 JPG/PNG/GIF/WEBP 格式的图片!')
+    return false
+  }
+  if (!isLt2M) {
+    ElMessage.error('图片大小不能超过 2MB!')
+    return false
+  }
+  return true
+}
+
 // 头像上传 - 自定义 http-request 调 uploadFile
 // 后端返回 data = "{绝对路径}::{保存文件名}"，取 split('::')[1] 作为头像字段值
 const handleAvatarUpload = async (options) => {
@@ -237,9 +251,9 @@ const handleAvatarUpload = async (options) => {
   }
 }
 
-// 返回上一页
+// 返回员工列表页
 const goBack = () => {
-  router.back()
+  router.push('/admin/employee')
 }
 
 // 加载员工详情 - 编辑模式 onMounted 调用
@@ -268,7 +282,7 @@ const fetchEmployeeDetail = async () => {
 }
 
 // 提交表单 - query.id 决定 registerEmployee（新增）或 updateEmployee（编辑）
-const handleSubmit = async () => {
+const handleSubmit = async (continueAdd) => {
   if (!formRef.value) return
   try {
     await formRef.value.validate()
@@ -293,13 +307,22 @@ const handleSubmit = async () => {
       }
       await updateEmployee(payload)
       ElMessage.success('员工信息更新成功')
+      goBack()
     } else {
       // 新增模式：后端无专用 add 接口，注册即新增
       payload.password = formData.password
       await registerEmployee(payload)
       ElMessage.success('员工新增成功')
+
+      if (continueAdd) {
+        formRef.value.resetFields()
+        formData.avatar = ''
+        formData.sex = '男'
+        formData.status = 1
+      } else {
+        goBack()
+      }
     }
-    router.back()
   } catch (error) {
     if (error !== false) {
       console.error('提交失败:', error)
@@ -338,16 +361,17 @@ onMounted(() => {
   font-size: 16px;
   font-weight: 500;
   /* 标题文字使用系统靛蓝 */
-  color: $primary-dark;
+  color: $sys-indigo;
 }
 
 .form-container {
-  max-width: 640px;
+  max-width: 800px;
   padding: 20px 0;
 }
 
 .employee-form {
-  .el-input {
+  .el-input,
+  .el-select {
     width: 300px;
   }
 }
@@ -398,15 +422,5 @@ onMounted(() => {
   padding-top: 20px;
   /* 顶部分隔线使用系统蓝半透明 */
   border-top: 1px solid rgba(10, 132, 255, 0.2);
-
-  :deep(.el-button--primary) {
-    background-color: $primary;
-    border-color: $primary;
-
-    &:hover {
-      background-color: $primary-dark;
-      border-color: $primary-dark;
-    }
-  }
 }
 </style>
