@@ -48,12 +48,6 @@ public class Festival implements Serializable {
     private BigDecimal price;
 
     /**
-     * 鲜花总数量，多花礼盒内花朵总数
-     */
-    @TableField("number")
-    private Long number;
-
-    /**
      * 售卖状态：0 下架，1 在售
      */
     @TableField("status")

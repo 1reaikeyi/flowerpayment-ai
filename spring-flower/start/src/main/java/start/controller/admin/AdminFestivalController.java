@@ -85,4 +85,11 @@ public class AdminFestivalController {
         List<FestivalDetailVO> festivalDetailVOList = festivalService.readOfOption(option);
         return Result.success(festivalDetailVOList);
     }
+    @OperationLogging(operation = OperationEnum.READ)
+    @GetMapping("/of/number")
+    public Result readOfNumber(@RequestParam int number) {
+        List<FestivalDetailVO> festivalDetailVOList = festivalService.readOfNumber(number);
+        return Result.success(festivalDetailVOList);
+    }
+
 }

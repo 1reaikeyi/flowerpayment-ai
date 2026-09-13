@@ -32,14 +32,9 @@ public class FestivalDTO implements Serializable {
     private String name;
 
     /**
-     * 多花礼盒价格
+     * 多花价格
      */
     private BigDecimal price;
-
-    /**
-     * 鲜花总数量，多花礼盒内花朵总数
-     */
-    private Long number;
 
     /**
      * 售卖状态：0 下架，1 在售

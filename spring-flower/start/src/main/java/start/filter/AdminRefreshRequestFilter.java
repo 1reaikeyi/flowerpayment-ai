@@ -101,7 +101,7 @@ public class AdminRefreshRequestFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         } catch (Exception e) {
             // 签名不匹配，说明不是 emp token（可能是 user token），交给下一个过滤器处理
-            log.info("admin 过滤器签名不匹配，交给下一个过滤器: {}", e.getMessage());
+            log.debug("admin 过滤器签名不匹配，交给下一个过滤器: {}", e.getMessage());
             filterChain.doFilter(request, response);
         }
 

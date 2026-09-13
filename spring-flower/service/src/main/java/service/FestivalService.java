@@ -35,4 +35,6 @@ public interface FestivalService extends IService<Festival> {
     List<FestivalDetailVO> readOfObject(String object);
     @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     List<FestivalDetailVO> readOfOption(String option);
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
+    List<FestivalDetailVO> readOfNumber(int number);
 }

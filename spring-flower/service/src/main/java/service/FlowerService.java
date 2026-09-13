@@ -38,4 +38,5 @@ public interface FlowerService extends IService<Flower> {
     List<FlowerDetailVO> readOfObject(String object);
     @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_EMP') or hasAuthority('ROLE_ADMIN')")
     List<FlowerDetailVO> readOfOption(String option);
+
 }

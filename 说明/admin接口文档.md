@@ -199,7 +199,6 @@ public Result handleException(Exception e) {
 | name | String | 是 | 多花礼盒名称 |
 | categoryId | Long | 是 | 所属分类 ID |
 | price | BigDecimal | 是 | 多花礼盒价格 |
-| number | Long | 否 | 鲜花总数量 |
 | status | Long | 否 | 售卖状态 0:下架 1:在售 |
 | description | String | 否 | 多花礼盒描述 |
 | image | String | 否 | 多花礼盒图片 URL |
@@ -229,7 +228,6 @@ public Result handleException(Exception e) {
 | categoryId | Long | 所属分类 ID |
 | name | String | 多花礼盒名称 |
 | price | BigDecimal | 价格 |
-| number | Long | 鲜花总数量 |
 | status | Long | 售卖状态 0:下架 1:在售 |
 | statusDesc | String | 售卖状态描述 |
 | description | String | 描述 |
@@ -273,7 +271,6 @@ public Result handleException(Exception e) {
 | name | String | 否 | 多花礼盒名称 |
 | categoryId | Long | 否 | 分类 ID |
 | price | BigDecimal | 否 | 价格 |
-| number | Long | 否 | 鲜花数量 |
 | status | Long | 否 | 状态 |
 | description | String | 否 | 描述 |
 | image | String | 否 | 图片 |
@@ -319,6 +316,7 @@ public Result handleException(Exception e) {
 | id | Long | 明细主键 |
 | festivalId | Long | 关联多花礼盒 ID |
 | flowerId | Long | 关联鲜花 ID |
+| specNumber | Long | 鲜花数量（该鲜花在礼盒中的数量） |
 | specObject | String | 送人对象（如女友、母亲） |
 | specOption | String | 用途场景（如表白、生日） |
 
@@ -375,6 +373,23 @@ public Result handleException(Exception e) {
 
 ---
 
+### 2.10 按用途场景查询多花礼盒明细
+
+- **方法**: `GET`
+- **路径**: `/admin/festival/of/nunmber`
+- **描述**: 按用途数量（number）查询多花礼盒明细
+- **权限**: ROLE_USER / ROLE_EMP / ROLE_ADMIN
+
+**请求参数 (Query)**:
+
+| 参数   | 类型 | 必填 | 说明     |
+| ------ | ---- | ---- | -------- |
+| number | int  | 是   | 用途数量 |
+
+**响应**: `Result<List<FestivalDetailVO>>`（字段见 2.6 节）
+
+---
+
 ## 3. 多花明细管理 AdminFestivalDetailController
 
 **基础路径**: `/admin/festivalDetail`
@@ -394,6 +409,7 @@ public Result handleException(Exception e) {
 |------|------|------|------|
 | festivalId | Long | 是 | 关联多花礼盒 ID |
 | flowerId | Long | 是 | 关联鲜花 ID |
+| specNumber | Long | 否 | 鲜花数量（该鲜花在礼盒中的数量） |
 | specObject | String | 否 | 送人对象（如女友） |
 | specOption | String | 否 | 用途场景（如表白） |
 
@@ -432,6 +448,7 @@ public Result handleException(Exception e) {
 | id | Long | 是 | 主键 ID |
 | festivalId | Long | 否 | 多花礼盒 ID |
 | flowerId | Long | 否 | 鲜花 ID |
+| specNumber | Long | 否 | 鲜花数量 |
 | specObject | String | 否 | 送人对象 |
 | specOption | String | 否 | 用途场景 |
 

@@ -75,6 +75,12 @@
             {{ flowerMap[row.flowerId]?.name || `鲜花#${row.flowerId}` }}
           </template>
         </el-table-column>
+        <el-table-column label="鲜花数量" min-width="90" align="center">
+          <template #default="{ row }">
+            <span v-if="row.specNumber != null">× {{ row.specNumber }}</span>
+            <span v-else class="text-muted">-</span>
+          </template>
+        </el-table-column>
         <el-table-column label="送人对象" min-width="120" align="center">
           <template #default="{ row }">
             <el-tag v-if="row.specObject" type="warning" size="small">{{ row.specObject }}</el-tag>

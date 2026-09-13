@@ -257,6 +257,9 @@ public class FestivalDetailServiceImpl extends ServiceImpl<FestivalDetailMapper,
         if (festivalDetailDTO.getFestivalId() != null){
             updateWrapper.set(FestivalDetail::getFestivalId,festivalDetailDTO.getFestivalId());
         }
+        if (festivalDetailDTO.getSpecNumber() != null){
+            updateWrapper.set(FestivalDetail::getSpecNumber,festivalDetailDTO.getSpecNumber());
+        }
         if (StrUtil.isNotBlank(festivalDetailDTO.getSpecObject())){
             updateWrapper.set(FestivalDetail::getSpecObject,festivalDetailDTO.getSpecObject());
         }

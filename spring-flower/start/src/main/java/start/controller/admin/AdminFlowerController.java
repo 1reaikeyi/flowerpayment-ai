@@ -48,8 +48,6 @@ public class AdminFlowerController {
         return Result.success(flowerVOPageResult);
     }
 
-
-
     @OperationLogging(operation = OperationEnum.UPDATE)
     @PutMapping
     public Result updateByObject(@RequestBody FlowerDTO flowerDTO) {
@@ -81,5 +79,4 @@ public class AdminFlowerController {
         List<FlowerDetailVO> flowerDetailVOList = flowerService.readOfOption(option);
         return Result.success(flowerDetailVOList);
     }
-
 }

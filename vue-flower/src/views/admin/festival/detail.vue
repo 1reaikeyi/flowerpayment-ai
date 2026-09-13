@@ -43,10 +43,6 @@
             <span class="info-value price">￥{{ Number(festivalInfo.price || 0).toFixed(2) }}</span>
           </div>
           <div class="info-row">
-            <span class="info-label">鲜花总数量：</span>
-            <span class="info-value">{{ festivalInfo.number ?? 0 }} 朵</span>
-          </div>
-          <div class="info-row">
             <span class="info-label">售卖状态：</span>
             <el-tag :type="festivalInfo.status === 1 ? 'success' : 'danger'">
               {{ festivalInfo.status === 1 ? '在售' : '下架' }}
@@ -84,6 +80,12 @@
         <el-table-column label="鲜花名称" min-width="160">
           <template #default="{ row }">
             {{ flowerMap[row.flowerId]?.name || `鲜花#${row.flowerId}` }}
+          </template>
+        </el-table-column>
+        <el-table-column label="鲜花数量" min-width="90" align="center">
+          <template #default="{ row }">
+            <span v-if="row.specNumber != null">× {{ row.specNumber }}</span>
+            <span v-else class="text-muted">-</span>
           </template>
         </el-table-column>
         <el-table-column label="送人对象" min-width="120">
@@ -154,6 +156,16 @@
         </el-form-item>
         <el-form-item label="鲜花名称" v-else>
           <span>{{ flowerMap[detailForm.flowerId]?.name || `鲜花#${detailForm.flowerId}` }}</span>
+        </el-form-item>
+
+        <el-form-item label="鲜花数量" prop="specNumber">
+          <el-input-number
+            v-model="detailForm.specNumber"
+            :min="1"
+            :max="999"
+            placeholder="该鲜花在礼盒中的数量"
+            style="width: 100%"
+          />
         </el-form-item>
 
         <el-form-item label="送人对象" prop="specObject">
@@ -227,6 +239,7 @@ const detailForm = reactive({
   id: '',
   festivalId: '',
   flowerId: null,
+  specNumber: 1,
   specObject: '',
   specOption: ''
 })
@@ -349,6 +362,7 @@ const resetDetailForm = () => {
   detailForm.id = ''
   detailForm.festivalId = festivalId
   detailForm.flowerId = null
+  detailForm.specNumber = 1
   detailForm.specObject = ''
   detailForm.specOption = ''
 }
@@ -368,6 +382,7 @@ const openEditDialog = (row) => {
   detailForm.id = row.id
   detailForm.festivalId = row.festivalId
   detailForm.flowerId = row.flowerId
+  detailForm.specNumber = row.specNumber ?? 1
   detailForm.specObject = row.specObject || ''
   detailForm.specOption = row.specOption || ''
   detailDialogVisible.value = true
@@ -381,6 +396,7 @@ const submitDetail = async () => {
     const payload = {
       festivalId: detailForm.festivalId,
       flowerId: detailForm.flowerId,
+      specNumber: detailForm.specNumber,
       specObject: detailForm.specObject,
       specOption: detailForm.specOption
     }

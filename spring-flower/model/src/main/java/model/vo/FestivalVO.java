@@ -37,11 +37,6 @@ public class FestivalVO implements Serializable {
     private BigDecimal price;
 
     /**
-     * 鲜花总数量
-     */
-    private Long number;
-
-    /**
      * 售卖状态：0 下架，1 在售
      */
     private Long status;

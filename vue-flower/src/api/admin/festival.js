@@ -6,7 +6,8 @@ import request from '@/utils/admin/request.js'
  */
 
 // 2.1 新增节日多花礼盒 - POST /admin/festival
-// 请求体 FestivalDTO: { name(必填), categoryId(必填), price(必填), number, status, description, image }
+// 请求体 FestivalDTO: { name(必填), categoryId(必填), price(必填), status, description, image }
+// 鲜花数量在明细表 festival_detail.spec_number 维护，礼盒本身无数量字段
 // 响应 Result<FestivalDTO>（带自增 ID）
 export const createFestival = (data) => {
   return request({
@@ -39,7 +40,7 @@ export const pageFestivalList = (params) => {
 }
 
 // 2.4 更新节日多花礼盒 - PUT /admin/festival
-// 请求体 FestivalDTO: { id(必填), name, categoryId, price, number, status, description, image }
+// 请求体 FestivalDTO: { id(必填), name, categoryId, price, status, description, image }
 // 响应 Result<FestivalDTO>
 export const updateFestival = (data) => {
   return request({

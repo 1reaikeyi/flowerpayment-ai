@@ -42,7 +42,13 @@ public class FestivalDetail implements Serializable {
     private Long flowerId;
 
     /**
-     * 送人对象标注：该花在多花礼盒中的送人对象
+     * 鲜花数量：该鲜花在多花组合中的数量
+     */
+    @TableField("spec_number")
+    private Long specNumber;
+
+    /**
+     * 送人对象标注：该花在多花组合中的送人对象
      */
     @TableField("spec_object")
     private String specObject;

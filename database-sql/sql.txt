@@ -58,35 +58,60 @@ create table employee
     comment '员工信息（店长/店员/客服）' collate = utf8mb4_bin;
 
 create table festival
+
 (
-    id          bigint auto_increment comment '主键'
-        primary key,
-    category_id bigint           null comment '所属分类',
-    name        varchar(32)      not null comment '多花组合名字',
-    price       decimal(10, 2)   not null comment '价格',
-    number      bigint           not null comment '鲜花数量',
-    status      bigint default 1 null comment '售卖状态 0:下架 1:在售',
-    description varchar(255)     null comment '礼盒描述',
-    image       varchar(255)     null comment '礼盒图片',
-    create_time datetime         null comment '创建时间',
-    update_time datetime         null comment '更新时间',
-    create_user bigint           null comment '创建人',
-    update_user bigint           null comment '修改人',
-    constraint idx_festival_name
-        unique (name)
+
+id          bigint auto_increment comment '主键'
+
+primary key,
+
+category_id bigint           null comment '所属分类',
+
+name        varchar(32)      not null comment '多花组合名字',
+
+price       decimal(10, 2)   not null comment '价格',
+
+status      bigint default 1 null comment '售卖状态 0:下架 1:在售',
+
+description varchar(255)     null comment '礼盒描述',
+
+image       varchar(255)     null comment '礼盒图片',
+
+create_time datetime         null comment '创建时间',
+
+update_time datetime         null comment '更新时间',
+
+create_user bigint           null comment '创建人',
+
+update_user bigint           null comment '修改人',
+
+constraint idx_festival_name
+
+unique (name)
+
 )
-    comment '多花组合' collate = utf8mb4_bin;
+
+comment '多花组合' collate = utf8mb4_bin;
 
 create table festival_detail
+
 (
-    id          bigint auto_increment comment '主键'
-        primary key,
-    festival_id bigint       null comment '多花组合id',
-    flower_id   bigint       null comment '关联鲜花id',
-    spec_object varchar(32)  null comment '送人对象',
-    spec_option varchar(255) null comment '用途'
+
+id          bigint auto_increment comment '主键'
+
+primary key,
+
+festival_id bigint       null comment '多花组合id',
+
+flower_id   bigint       null comment '关联鲜花id',
+
+spec_number bigint       null comment '鲜花数量',
+
+spec_object varchar(32)  null comment '送人对象',
+
+spec_option varchar(255) null comment '用途'
+
 )
-    comment '多花详细信息' collate = utf8mb4_bin;
 
 create index idx_festival_id
     on festival_detail (festival_id)

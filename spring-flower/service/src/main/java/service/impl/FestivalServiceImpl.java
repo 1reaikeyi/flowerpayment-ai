@@ -287,9 +287,6 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
         if (festivalDTO.getImage() != null) {
             updateWrapper.set(Festival::getImage, festivalDTO.getImage());
         }
-        if (festivalDTO.getNumber() != null) {
-            updateWrapper.set(Festival::getNumber, festivalDTO.getNumber());
-        }
         this.update(updateWrapper);
         festivalLocalCache.invalidate(RedisPrefixConstant.FESTIVAL_PREFIX + festivalDTO.getId());
         stringRedisTemplate.delete(RedisPrefixConstant.FESTIVAL_PREFIX + festivalDTO.getId());
@@ -360,6 +357,15 @@ public class FestivalServiceImpl extends ServiceImpl<FestivalMapper, Festival> i
     @Override
     public List<FestivalDetailVO> readOfOption(String option) {
         List<FestivalDetail> festivalList = festivalDetailService.lambdaQuery().like(FestivalDetail::getSpecOption,option).list();
+        List<FestivalDetailVO> festivalDetailVOList = festivalList.stream()
+                .map(festivalDetailVO -> BeanUtil.toBean(festivalDetailVO, FestivalDetailVO.class) )
+                .toList();
+        return festivalDetailVOList;
+    }
+
+    @Override
+    public List<FestivalDetailVO> readOfNumber(int number) {
+        List<FestivalDetail> festivalList = festivalDetailService.lambdaQuery().eq(FestivalDetail::getSpecNumber,number).list();
         List<FestivalDetailVO> festivalDetailVOList = festivalList.stream()
                 .map(festivalDetailVO -> BeanUtil.toBean(festivalDetailVO, FestivalDetailVO.class) )
                 .toList();

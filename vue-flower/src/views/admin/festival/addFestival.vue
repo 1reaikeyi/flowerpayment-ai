@@ -50,17 +50,6 @@
           </el-input>
         </el-form-item>
 
-        <!-- 鲜花总数量 -->
-        <el-form-item label="鲜花数量" prop="number">
-          <el-input-number
-            v-model="formData.number"
-            :min="0"
-            :max="999"
-            placeholder="多花礼盒内鲜花总数量"
-            style="width: 100%"
-          />
-        </el-form-item>
-
         <!-- 图片上传 -->
         <el-form-item label="多花礼盒图片" prop="image">
           <el-upload
@@ -142,13 +131,12 @@ const isEdit = computed(() => !!route.query.id)
 // 分类列表（type=2 节日商品多只）
 const categoryList = ref([])
 
-// 表单数据 - 对齐后端 FestivalDTO 字段
+// 表单数据 - 对齐后端 FestivalDTO 字段（鲜花数量在明细 festival_detail.spec_number 维护）
 const formData = reactive({
   id: '',
   name: '',
   categoryId: null,
   price: '',
-  number: 0,
   image: '',
   description: '',
   status: 1
@@ -210,7 +198,6 @@ const fetchFestivalDetail = async () => {
       formData.name = data.name
       formData.categoryId = data.categoryId ? Number(data.categoryId) : null
       formData.price = String(data.price)
-      formData.number = data.number ?? 0
       formData.image = data.image
       formData.description = data.description || ''
       formData.status = data.status ?? 1
@@ -277,7 +264,6 @@ const handleSubmit = async (continueAdd) => {
       name: formData.name,
       categoryId: formData.categoryId,
       price: formData.price,
-      number: formData.number,
       image: formData.image,
       description: formData.description,
       status: formData.status
@@ -297,7 +283,6 @@ const handleSubmit = async (continueAdd) => {
       if (continueAdd) {
         formRef.value.resetFields()
         formData.image = ''
-        formData.number = 0
         formData.status = 1
       } else {
         goBack()
